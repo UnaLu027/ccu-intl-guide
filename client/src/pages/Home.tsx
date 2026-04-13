@@ -280,7 +280,7 @@ export default function Home() {
           <p className="text-sm mb-2">
             {t(
               "CCU International Student Friendly Campus Guide",
-              "國立中正大學外籍生友善校園導引系統"
+              "國立中正大學國際生友善校園導引系統"
             )}
           </p>
           <p className="text-xs text-white/40">

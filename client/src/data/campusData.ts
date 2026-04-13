@@ -173,7 +173,7 @@ export const offices: Office[] = [
     indoor_location_note_en: "1st floor of the Administration Building",
     function_desc_zh: "負責國際學生入學、簽證居留、獎學金、交換計畫、國際活動與生活輔導等事務。",
     function_desc_en: "Handles international student admissions, visa/ARC, scholarships, exchange programs, international events, and life support.",
-    service_scope_zh: "入學諮詢、簽證與居留證辦理、獎學金申請、國際交流活動、外籍生生活輔導。",
+    service_scope_zh: "入學諮詢、簽證與居留證辦理、獎學金申請、國際交流活動、國際生生活輔導。",
     service_scope_en: "Admission inquiry, Visa & ARC application, Scholarship application, International exchange events, Life counseling for international students.",
     common_scenarios_zh: "居留證問題、獎學金申請、入學手續、國際活動報名、生活疑難。",
     common_scenarios_en: "ARC issues, Scholarship application, Enrollment procedures, International event registration, General life problems.",

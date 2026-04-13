@@ -31,7 +31,7 @@ export default function Header() {
           <div className="hidden sm:block">
             <div className="font-display font-bold text-sm leading-tight text-white">CCU Campus Guide</div>
             <div className="text-[10px] text-amber-light leading-tight opacity-80">
-              {t("International Student Friendly", "外籍生友善導引")}
+              {t("International Student Friendly", "國際生友善導引")}
             </div>
           </div>
         </Link>
