@@ -4,13 +4,13 @@
  */
 import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { offices, departments, campusResources } from "@/data/campusData";
+import { offices, departments } from "@/data/campusData";
 import { MapView } from "@/components/Map";
 import { useState, useCallback, useRef } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, Building2, Briefcase, MapPin, Coffee, X } from "lucide-react";
+import { ArrowLeft, Building2, Briefcase, MapPin, X } from "lucide-react";
 
-type MarkerType = "office" | "department" | "resource";
+type MarkerType = "office" | "department";
 
 interface MapMarker {
   id: string;
@@ -61,22 +61,6 @@ function buildMarkers(): MapMarker[] {
       navLink: `/navigate/dept/${d.id}`,
     });
   });
-  campusResources.forEach(r => {
-    markers.push({
-      id: r.id,
-      type: "resource",
-      name_en: r.name_en,
-      name_zh: r.name_zh,
-      building_en: r.building_name_en,
-      building_zh: r.building_name_zh,
-      floor: r.floor,
-      lat: r.latitude,
-      lng: r.longitude,
-      detail_en: "",
-      detail_zh: "",
-      navLink: "",
-    });
-  });
   return markers;
 }
 
@@ -86,13 +70,11 @@ const filterOptions: { type: MarkerType | "all"; label_en: string; label_zh: str
   { type: "all", label_en: "All", label_zh: "全部", icon: MapPin },
   { type: "office", label_en: "Offices", label_zh: "行政單位", icon: Briefcase },
   { type: "department", label_en: "Departments", label_zh: "系所", icon: Building2 },
-  { type: "resource", label_en: "Campus Life", label_zh: "校園生活", icon: Coffee },
 ];
 
 const markerColors: Record<MarkerType, string> = {
   office: "#1B2A4A",
   department: "#7A9E7E",
-  resource: "#E8A838",
 };
 
 export default function CampusMap() {
