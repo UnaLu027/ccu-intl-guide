@@ -9,7 +9,6 @@ import {
   serviceCategories,
   offices,
   tasks,
-  campusResources,
   searchByNeed,
 } from "../shared/campusData.js";
 
@@ -94,31 +93,6 @@ function registerTools(server: McpServer) {
         `**${task.task_name_en}**`,
         `📌 Scenario: ${task.scenario_en}`,
         `\n🗺️ Steps:\n${steps}`,
-      ].join("\n");
-      return { content: [{ type: "text", text }] };
-    }
-  );
-
-  server.tool(
-    "get_campus_resource",
-    "Get location info about campus resources like cafeteria, ATM, 7-ELEVEN, sports center.",
-    { keyword: z.string().describe("Resource keyword, e.g. 'cafeteria', 'ATM', '7-eleven', 'gym'") },
-    async ({ keyword }) => {
-      const q = keyword.toLowerCase();
-      const resource = campusResources.find(
-        (r) =>
-          r.name_en.toLowerCase().includes(q) ||
-          r.name_zh.includes(q) ||
-          r.id.includes(q)
-      );
-      if (!resource) {
-        const list = campusResources.map((r) => r.name_en).join(", ");
-        return { content: [{ type: "text", text: `Resource not found. Available: ${list}` }] };
-      }
-      const text = [
-        `**${resource.name_en}** (${resource.name_zh})`,
-        `📍 Location: ${resource.building_name_en}, ${resource.floor}`,
-        `🗺️ ${resource.indoor_location_note_en}`,
       ].join("\n");
       return { content: [{ type: "text", text }] };
     }

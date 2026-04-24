@@ -154,15 +154,6 @@ export const serviceCategories: ServiceCategory[] = [
     keywords: ["academic", "curriculum", "grade", "transcript", "graduation", "credit", "教務", "成績", "成績單", "畢業", "學分"]
   },
   {
-    id: "campus_life",
-    name_en: "Campus Life",
-    name_zh: "校園生活",
-    icon: "Coffee",
-    description_en: "Dining, convenience stores, ATMs, and daily campus services",
-    description_zh: "餐廳、便利商店、ATM 與日常校園服務",
-    keywords: ["food", "restaurant", "cafeteria", "atm", "convenience store", "shop", "餐廳", "便利商店", "ATM", "商店"]
-  },
-  {
     id: "course_issues",
     name_en: "Course Issues",
     name_zh: "選課相關",
@@ -695,7 +686,7 @@ export const offices: Office[] = [
     name_zh: "總務處",
     name_en: "Office of General Affairs",
     category: "office",
-    service_categories: ["campus_life"],
+    service_categories: [],
     building_name_zh: "行政大樓西棟",
     building_name_en: "West Wing, Administration Building",
     floor: "1F",
@@ -723,7 +714,7 @@ export const offices: Office[] = [
     name_zh: "總務處－事務組",
     name_en: "General Services Division, Office of General Affairs",
     category: "office",
-    service_categories: ["campus_life"],
+    service_categories: [],
     building_name_zh: "行政大樓西棟",
     building_name_en: "West Wing, Administration Building",
     floor: "1F",
@@ -778,7 +769,7 @@ export const offices: Office[] = [
     name_zh: "總務處－保管組",
     name_en: "Property Management Division, Office of General Affairs",
     category: "office",
-    service_categories: ["campus_life", "student_affairs"],
+    service_categories: ["student_affairs"],
     building_name_zh: "行政大樓西棟",
     building_name_en: "West Wing, Administration Building",
     floor: "B1",
@@ -836,7 +827,7 @@ export const offices: Office[] = [
     name_zh: "駐警處－車輛管控中心",
     name_en: "Vehicle Control Center, Campus Security",
     category: "office",
-    service_categories: ["campus_life", "student_affairs"],
+    service_categories: ["student_affairs"],
     building_name_zh: "活動中心",
     building_name_en: "Activity Center",
     floor: "2F",
@@ -2718,79 +2709,6 @@ export const tasks: Task[] = [
   }
 ];
 
-// ============================================================
-// Campus Life Resources
-// [修正] category 統一使用 "campus_life"
-// ============================================================
-export interface CampusResource {
-  id: string;
-  name_zh: string;
-  name_en: string;
-  // [修正] category 值：統一使用 "campus_life"
-  category: string;
-  building_name_zh: string;
-  building_name_en: string;
-  floor: string;
-  indoor_location_note_en: string;
-  latitude: number;
-  longitude: number;
-  needs_manual_review: boolean;
-}
-
-export const campusResources: CampusResource[] = [
-  {
-    id: "7eleven",
-    name_zh: "7-ELEVEN 中正大學門市",
-    name_en: "7-ELEVEN (CCU Branch)",
-    category: "campus_life",
-    building_name_zh: "學生活動中心",
-    building_name_en: "Student Activity Center",
-    floor: "1F",
-    indoor_location_note_en: "1st floor, Student Activity Center",
-    latitude: 23.5618,
-    longitude: 120.4728,
-    needs_manual_review: true
-  },
-  {
-    id: "cafeteria",
-    name_zh: "學生餐廳",
-    name_en: "Student Cafeteria",
-    category: "campus_life",
-    building_name_zh: "學生活動中心",
-    building_name_en: "Student Activity Center",
-    floor: "B1–1F",
-    indoor_location_note_en: "Basement and 1st floor, Student Activity Center",
-    latitude: 23.5618,
-    longitude: 120.4728,
-    needs_manual_review: true
-  },
-  {
-    id: "atm",
-    name_zh: "ATM 提款機",
-    name_en: "ATM",
-    category: "campus_life",
-    building_name_zh: "行政大樓",
-    building_name_en: "Administration Building",
-    floor: "1F",
-    indoor_location_note_en: "1st floor lobby, Administration Building",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    needs_manual_review: true
-  },
-  {
-    id: "sports_center",
-    name_zh: "體育館",
-    name_en: "Sports Center / Gymnasium",
-    category: "campus_life",
-    building_name_zh: "體育館",
-    building_name_en: "Gymnasium",
-    floor: "1F–2F",
-    indoor_location_note_en: "Gymnasium Building",
-    latitude: 23.5610,
-    longitude: 120.4740,
-    needs_manual_review: true
-  }
-];
 
 // ============================================================
 // Search Engine (unchanged)
