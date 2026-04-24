@@ -1804,216 +1804,725 @@ export interface Task {
   target_unit_type: "office" | "department";
   target_unit_id: string;
   recommended_service_categories: string[];
+  required_documents: { zh: string; en: string }[];
+  navigation_tip_zh?: string;
+  navigation_tip_en?: string;
   steps: { zh: string; en: string }[];
   source_url: string;
   needs_manual_review: boolean;
 }
 
 export const tasks: Task[] = [
+  // ============================================================
+  // 1. 來台之前 / 剛到學校
+  // ============================================================
   {
-    id: "task_find_dept",
-    task_name_zh: "找我的系辦公室",
-    task_name_en: "Find my department office",
-    scenario_zh: "你需要找到自己系所的辦公室，例如詢問選課、找導師、領取文件等。",
-    scenario_en: "You need to find your department office for course advising, meeting your advisor, or picking up documents.",
-    target_unit_type: "department",
-    target_unit_id: "",
-    recommended_service_categories: ["department_offices"],
-    steps: [
-      { zh: "確認你的系所名稱與所屬學院", en: "Confirm your department name and college" },
-      { zh: "前往該學院大樓", en: "Go to the college building" },
-      { zh: "進入大樓後搭電梯或走樓梯到指定樓層", en: "Take the elevator or stairs to the designated floor" },
-      { zh: "找到系辦公室門牌", en: "Find the department office sign" },
-      { zh: "向系辦人員說明你的需求", en: "Tell the office staff what you need" }
-    ],
-    source_url: "https://www.ccu.edu.tw/p/412-1000-792.php?Lang=zh-tw",
-    needs_manual_review: false
-  },
-  {
-    id: "task_oia",
-    task_name_zh: "找國際處",
-    task_name_en: "Go to the International Office",
-    scenario_zh: "你有簽證、居留證、獎學金或國際學生相關問題需要協助。",
-    scenario_en: "You need help with visa, ARC, scholarships, or any international student-related issues.",
+    id: "task_visa",
+    task_name_zh: "申請學生簽證",
+    task_name_en: "Apply for a Student Visa",
+    scenario_zh: "你需要在入台前申請學生簽證（居留簽證）。",
+    scenario_en: "You need to apply for a student visa (resident visa) before arriving in Taiwan.",
     target_unit_type: "office",
     target_unit_id: "oia",
     recommended_service_categories: ["international_support"],
-    steps: [
-      { zh: "前往行政大樓", en: "Go to the Administration Building" },
-      { zh: "從正門進入", en: "Enter through the main entrance" },
-      { zh: "國際處位於一樓", en: "OIA is on the 1st floor" },
-      { zh: "找到國際事務處的辦公室", en: "Find the Office of International Affairs" },
-      { zh: "向櫃台人員說明你的需求", en: "Tell the staff at the counter what you need" }
+    required_documents: [
+      { zh: "入學許可函（學校寄發）", en: "Admission letter issued by CCU" },
+      { zh: "有效護照", en: "Valid passport" },
+      { zh: "健康檢查證明（特定國籍需要）", en: "Health certificate (required for certain nationalities)" },
+      { zh: "財力證明", en: "Proof of financial support" },
+      { zh: "2 吋照片 2 張", en: "2 passport-size photos" }
     ],
-    source_url: "https://oia.ccu.edu.tw/",
+    navigation_tip_zh: "行政大樓 1F｜週一至週五 08:30–17:00",
+    navigation_tip_en: "Administration Building, 1F｜Mon–Fri 08:30–17:00",
+    steps: [
+      { zh: "向台灣駐外館處或使館申請居留簽證", en: "Apply for a resident visa at the Taiwan embassy or representative office in your country" },
+      { zh: "備妥入學許可函、護照、健康證明、財力證明、照片", en: "Prepare admission letter, passport, health certificate, financial proof, and photos" },
+      { zh: "簽證核發後，憑簽證入台，入台後 15 天內辦理 ARC", en: "After visa approval, enter Taiwan and apply for ARC within 15 days of arrival" }
+    ],
+    source_url: "https://oia.ccu.edu.tw/p/412-1008-3916.php?Lang=en",
     needs_manual_review: false
   },
   {
-    id: "task_registration",
-    task_name_zh: "處理註冊問題",
-    task_name_en: "Handle registration issues",
-    scenario_zh: "你有註冊、學籍、休學、退學等問題需要處理。",
-    scenario_en: "You need to handle registration, enrollment status, leave of absence, or withdrawal.",
+    id: "task_arc",
+    task_name_zh: "辦理居留證（ARC）",
+    task_name_en: "Apply for ARC (Alien Resident Certificate)",
+    scenario_zh: "你剛到台灣，需要在 15 天內辦理居留證。",
+    scenario_en: "You just arrived in Taiwan and need to apply for an ARC within 15 days.",
     target_unit_type: "office",
-    target_unit_id: "oaa_reg",
-    recommended_service_categories: ["registration", "academic_affairs"],
-    steps: [
-      { zh: "前往行政大樓東棟", en: "Go to the East Wing of Administration Building" },
-      { zh: "從正門進入", en: "Enter through the main entrance" },
-      { zh: "教務處－註冊組位於一樓", en: "Registration Division is on the 1st floor" },
-      { zh: "找到教務處註冊組窗口", en: "Find the Registration Division counter" },
-      { zh: "攜帶學生證與相關文件", en: "Bring your student ID and relevant documents" }
+    target_unit_id: "oia",
+    recommended_service_categories: ["international_support"],
+    required_documents: [
+      { zh: "有效護照與居留簽證", en: "Valid passport and resident visa" },
+      { zh: "入學許可函", en: "Admission letter" },
+      { zh: "在學證明（向國際處或教務處申請）", en: "Enrollment certificate (from OIA or Registration Division)" },
+      { zh: "健康檢查報告（特定國籍需要）", en: "Health examination report (required for certain nationalities)" },
+      { zh: "2 吋照片 2 張", en: "2 passport-size photos" },
+      { zh: "規費（金額依規定）", en: "Application fee (amount as regulated)" }
     ],
-    source_url: "https://oaa.ccu.edu.tw/",
+    navigation_tip_zh: "行政大樓 1F｜先至國際處確認所需文件",
+    navigation_tip_en: "Administration Building, 1F｜Visit OIA first to confirm required documents",
+    steps: [
+      { zh: "入台後先至國際處確認所需文件與辦理流程", en: "After arrival, visit OIA to confirm required documents and procedures" },
+      { zh: "備妥所有文件", en: "Prepare all required documents" },
+      { zh: "由國際處協助帶隊至嘉義縣移民署辦理", en: "OIA will arrange group visits to the Chiayi Immigration Office for ARC application" },
+      { zh: "辦理完成後即獲得居留證（若需等待，會給收據）", en: "ARC will be issued upon completion (a receipt is given if processing time is needed)" }
+    ],
+    source_url: "https://oia.ccu.edu.tw/p/412-1008-3916.php?Lang=en",
     needs_manual_review: false
   },
   {
-    id: "task_student_id",
-    task_name_zh: "補辦學生證",
-    task_name_en: "Replace my student ID",
-    scenario_zh: "你的學生證遺失或損壞，需要補辦。",
-    scenario_en: "Your student ID is lost or damaged and needs to be replaced.",
+    id: "task_airport_to_ccu",
+    task_name_zh: "從機場到中正大學",
+    task_name_en: "Get from the Airport to CCU",
+    scenario_zh: "你剛抵達桃園或高雄機場，需要前往中正大學。",
+    scenario_en: "You just arrived at Taoyuan or Kaohsiung Airport and need to get to CCU.",
     target_unit_type: "office",
-    target_unit_id: "oaa_reg",
-    recommended_service_categories: ["student_id", "registration"],
+    target_unit_id: "oia",
+    recommended_service_categories: ["international_support"],
+    required_documents: [],
+    navigation_tip_zh: "國際處提供接機服務，請提前聯繫",
+    navigation_tip_en: "OIA provides airport pickup service — contact them in advance",
     steps: [
-      { zh: "前往行政大樓東棟", en: "Go to the East Wing of Administration Building" },
-      { zh: "從正門進入", en: "Enter through the main entrance" },
-      { zh: "教務處－註冊組位於一樓", en: "Registration Division is on the 1st floor" },
-      { zh: "向註冊組申請學生證補發", en: "Apply for student ID replacement at the Registration Division" },
-      { zh: "攜帶身分證件與補辦費用", en: "Bring your ID document and replacement fee" }
+      { zh: "提前聯繫國際處告知抵達時間（oia@ccu.edu.tw）", en: "Contact OIA in advance with your arrival time (oia@ccu.edu.tw)" },
+      { zh: "桃園機場選項：高鐵到嘉義站（約 1.5hr）→ 計程車到中正大學（約 20 分鐘）", en: "From Taoyuan Airport: THSR to Chiayi Station (approx. 1.5 hrs) → Taxi to CCU (approx. 20 min)" },
+      { zh: "或搭客運：國光客運至嘉義，再轉乘計程車", en: "Or take intercity bus to Chiayi, then taxi to CCU" },
+      { zh: "抵達後前往宿舍辦理報到，再至國際處辦理入學手續", en: "Upon arrival, check in at the dormitory, then go to OIA for enrollment procedures" }
     ],
-    source_url: "https://oaa.ccu.edu.tw/",
+    source_url: "https://oia.ccu.edu.tw/p/406-1008-67682,r1716.php?Lang=en",
+    needs_manual_review: true
+  },
+  {
+    id: "task_checkin",
+    task_name_zh: "辦理入學報到手續",
+    task_name_en: "Complete Enrollment / Check-in Procedures",
+    scenario_zh: "你剛到學校，需要完成入學報到的全部流程。",
+    scenario_en: "You just arrived at school and need to complete all enrollment check-in procedures.",
+    target_unit_type: "office",
+    target_unit_id: "oia",
+    recommended_service_categories: ["international_support", "registration"],
+    required_documents: [
+      { zh: "護照", en: "Passport" },
+      { zh: "入學許可函", en: "Admission letter" },
+      { zh: "學費繳費證明（若已繳費）", en: "Tuition payment receipt (if already paid)" },
+      { zh: "照片數張", en: "Passport-size photos" }
+    ],
+    navigation_tip_zh: "行政大樓 1F 國際處 → 東棟 1F 教務處，依序辦理",
+    navigation_tip_en: "Administration Building 1F OIA → East Wing 1F Registration Division, in order",
+    steps: [
+      { zh: "至國際處領取入學相關資料與學生手冊", en: "Go to OIA to receive enrollment materials and student handbook" },
+      { zh: "完成線上報到（CCU Portal）", en: "Complete online check-in on CCU Portal" },
+      { zh: "至教務處註冊組完成學籍登記", en: "Go to the Registration Division to complete enrollment registration" },
+      { zh: "至總務處出納組繳交學雜費", en: "Pay tuition at the Cashier Division" },
+      { zh: "領取學生證", en: "Receive your student ID card" }
+    ],
+    source_url: "https://oia.ccu.edu.tw/p/412-1008-1424.php?Lang=en",
     needs_manual_review: false
   },
+  {
+    id: "task_nhi",
+    task_name_zh: "申請健保卡",
+    task_name_en: "Apply for National Health Insurance (NHI) Card",
+    scenario_zh: "你需要辦理台灣全民健保，以便在台就醫。",
+    scenario_en: "You need to enroll in Taiwan's National Health Insurance for medical care.",
+    target_unit_type: "office",
+    target_unit_id: "oia",
+    recommended_service_categories: ["international_support", "health"],
+    required_documents: [
+      { zh: "居留證（ARC）", en: "ARC (Alien Resident Certificate)" },
+      { zh: "護照", en: "Passport" },
+      { zh: "在學證明", en: "Enrollment certificate" }
+    ],
+    navigation_tip_zh: "行政大樓 1F 國際處｜ARC 辦好後即可申請",
+    navigation_tip_en: "Administration Building 1F OIA｜Apply after receiving your ARC",
+    steps: [
+      { zh: "先完成 ARC 辦理", en: "First complete your ARC application" },
+      { zh: "至國際處詢問健保申請流程（學校會統一協助辦理）", en: "Visit OIA to inquire about NHI enrollment (the school will assist with group enrollment)" },
+      { zh: "健保卡申辦完成後，即可持卡至健保特約診所就醫", en: "Once your NHI card is ready, you can use it at NHI-contracted clinics" }
+    ],
+    source_url: "https://oia.ccu.edu.tw/p/412-1008-1596.php?Lang=en",
+    needs_manual_review: true
+  },
+  {
+    id: "task_health_checkup",
+    task_name_zh: "辦理新生健康檢查",
+    task_name_en: "Complete New Student Health Examination",
+    scenario_zh: "你是新生，需要完成學校規定的新生健康檢查。",
+    scenario_en: "As a new student, you need to complete the required health examination.",
+    target_unit_type: "office",
+    target_unit_id: "health_center",
+    recommended_service_categories: ["health"],
+    required_documents: [
+      { zh: "學生證或護照", en: "Student ID or passport" },
+      { zh: "健康檢查通知單（學校發放）", en: "Health examination notice (issued by the school)" }
+    ],
+    navigation_tip_zh: "活動中心 2F｜衛生保健組",
+    navigation_tip_en: "Activity Center, 2F｜Health Services Division",
+    steps: [
+      { zh: "收到學校通知後，依指定時間前往衛生保健組", en: "After receiving the school notice, visit the Health Services Division at the designated time" },
+      { zh: "攜帶學生證或護照", en: "Bring your student ID or passport" },
+      { zh: "完成基本身體測量與檢查項目", en: "Complete basic physical measurements and examination items" },
+      { zh: "若有追蹤需求，衛生保健組會另行通知", en: "If follow-up is needed, the Health Services Division will notify you" }
+    ],
+    source_url: "https://studaffairs.ccu.edu.tw/",
+    needs_manual_review: true
+  },
+
+  // ============================================================
+  // 2. 宿舍與生活
+  // ============================================================
   {
     id: "task_dormitory",
-    task_name_zh: "找宿舍服務中心",
-    task_name_en: "Find dormitory service center",
-    scenario_zh: "你有宿舍申請、維修、門禁或住宿相關問題。",
-    scenario_en: "You have issues with dormitory application, maintenance, access, or housing.",
+    task_name_zh: "申請宿舍",
+    task_name_en: "Apply for Dormitory",
+    scenario_zh: "你需要申請學校宿舍。",
+    scenario_en: "You need to apply for on-campus housing.",
     target_unit_type: "office",
     target_unit_id: "osa_dorm",
     recommended_service_categories: ["dormitory"],
+    required_documents: [
+      { zh: "CCU Portal 帳號（線上申請）", en: "CCU Portal account (online application)" },
+      { zh: "繳費證明（分配後繳費）", en: "Payment receipt (after room assignment)" }
+    ],
+    navigation_tip_zh: "學生活動中心 1F｜住宿服務組",
+    navigation_tip_en: "Student Activity Center, 1F｜Housing Service Division",
     steps: [
-      { zh: "前往學生活動中心", en: "Go to the Student Activity Center" },
-      { zh: "從正門進入", en: "Enter through the main entrance" },
-      { zh: "住宿服務組位於一樓", en: "Housing Service Division is on the 1st floor" },
-      { zh: "找到住宿服務組辦公室", en: "Find the Housing Service Division office" },
-      { zh: "向工作人員說明你的宿舍問題", en: "Tell the staff about your dormitory issue" }
+      { zh: "登入 CCU Portal，點選「宿舍申請」", en: "Log in to CCU Portal and click 'Dormitory Application'" },
+      { zh: "填寫志願序並送出申請", en: "Fill in preferences and submit the application" },
+      { zh: "等待分配通知（約 2 週）", en: "Wait for room assignment notice (approx. 2 weeks)" },
+      { zh: "依通知繳費，攜帶護照至住宿服務組辦理入住", en: "Pay the fee as instructed, then bring your passport to the Housing Service Division to check in" }
     ],
     source_url: "https://studaffairs.ccu.edu.tw/",
     needs_manual_review: true
   },
   {
+    id: "task_dorm_maintenance",
+    task_name_zh: "宿舍設備報修",
+    task_name_en: "Submit a Dormitory Maintenance Request",
+    scenario_zh: "你的宿舍設備壞了，需要申請維修。",
+    scenario_en: "Your dormitory equipment is broken and you need to request a repair.",
+    target_unit_type: "office",
+    target_unit_id: "osa_dorm",
+    recommended_service_categories: ["dormitory"],
+    required_documents: [],
+    navigation_tip_zh: "學生活動中心 1F 或線上申請",
+    navigation_tip_en: "Student Activity Center, 1F or apply online",
+    steps: [
+      { zh: "透過 CCU Portal 或至住宿服務組填寫報修單", en: "Submit a maintenance request through CCU Portal or in person at the Housing Service Division" },
+      { zh: "說明損壞設備與地點（棟別、房號）", en: "Describe the broken equipment and location (building name, room number)" },
+      { zh: "等待工務人員來訪修繕", en: "Wait for maintenance staff to visit and repair" }
+    ],
+    source_url: "https://studaffairs.ccu.edu.tw/",
+    needs_manual_review: true
+  },
+  {
+    id: "task_dormnet",
+    task_name_zh: "申請宿舍網路（DormNet）",
+    task_name_en: "Apply for Dormitory Internet (DormNet)",
+    scenario_zh: "你住在宿舍，需要申請校園網路。",
+    scenario_en: "You live in the dormitory and need to apply for campus internet access.",
+    target_unit_type: "office",
+    target_unit_id: "it_office",
+    recommended_service_categories: ["dormitory", "it_support"],
+    required_documents: [
+      { zh: "學生證或宿舍入住證明", en: "Student ID or dormitory check-in confirmation" }
+    ],
+    navigation_tip_zh: "圖書資訊大樓｜資訊處，或線上申請",
+    navigation_tip_en: "Information and Library Building｜IT Office, or apply online",
+    steps: [
+      { zh: "至資訊處網站或 CCU Portal 申請 DormNet 帳號", en: "Apply for a DormNet account through the IT Office website or CCU Portal" },
+      { zh: "設定網路設備（依說明操作）", en: "Configure your network device (follow the instructions provided)" },
+      { zh: "若遇問題，至資訊處或撥打技術支援電話", en: "If you encounter issues, visit the IT Office or call technical support" }
+    ],
+    source_url: "https://it.ccu.edu.tw/",
+    needs_manual_review: true
+  },
+  {
+    id: "task_see_doctor",
+    task_name_zh: "就醫看病",
+    task_name_en: "See a Doctor / Get Medical Care",
+    scenario_zh: "你身體不舒服，需要就醫。",
+    scenario_en: "You feel unwell and need to see a doctor.",
+    target_unit_type: "office",
+    target_unit_id: "health_center",
+    recommended_service_categories: ["health"],
+    required_documents: [
+      { zh: "健保卡", en: "NHI card" },
+      { zh: "學生證（就醫時備用）", en: "Student ID (as backup)" }
+    ],
+    navigation_tip_zh: "活動中心 2F 衛生保健組（基本處理）/ 校外特約醫院（進一步診療）",
+    navigation_tip_en: "Activity Center 2F Health Division (basic care) / Partner hospitals (further treatment)",
+    steps: [
+      { zh: "輕微症狀：至活動中心二樓衛生保健組就診", en: "For minor symptoms: visit the Health Services Division on the 2nd floor of the Activity Center" },
+      { zh: "需進一步診療：衛生保健組提供特約醫院轉介", en: "For further treatment: the Health Services Division provides referrals to partner hospitals" },
+      { zh: "就醫時攜帶健保卡（掛號費約 NT$150–300）", en: "Bring your NHI card to the clinic (registration fee approx. NT$150–300)" },
+      { zh: "緊急情況：撥打 119 或請宿舍管理員協助", en: "For emergencies: call 119 or ask the dormitory manager for help" }
+    ],
+    source_url: "https://studaffairs.ccu.edu.tw/",
+    needs_manual_review: true
+  },
+  {
+    id: "task_off_campus_housing",
+    task_name_zh: "尋找校外租屋",
+    task_name_en: "Find Off-Campus Housing",
+    scenario_zh: "你沒有申請到宿舍或想住在校外，需要尋找租屋資訊。",
+    scenario_en: "You didn't get a dorm room or prefer to live off-campus and need rental information.",
+    target_unit_type: "office",
+    target_unit_id: "osa_life",
+    recommended_service_categories: ["dormitory", "student_affairs"],
+    required_documents: [],
+    navigation_tip_zh: "行政大樓西棟 2F｜生活事務組可提供校外租屋資訊",
+    navigation_tip_en: "West Wing, Administration Building 2F｜Student Life Office provides off-campus rental info",
+    steps: [
+      { zh: "至學務處生活事務組詢問校外租屋資訊", en: "Visit the Student Life Office for off-campus rental information" },
+      { zh: "也可參考 591 租屋網（https://www.591.com.tw）", en: "You can also check 591 Rental (https://www.591.com.tw)" },
+      { zh: "簽約前確認合約內容，如需協助可向國際處詢問", en: "Review the rental contract carefully before signing; contact OIA for assistance if needed" }
+    ],
+    source_url: "https://studaffairs.ccu.edu.tw/",
+    needs_manual_review: true
+  },
+
+  // ============================================================
+  // 3. 課程與學術
+  // ============================================================
+  {
+    id: "task_sso",
+    task_name_zh: "使用 SSO 單一入口登入",
+    task_name_en: "Use the SSO Login System",
+    scenario_zh: "你需要登入學校系統（選課、成績、email 等），但不知道如何使用 SSO。",
+    scenario_en: "You need to log in to school systems (course selection, grades, email, etc.) but don't know how to use SSO.",
+    target_unit_type: "office",
+    target_unit_id: "it_office",
+    recommended_service_categories: ["it_support", "academic_affairs"],
+    required_documents: [
+      { zh: "學號（入學後由學校提供）", en: "Student ID number (provided by the school after enrollment)" },
+      { zh: "初始密碼（入學通知信件內）", en: "Initial password (found in the enrollment notification email)" }
+    ],
+    navigation_tip_zh: "portal.ccu.edu.tw｜帳號問題請至資訊處",
+    navigation_tip_en: "portal.ccu.edu.tw｜For account issues, visit the IT Office",
+    steps: [
+      { zh: "前往 https://portal.ccu.edu.tw", en: "Go to https://portal.ccu.edu.tw" },
+      { zh: "使用學號與初始密碼登入，首次登入需修改密碼", en: "Log in with your student ID and initial password; change your password on first login" },
+      { zh: "登入後可存取選課系統、成績查詢、eCourse2、Email 等", en: "After login, you can access course selection, grades, eCourse2, email, and more" },
+      { zh: "帳號問題：至圖書資訊大樓資訊處或撥打技術支援", en: "For account issues: visit the IT Office in the Information and Library Building or call technical support" }
+    ],
+    source_url: "https://it.ccu.edu.tw/",
+    needs_manual_review: false
+  },
+  {
+    id: "task_ecourse",
+    task_name_zh: "使用 eCourse2 線上學習平台",
+    task_name_en: "Use eCourse2 Learning Platform",
+    scenario_zh: "你需要查看課程資料、繳交作業或觀看線上課程影片。",
+    scenario_en: "You need to access course materials, submit assignments, or watch online course videos.",
+    target_unit_type: "office",
+    target_unit_id: "it_office",
+    recommended_service_categories: ["it_support", "academic_affairs"],
+    required_documents: [],
+    navigation_tip_zh: "ecourse2.ccu.edu.tw｜使用 SSO 帳號登入",
+    navigation_tip_en: "ecourse2.ccu.edu.tw｜Log in with your SSO account",
+    steps: [
+      { zh: "前往 https://ecourse2.ccu.edu.tw", en: "Go to https://ecourse2.ccu.edu.tw" },
+      { zh: "使用 SSO 帳號（學號 + 密碼）登入", en: "Log in with your SSO account (student ID + password)" },
+      { zh: "課程加入：等老師開放，或輸入選課碼加入", en: "Join courses: wait for the instructor to open enrollment, or enter the course code" },
+      { zh: "技術問題：至資訊處或發送 email 至 it@ccu.edu.tw", en: "Technical issues: visit the IT Office or email it@ccu.edu.tw" }
+    ],
+    source_url: "https://it.ccu.edu.tw/",
+    needs_manual_review: false
+  },
+  {
+    id: "task_course_selection",
+    task_name_zh: "使用選課系統選課",
+    task_name_en: "Register for Courses via the Course Selection System",
+    scenario_zh: "你需要完成每學期的課程選課，但不知道如何操作系統。",
+    scenario_en: "You need to complete course registration each semester but don't know how to use the system.",
+    target_unit_type: "office",
+    target_unit_id: "oaa_curriculum",
+    recommended_service_categories: ["course_issues", "academic_affairs"],
+    required_documents: [],
+    navigation_tip_zh: "行政大樓東棟 2F｜課務組（系統問題請洽資訊處）",
+    navigation_tip_en: "East Wing, Administration Building 2F｜Curriculum Division (system issues: contact IT Office)",
+    steps: [
+      { zh: "登入 SSO 後，進入選課系統（學期開始前 2 週開放）", en: "Log in to SSO, then access the course selection system (opens 2 weeks before the semester)" },
+      { zh: "依課表瀏覽並加選課程（注意必修、選修分類）", en: "Browse the course schedule and add courses (note required vs. elective categories)" },
+      { zh: "若課程額滿，可等加退選期間再嘗試", en: "If a course is full, try again during the add/drop period" },
+      { zh: "系統操作問題：至教務處課務組詢問", en: "For system issues: visit the Curriculum Division of Academic Affairs" },
+      { zh: "英文介面提示：系統主要為中文，如有困難請聯繫國際處", en: "Interface note: system is mainly in Chinese; contact OIA if you need assistance" }
+    ],
+    source_url: "https://oaa.ccu.edu.tw/",
+    needs_manual_review: false
+  },
+  {
+    id: "task_add_drop",
+    task_name_zh: "加退選課程",
+    task_name_en: "Add or Drop a Course",
+    scenario_zh: "你想加選某門課，或想退掉已選的課。",
+    scenario_en: "You want to add a course or drop a course you've already selected.",
+    target_unit_type: "office",
+    target_unit_id: "oaa_curriculum",
+    recommended_service_categories: ["course_issues"],
+    required_documents: [
+      { zh: "加選需要老師同意者：老師簽名的加選單", en: "For courses requiring instructor approval: add-course form signed by the instructor" }
+    ],
+    navigation_tip_zh: "行政大樓東棟 2F｜課務組，或透過選課系統操作",
+    navigation_tip_en: "East Wing, Administration Building 2F｜Curriculum Division, or via the course selection system",
+    steps: [
+      { zh: "加退選期間（約學期開始後第 1–2 週）登入選課系統操作", en: "During the add/drop period (approx. 1st–2nd week of semester), log in and make changes" },
+      { zh: "加選額滿課程：需取得老師同意，填寫加選申請單至課務組辦理", en: "For full courses: get instructor approval, fill out the add-course form, and submit to the Curriculum Division" },
+      { zh: "退選確認：退選後請確認系統已更新", en: "Confirm drop: after dropping, verify the change in the system" }
+    ],
+    source_url: "https://oaa.ccu.edu.tw/",
+    needs_manual_review: true
+  },
+  {
+    id: "task_credit_waiver",
+    task_name_zh: "申請學分抵免",
+    task_name_en: "Apply for Credit Waiver / Transfer",
+    scenario_zh: "你在其他學校修過的課程，想申請抵免中正大學的學分。",
+    scenario_en: "You have taken courses at another school and want to transfer those credits to CCU.",
+    target_unit_type: "office",
+    target_unit_id: "oaa_reg",
+    recommended_service_categories: ["registration", "academic_affairs"],
+    required_documents: [
+      { zh: "原校成績單（英文版）", en: "Transcript from previous school (English version)" },
+      { zh: "課程大綱（Syllabus）", en: "Course syllabus" },
+      { zh: "抵免申請表（向系辦或教務處取得）", en: "Credit transfer application form (from department office or Academic Affairs)" }
+    ],
+    navigation_tip_zh: "行政大樓東棟 1F｜先至系辦，再送教務處審核",
+    navigation_tip_en: "East Wing, Administration Building 1F｜Start at your department office, then submit to Academic Affairs",
+    steps: [
+      { zh: "向系辦取得抵免申請表", en: "Get the credit transfer form from your department office" },
+      { zh: "備妥原校英文成績單與課程大綱", en: "Prepare your English transcript and course syllabi from your previous school" },
+      { zh: "至系辦提交申請，由系上審查", en: "Submit the application to your department office for review" },
+      { zh: "系所審查後送交教務處核定，約 2–4 週公告結果", en: "After departmental review, the application is sent to Academic Affairs for final approval (results announced in 2–4 weeks)" }
+    ],
+    source_url: "https://oaa.ccu.edu.tw/",
+    needs_manual_review: false
+  },
+  {
+    id: "task_course_withdrawal",
+    task_name_zh: "申請課程撤選",
+    task_name_en: "Apply for Course Withdrawal",
+    scenario_zh: "加退選期間已過，你想要撤選某門課程。",
+    scenario_en: "The add/drop period has passed and you want to withdraw from a course.",
+    target_unit_type: "office",
+    target_unit_id: "oaa_curriculum",
+    recommended_service_categories: ["course_issues", "academic_affairs"],
+    required_documents: [
+      { zh: "撤選申請表（向課務組索取）", en: "Course withdrawal form (available at the Curriculum Division)" },
+      { zh: "導師或系主任簽名（視規定）", en: "Advisor or department head signature (as required)" }
+    ],
+    navigation_tip_zh: "行政大樓東棟 2F｜課務組（學期中段前申請）",
+    navigation_tip_en: "East Wing, Administration Building 2F｜Curriculum Division (apply before mid-semester)",
+    steps: [
+      { zh: "至教務處課務組取得撤選申請表", en: "Get the course withdrawal form from the Curriculum Division" },
+      { zh: "填妥後請導師或系主任簽名（視規定）", en: "Complete the form and obtain required signatures (advisor or department head)" },
+      { zh: "在規定期限內送回課務組", en: "Submit the form to the Curriculum Division before the deadline" },
+      { zh: "撤選後成績單不會出現此課程", en: "After withdrawal, this course will not appear on your transcript" }
+    ],
+    source_url: "https://oaa.ccu.edu.tw/",
+    needs_manual_review: true
+  },
+
+  // ============================================================
+  // 4. 行政手續
+  // ============================================================
+  {
+    id: "task_student_id",
+    task_name_zh: "補辦學生證",
+    task_name_en: "Replace a Lost or Damaged Student ID Card",
+    scenario_zh: "你的學生證遺失或損壞，需要補辦。",
+    scenario_en: "Your student ID card is lost or damaged and needs to be replaced.",
+    target_unit_type: "office",
+    target_unit_id: "oaa_reg",
+    recommended_service_categories: ["student_id", "registration"],
+    required_documents: [
+      { zh: "護照或其他有效身分證件", en: "Passport or other valid ID" },
+      { zh: "補辦費用（金額請至窗口確認）", en: "Replacement fee (confirm amount at the counter)" },
+      { zh: "1 吋或 2 吋照片（部分情形需要）", en: "1 or 2 inch photo (required in some cases)" }
+    ],
+    navigation_tip_zh: "行政大樓東棟 1F｜教務處註冊組",
+    navigation_tip_en: "East Wing, Administration Building 1F｜Registration Division",
+    steps: [
+      { zh: "前往行政大樓東棟一樓教務處註冊組", en: "Go to the Registration Division on the 1st floor of the East Wing, Administration Building" },
+      { zh: "告知工作人員需補辦學生證並提供身分證件", en: "Inform the staff you need a replacement student ID and provide your ID document" },
+      { zh: "繳交補辦費用", en: "Pay the replacement fee" },
+      { zh: "等待製作（若需等候時間，工作人員會告知取件日）", en: "Wait for the card to be made (staff will inform you of the pickup date if processing time is needed)" }
+    ],
+    source_url: "https://oaa.ccu.edu.tw/",
+    needs_manual_review: false
+  },
+  {
+    id: "task_transcript",
+    task_name_zh: "申請成績單",
+    task_name_en: "Apply for a Transcript",
+    scenario_zh: "你需要申請中文或英文成績單。",
+    scenario_en: "You need to apply for a Chinese or English transcript.",
+    target_unit_type: "office",
+    target_unit_id: "oaa_reg",
+    recommended_service_categories: ["registration", "academic_affairs"],
+    required_documents: [
+      { zh: "學生證或護照", en: "Student ID or passport" },
+      { zh: "工本費（每份金額請確認）", en: "Processing fee (confirm amount per copy)" }
+    ],
+    navigation_tip_zh: "行政大樓東棟 1F｜教務處註冊組",
+    navigation_tip_en: "East Wing, Administration Building 1F｜Registration Division",
+    steps: [
+      { zh: "前往行政大樓東棟一樓教務處註冊組", en: "Go to the Registration Division on the 1st floor of the East Wing, Administration Building" },
+      { zh: "說明需要中文版或英文版成績單，以及份數", en: "Specify whether you need Chinese or English transcripts and how many copies" },
+      { zh: "繳交工本費，當場或隔日取件（視是否即時列印）", en: "Pay the fee and pick up on the spot or the next day (depends on printing availability)" }
+    ],
+    source_url: "https://oaa.ccu.edu.tw/",
+    needs_manual_review: false
+  },
+  {
+    id: "task_registration",
+    task_name_zh: "辦理各學期註冊",
+    task_name_en: "Complete Semester Registration",
+    scenario_zh: "每學期開始時需要完成正式註冊手續（繳費＋線上報到）。",
+    scenario_en: "At the start of each semester, you need to complete formal registration (payment + online check-in).",
+    target_unit_type: "office",
+    target_unit_id: "oaa_reg",
+    recommended_service_categories: ["registration", "tuition"],
+    required_documents: [
+      { zh: "學費繳費通知單（Portal 或 Email 通知）", en: "Tuition payment notice (via Portal or email)" }
+    ],
+    navigation_tip_zh: "線上完成 Portal，繳費至西棟 1F 出納組或網路繳款",
+    navigation_tip_en: "Complete online via Portal; pay at West Wing 1F Cashier or online",
+    steps: [
+      { zh: "依學校通知於期限內繳交學雜費", en: "Pay tuition and fees by the deadline as notified by the school" },
+      { zh: "完成繳費後，於 CCU Portal 完成線上報到", en: "After payment, complete online check-in on CCU Portal" },
+      { zh: "如有減免資格，需提前至生活事務組申請", en: "If eligible for fee reduction, apply at the Student Life Office in advance" }
+    ],
+    source_url: "https://oaa.ccu.edu.tw/",
+    needs_manual_review: false
+  },
+  {
+    id: "task_leave_of_absence",
+    task_name_zh: "申請休學",
+    task_name_en: "Apply for Leave of Absence",
+    scenario_zh: "你因個人、健康或其他原因需要申請暫時停學。",
+    scenario_en: "You need to apply for a temporary leave of absence due to personal, health, or other reasons.",
+    target_unit_type: "office",
+    target_unit_id: "oaa_reg",
+    recommended_service_categories: ["registration", "academic_affairs"],
+    required_documents: [
+      { zh: "休學申請表（向教務處或系辦索取）", en: "Leave of absence application form (from Academic Affairs or department office)" },
+      { zh: "醫療證明（健康因素者）", en: "Medical certificate (for health-related reasons)" },
+      { zh: "指導教授或系主任同意書（視規定）", en: "Advisor or department head approval (as required)" }
+    ],
+    navigation_tip_zh: "行政大樓東棟 1F｜教務處註冊組，需於期限前提出",
+    navigation_tip_en: "East Wing, Administration Building 1F｜Registration Division, apply before the deadline",
+    steps: [
+      { zh: "至教務處或系辦取得休學申請表", en: "Get the leave of absence form from Academic Affairs or your department office" },
+      { zh: "填妥後取得必要簽名（視規定）", en: "Complete the form and obtain required signatures" },
+      { zh: "送至教務處註冊組辦理，注意申請期限", en: "Submit to the Registration Division; note the application deadline" },
+      { zh: "國際生注意：休學期間居留證效力需另行確認（洽國際處）", en: "International students: confirm the impact on your ARC/visa status during leave (contact OIA)" }
+    ],
+    source_url: "https://oaa.ccu.edu.tw/",
+    needs_manual_review: false
+  },
+  {
+    id: "task_scholarship",
+    task_name_zh: "申請獎學金",
+    task_name_en: "Apply for Scholarship",
+    scenario_zh: "你想了解並申請學校或校外提供的各項獎學金。",
+    scenario_en: "You want to learn about and apply for scholarships offered by CCU or external organizations.",
+    target_unit_type: "office",
+    target_unit_id: "oia",
+    recommended_service_categories: ["international_support", "student_affairs"],
+    required_documents: [
+      { zh: "成績單（視獎學金要求）", en: "Transcript (depending on scholarship requirements)" },
+      { zh: "推薦函（部分獎學金需要）", en: "Recommendation letter (required for some scholarships)" },
+      { zh: "財力證明（部分獎學金需要）", en: "Proof of financial need (required for some scholarships)" },
+      { zh: "護照或居留證影本", en: "Copy of passport or ARC" }
+    ],
+    navigation_tip_zh: "行政大樓 1F 國際處（國際生獎學金）/ 西棟 2F 生活事務組（助學金）",
+    navigation_tip_en: "Administration Building 1F OIA (international scholarships) / West Wing 2F Student Life Office (financial aid)",
+    steps: [
+      { zh: "至國際處或學務處網站查看目前開放的獎學金項目", en: "Check OIA or Student Affairs websites for currently available scholarships" },
+      { zh: "確認申請資格與截止日期", en: "Confirm eligibility requirements and application deadlines" },
+      { zh: "備妥所需文件並於期限內提交", en: "Prepare required documents and submit before the deadline" },
+      { zh: "等待審核結果通知", en: "Wait for review result notification" }
+    ],
+    source_url: "https://oia.ccu.edu.tw/p/412-1008-3967.php?Lang=en",
+    needs_manual_review: false
+  },
+  {
+    id: "task_tuition",
+    task_name_zh: "繳交學雜費",
+    task_name_en: "Pay Tuition and Fees",
+    scenario_zh: "你需要繳交每學期的學雜費。",
+    scenario_en: "You need to pay tuition and fees each semester.",
+    target_unit_type: "office",
+    target_unit_id: "cashier",
+    recommended_service_categories: ["tuition"],
+    required_documents: [
+      { zh: "繳費通知單（Portal 或 Email）", en: "Payment notice (from Portal or email)" },
+      { zh: "現金或銀行轉帳（依繳費方式）", en: "Cash or bank transfer (depending on payment method)" }
+    ],
+    navigation_tip_zh: "行政大樓西棟 1F｜出納組，或網路繳款",
+    navigation_tip_en: "West Wing, Administration Building 1F｜Cashier Division, or pay online",
+    steps: [
+      { zh: "收到學校繳費通知後，確認金額與期限", en: "After receiving the payment notice, confirm the amount and deadline" },
+      { zh: "選擇繳費方式：ATM 轉帳、便利商店繳費或至出納組現金繳費", en: "Choose payment method: ATM transfer, convenience store payment, or cash at the Cashier Division" },
+      { zh: "繳費後保留收據，並確認 Portal 上的繳費狀態", en: "Keep your receipt after payment and confirm payment status on Portal" }
+    ],
+    source_url: "https://oga.ccu.edu.tw/",
+    needs_manual_review: false
+  },
+  {
+    id: "task_work_permit",
+    task_name_zh: "申請工作許可",
+    task_name_en: "Apply for a Work Permit",
+    scenario_zh: "你是國際學生，想要在學期間兼職打工，需要申請工作許可。",
+    scenario_en: "As an international student, you want to work part-time and need to apply for a work permit.",
+    target_unit_type: "office",
+    target_unit_id: "oia",
+    recommended_service_categories: ["international_support"],
+    required_documents: [
+      { zh: "居留證（ARC）", en: "ARC" },
+      { zh: "在學證明", en: "Enrollment certificate" },
+      { zh: "護照", en: "Passport" },
+      { zh: "工作許可申請表（向國際處索取）", en: "Work permit application form (from OIA)" }
+    ],
+    navigation_tip_zh: "行政大樓 1F｜國際處｜取得許可後才能開始工作",
+    navigation_tip_en: "Administration Building 1F｜OIA｜You must have the permit before starting work",
+    steps: [
+      { zh: "至國際處取得工作許可申請資料", en: "Go to OIA for work permit application materials" },
+      { zh: "填妥申請表，備齊護照、ARC、在學證明", en: "Complete the application form and prepare passport, ARC, and enrollment certificate" },
+      { zh: "申請核准後即可依核准範圍打工（每週不超過規定時數）", en: "After approval, you may work within the permitted scope (not exceeding the regulated weekly hours)" },
+      { zh: "每學期需更新申請，且不可超過規定工時", en: "The permit must be renewed each semester and you cannot exceed the regulated working hours" }
+    ],
+    source_url: "https://oia.ccu.edu.tw/p/412-1008-3371.php?Lang=en",
+    needs_manual_review: false
+  },
+
+  // ============================================================
+  // 5. 校園導覽與服務
+  // ============================================================
+  {
+    id: "task_oia",
+    task_name_zh: "找國際處",
+    task_name_en: "Go to the International Office (OIA)",
+    scenario_zh: "你有簽證、居留證、獎學金或任何國際學生相關問題需要協助。",
+    scenario_en: "You need help with visa, ARC, scholarships, or any international student-related issues.",
+    target_unit_type: "office",
+    target_unit_id: "oia",
+    recommended_service_categories: ["international_support"],
+    required_documents: [],
+    navigation_tip_zh: "行政大樓 1F｜週一至週五 08:30–17:00",
+    navigation_tip_en: "Administration Building, 1F｜Mon–Fri 08:30–17:00",
+    steps: [
+      { zh: "前往行政大樓正門進入", en: "Enter through the main entrance of the Administration Building" },
+      { zh: "國際處位於一樓，循指示牌可找到", en: "OIA is on the 1st floor — follow the signs" },
+      { zh: "向櫃台工作人員說明你的需求", en: "Tell the counter staff what you need" }
+    ],
+    source_url: "https://oia.ccu.edu.tw/",
+    needs_manual_review: false
+  },
+  {
+    id: "task_find_dept",
+    task_name_zh: "找我的系辦公室",
+    task_name_en: "Find My Department Office",
+    scenario_zh: "你需要找到自己系所的辦公室，例如詢問選課、找導師、領取文件等。",
+    scenario_en: "You need to find your department office for course advising, meeting your advisor, or picking up documents.",
+    target_unit_type: "department",
+    target_unit_id: "",
+    recommended_service_categories: ["department_offices"],
+    required_documents: [],
+    navigation_tip_zh: "依學院不同，位置各異，請查詢地圖頁",
+    navigation_tip_en: "Location varies by college — check the Map page",
+    steps: [
+      { zh: "確認你的系所名稱與所屬學院", en: "Confirm your department name and college" },
+      { zh: "在「地圖」頁搜尋你的系所，查看所在大樓與樓層", en: "Search for your department on the Map page to find the building and floor" },
+      { zh: "前往該學院大樓，搭電梯或走樓梯到指定樓層", en: "Go to the college building and take the elevator or stairs to the designated floor" },
+      { zh: "找到系辦公室門牌，向系辦人員說明需求", en: "Find the department office sign and tell the staff what you need" }
+    ],
+    source_url: "https://www.ccu.edu.tw/p/412-1000-792.php?Lang=zh-tw",
+    needs_manual_review: false
+  },
+  {
     id: "task_library",
-    task_name_zh: "去圖書館",
-    task_name_en: "Go to the library",
-    scenario_zh: "你想借書、找論文、預約討論室或使用自習空間。",
-    scenario_en: "You want to borrow books, find thesis, reserve discussion rooms, or use study spaces.",
+    task_name_zh: "使用圖書館服務",
+    task_name_en: "Use Library Services",
+    scenario_zh: "你想借書、查論文、預約討論室或使用電子資料庫。",
+    scenario_en: "You want to borrow books, search for thesis, reserve discussion rooms, or use electronic databases.",
     target_unit_type: "office",
     target_unit_id: "library",
     recommended_service_categories: ["library"],
+    required_documents: [
+      { zh: "學生證（感應入館用）", en: "Student ID card (required to enter the library)" }
+    ],
+    navigation_tip_zh: "圖書資訊大樓｜服務台在 1F 入口處",
+    navigation_tip_en: "Information and Library Building｜Service desk at the 1F entrance",
     steps: [
-      { zh: "前往圖書資訊大樓", en: "Go to the Information and Library Building" },
-      { zh: "從一樓正門進入", en: "Enter through the 1st floor main entrance" },
-      { zh: "服務台在一樓入口處", en: "Service desk is at the 1st floor entrance" },
-      { zh: "出示學生證感應入館", en: "Tap your student ID to enter" },
-      { zh: "向服務台詢問你需要的服務", en: "Ask the service desk for what you need" }
+      { zh: "前往圖書資訊大樓，持學生證感應入館", en: "Go to the Information and Library Building and tap your student ID to enter" },
+      { zh: "服務台在一樓入口，可詢問任何圖書館相關問題", en: "The service desk is at the 1st floor entrance — ask about any library services" },
+      { zh: "電子資料庫：登入 SSO 後可在圖書館網站存取", en: "Electronic databases: log in with SSO to access on the library website" },
+      { zh: "討論室預約：至服務台或透過圖書館網站預約", en: "Discussion room reservation: at the service desk or through the library website" }
     ],
     source_url: "https://lib.ccu.edu.tw/",
     needs_manual_review: false
   },
   {
     id: "task_health",
-    task_name_zh: "找健康中心",
-    task_name_en: "Go to the Health Center",
-    scenario_zh: "你身體不適、受傷或需要健康檢查。",
-    scenario_en: "You feel unwell, are injured, or need a health checkup.",
+    task_name_zh: "前往衛生保健組",
+    task_name_en: "Visit the Health Services Division",
+    scenario_zh: "你身體不舒服、受傷，或需要健康諮詢與體檢。",
+    scenario_en: "You feel unwell, are injured, or need health consultation or checkup.",
     target_unit_type: "office",
     target_unit_id: "health_center",
     recommended_service_categories: ["health"],
+    required_documents: [
+      { zh: "健保卡（若有）", en: "NHI card (if available)" },
+      { zh: "學生證", en: "Student ID" }
+    ],
+    navigation_tip_zh: "活動中心 2F｜週一至週五 08:30–17:00",
+    navigation_tip_en: "Activity Center, 2F｜Mon–Fri 08:30–17:00",
     steps: [
-      { zh: "前往活動中心", en: "Go to the Activity Center" },
-      { zh: "從正門進入", en: "Enter through the main entrance" },
-      { zh: "衛生保健組位於二樓", en: "Health Services Division is on the 2nd floor" },
-      { zh: "找到衛生保健組辦公室", en: "Find the Health Services Division office" },
-      { zh: "向護理人員說明你的症狀", en: "Tell the nurse about your symptoms" }
+      { zh: "前往活動中心，搭電梯或走樓梯到二樓", en: "Go to the Activity Center and take the elevator or stairs to the 2nd floor" },
+      { zh: "找到衛生保健組，向護理人員說明症狀", en: "Find the Health Services Division and describe your symptoms to the nursing staff" },
+      { zh: "若需進一步診療，衛生保健組提供特約醫院轉介", en: "For further treatment, the Health Services Division can provide referrals to partner hospitals" }
     ],
     source_url: "https://studaffairs.ccu.edu.tw/",
     needs_manual_review: true
   },
   {
-    id: "task_course",
-    task_name_zh: "處理選課問題",
-    task_name_en: "Handle course selection issues",
-    scenario_zh: "你有加退選、衝堂或選課系統相關問題。",
-    scenario_en: "You have issues with course add/drop, schedule conflicts, or the course selection system.",
-    target_unit_type: "office",
-    target_unit_id: "oaa_curriculum",
-    recommended_service_categories: ["course_issues", "academic_affairs"],
-    steps: [
-      { zh: "前往行政大樓東棟", en: "Go to the East Wing of Administration Building" },
-      { zh: "從正門進入", en: "Enter through the main entrance" },
-      { zh: "課務組位於二樓", en: "Curriculum Division is on the 2nd floor" },
-      { zh: "搭電梯或走樓梯到二樓", en: "Take the elevator or stairs to the 2nd floor" },
-      { zh: "找到教務處課務組", en: "Find the Curriculum Division of Academic Affairs" }
-    ],
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "task_transcript",
-    task_name_zh: "申請成績單",
-    task_name_en: "Apply for a transcript",
-    scenario_zh: "你需要申請中文或英文成績單。",
-    scenario_en: "You need to apply for a Chinese or English transcript.",
-    target_unit_type: "office",
-    target_unit_id: "oaa_reg",
-    recommended_service_categories: ["registration", "academic_affairs"],
-    steps: [
-      { zh: "前往行政大樓東棟", en: "Go to the East Wing of Administration Building" },
-      { zh: "從正門進入", en: "Enter through the main entrance" },
-      { zh: "教務處－註冊組位於一樓", en: "Registration Division is on the 1st floor" },
-      { zh: "向註冊組申請成績單", en: "Apply for transcript at the Registration Division" },
-      { zh: "攜帶學生證，可能需要繳交工本費", en: "Bring your student ID; a processing fee may be required" }
-    ],
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
     id: "task_counseling",
-    task_name_zh: "找諮商中心",
-    task_name_en: "Go to the Counseling Center",
-    scenario_zh: "你感到心理壓力、情緒困擾或需要生涯輔導。",
-    scenario_en: "You are experiencing stress, emotional difficulties, or need career counseling.",
+    task_name_zh: "前往諮商中心",
+    task_name_en: "Visit the Counseling Center",
+    scenario_zh: "你感到心理壓力、情緒困擾、思鄉或適應不良，想尋求支持。",
+    scenario_en: "You're experiencing stress, emotional difficulties, homesickness, or adjustment issues and want support.",
     target_unit_type: "office",
     target_unit_id: "counseling",
     recommended_service_categories: ["counseling", "health"],
+    required_documents: [],
+    navigation_tip_zh: "活動中心 3F｜提供英語諮商，完全保密，免費",
+    navigation_tip_en: "Activity Center, 3F｜English counseling available, fully confidential, free of charge",
     steps: [
-      { zh: "前往活動中心", en: "Go to the Activity Center" },
-      { zh: "從正門進入", en: "Enter through the main entrance" },
-      { zh: "諮商中心位於三樓", en: "Counseling Center is on the 3rd floor" },
-      { zh: "找到諮商中心辦公室", en: "Find the Counseling Center office" },
-      { zh: "向工作人員預約或說明你的需求", en: "Make an appointment or explain your needs to the staff" }
+      { zh: "前往活動中心，搭電梯或走樓梯到三樓", en: "Go to the Activity Center and take the elevator or stairs to the 3rd floor" },
+      { zh: "找到諮商中心，向接待人員預約或直接進行初次諮詢", en: "Find the Counseling Center and make an appointment or walk in for an initial consultation" },
+      { zh: "所有諮商內容嚴格保密，請放心尋求協助", en: "All counseling sessions are strictly confidential — please feel free to seek help" }
     ],
     source_url: "https://advising.ccu.edu.tw/",
     needs_manual_review: false
   },
   {
     id: "task_career",
-    task_name_zh: "找職涯發展中心",
+    task_name_zh: "前往職涯發展中心",
     task_name_en: "Visit the Career Development Center",
-    scenario_zh: "你需要求職資訊、履歷指導或想了解實習機會。",
-    scenario_en: "You need job search information, resume guidance, or want to learn about internship opportunities.",
+    scenario_zh: "你需要求職資訊、履歷指導、了解實習機會，或參加校園徵才活動。",
+    scenario_en: "You need job search info, resume guidance, internship opportunities, or want to join recruitment events.",
     target_unit_type: "office",
     target_unit_id: "career_center",
     recommended_service_categories: ["career"],
+    required_documents: [],
+    navigation_tip_zh: "共同教室大樓 5F 502 室",
+    navigation_tip_en: "Room 502, 5th Floor, Center for General Education",
     steps: [
-      { zh: "前往共同教室大樓", en: "Go to the Center for General Education building" },
-      { zh: "搭電梯到五樓", en: "Take the elevator to the 5th floor" },
+      { zh: "前往共同教室大樓，搭電梯到五樓", en: "Go to the Center for General Education building and take the elevator to the 5th floor" },
       { zh: "找到 502 室職涯發展中心", en: "Find Room 502, Career Development Center" },
-      { zh: "向工作人員說明你的需求或預約諮詢", en: "Tell the staff your needs or make a consultation appointment" }
+      { zh: "向工作人員說明需求（求職、實習、履歷），或預約個別諮詢", en: "Tell the staff your needs (job search, internship, resume) or make an individual consultation appointment" }
     ],
     source_url: "https://studaffairs.ccu.edu.tw/",
     needs_manual_review: true
@@ -2021,19 +2530,190 @@ export const tasks: Task[] = [
   {
     id: "task_it",
     task_name_zh: "處理帳號或網路問題",
-    task_name_en: "Handle account or network issues",
-    scenario_zh: "你的學校帳號無法登入，或遇到校園網路、eCourse2 等系統問題。",
-    scenario_en: "Your school account cannot log in, or you are having issues with campus network, eCourse2, or other systems.",
+    task_name_en: "Handle Account or Network Issues",
+    scenario_zh: "你的學校帳號無法登入，校園網路、eCourse2 或其他系統出現問題。",
+    scenario_en: "Your school account login fails, or you have issues with campus network, eCourse2, or other systems.",
     target_unit_type: "office",
     target_unit_id: "it_office",
     recommended_service_categories: ["it_support"],
+    required_documents: [
+      { zh: "學生證（身份驗證用）", en: "Student ID (for identity verification)" }
+    ],
+    navigation_tip_zh: "圖書資訊大樓｜資訊處",
+    navigation_tip_en: "Information and Library Building｜IT Office",
     steps: [
-      { zh: "前往圖書資訊大樓", en: "Go to the Information and Library Building" },
-      { zh: "找到資訊處辦公室", en: "Find the IT Office" },
-      { zh: "向工作人員說明你的問題", en: "Explain your issue to the staff" },
-      { zh: "攜帶學生證以供身份驗證", en: "Bring your student ID for identity verification" }
+      { zh: "前往圖書資訊大樓，找到資訊處", en: "Go to the Information and Library Building and find the IT Office" },
+      { zh: "攜帶學生證，向工作人員說明問題", en: "Bring your student ID and describe the issue to the staff" },
+      { zh: "緊急問題也可 email：it@ccu.edu.tw", en: "For urgent issues, you can also email: it@ccu.edu.tw" }
     ],
     source_url: "https://it.ccu.edu.tw/",
+    needs_manual_review: true
+  },
+
+  // ============================================================
+  // 6. 健康、心理與安全
+  // ============================================================
+  {
+    id: "task_insurance_claim",
+    task_name_zh: "申請學生保險理賠",
+    task_name_en: "Apply for Student Insurance Claim",
+    scenario_zh: "你在校內或校外受傷或生病，想申請學生團體保險理賠。",
+    scenario_en: "You were injured or ill on or off campus and want to file a student group insurance claim.",
+    target_unit_type: "office",
+    target_unit_id: "health_center",
+    recommended_service_categories: ["health", "student_affairs"],
+    required_documents: [
+      { zh: "醫療收據與診斷書", en: "Medical receipts and diagnosis certificate" },
+      { zh: "保險理賠申請表（向衛生保健組索取）", en: "Insurance claim form (from Health Services Division)" },
+      { zh: "學生證影本", en: "Copy of student ID" }
+    ],
+    navigation_tip_zh: "活動中心 2F｜衛生保健組，或學務處生活事務組",
+    navigation_tip_en: "Activity Center 2F｜Health Services Division, or Student Life Office",
+    steps: [
+      { zh: "就醫後保留所有收據與診斷書", en: "Keep all receipts and diagnosis certificates after medical treatment" },
+      { zh: "至衛生保健組或生活事務組取得理賠申請表", en: "Get the insurance claim form from the Health Services Division or Student Life Office" },
+      { zh: "填妥後附上所有文件送件審查", en: "Complete the form and submit with all documents for review" },
+      { zh: "審查通過後，理賠金額匯入指定帳戶", en: "After approval, the claim amount will be transferred to your designated account" }
+    ],
+    source_url: "https://studaffairs.ccu.edu.tw/",
+    needs_manual_review: true
+  },
+  {
+    id: "task_emergency",
+    task_name_zh: "緊急事件通報與處理",
+    task_name_en: "Report and Handle Emergency Incidents",
+    scenario_zh: "你或身邊的人遇到緊急安全事故（受傷、危險、突發事件）。",
+    scenario_en: "You or someone around you has encountered an emergency safety incident (injury, danger, sudden event).",
+    target_unit_type: "office",
+    target_unit_id: "osa_safety",
+    recommended_service_categories: ["student_affairs", "health"],
+    required_documents: [],
+    navigation_tip_zh: "緊急：119（救護）/ 110（警察）/ 校安中心 24 小時",
+    navigation_tip_en: "Emergency: 119 (ambulance) / 110 (police) / Campus Safety Center 24 hrs",
+    steps: [
+      { zh: "立即撥打 119（救護）或 110（警察）處理緊急狀況", en: "Immediately call 119 (ambulance) or 110 (police) for emergencies" },
+      { zh: "聯繫校安中心（24 小時）：05-2720411 ext.19110", en: "Contact the Campus Safety Center (24 hours): 05-2720411 ext.19110" },
+      { zh: "事後至學務處學生安全組填寫事故通報單", en: "Afterward, go to the Division of Student Safety to fill out an incident report form" }
+    ],
+    source_url: "https://studaffairs.ccu.edu.tw/",
+    needs_manual_review: true
+  },
+
+  // ============================================================
+  // 7. 畢業與職涯
+  // ============================================================
+  {
+    id: "task_graduation",
+    task_name_zh: "確認畢業資格",
+    task_name_en: "Confirm Graduation Requirements",
+    scenario_zh: "你即將畢業，想確認自己是否符合畢業資格及所需完成的手續。",
+    scenario_en: "You are nearing graduation and want to confirm eligibility and required procedures.",
+    target_unit_type: "office",
+    target_unit_id: "oaa_reg",
+    recommended_service_categories: ["academic_affairs", "registration"],
+    required_documents: [
+      { zh: "歷年成績單（系辦或教務處取得）", en: "Transcript of all academic years (from department office or Academic Affairs)" }
+    ],
+    navigation_tip_zh: "行政大樓東棟 1F｜教務處註冊組，先至系辦確認",
+    navigation_tip_en: "East Wing, Administration Building 1F｜Registration Division; confirm with department office first",
+    steps: [
+      { zh: "至系辦確認畢業必修學分是否修畢", en: "Go to your department office to confirm all required graduation credits are completed" },
+      { zh: "在 CCU Portal 查看畢業審查狀態", en: "Check your graduation review status on CCU Portal" },
+      { zh: "若有缺少學分，儘速與指導教授或系辦討論補救方式", en: "If you are missing credits, discuss remediation options with your advisor or department office immediately" },
+      { zh: "辦理離校手續：歸還圖書館借書、清繳相關費用", en: "Complete school-leaving procedures: return library books, clear outstanding fees" }
+    ],
+    source_url: "https://oaa.ccu.edu.tw/",
+    needs_manual_review: false
+  },
+  {
+    id: "task_internship",
+    task_name_zh: "申請校外實習",
+    task_name_en: "Apply for Off-Campus Internship",
+    scenario_zh: "你想申請課程認可的校外實習機會。",
+    scenario_en: "You want to apply for a course-credited off-campus internship.",
+    target_unit_type: "office",
+    target_unit_id: "career_center",
+    recommended_service_categories: ["career", "student_affairs"],
+    required_documents: [
+      { zh: "實習申請表（向職涯發展中心索取）", en: "Internship application form (from Career Development Center)" },
+      { zh: "工作許可（國際生需要）", en: "Work permit (required for international students)" },
+      { zh: "指導教授或系主任同意書", en: "Approval from advisor or department head" }
+    ],
+    navigation_tip_zh: "共同教室大樓 5F 502 室｜職涯發展中心",
+    navigation_tip_en: "Room 502, 5th Floor｜Career Development Center",
+    steps: [
+      { zh: "至職涯發展中心了解合作實習機構與申請流程", en: "Visit the Career Development Center to learn about partner internship organizations and application process" },
+      { zh: "國際生須先確認工作許可（可至國際處詢問）", en: "International students must first confirm work permit eligibility (contact OIA)" },
+      { zh: "取得指導教授或系主任同意後提交申請", en: "Obtain approval from your advisor or department head, then submit the application" }
+    ],
+    source_url: "https://studaffairs.ccu.edu.tw/",
+    needs_manual_review: true
+  },
+  {
+    id: "task_gown",
+    task_name_zh: "借用畢業學位服",
+    task_name_en: "Rent a Graduation Gown",
+    scenario_zh: "你即將參加畢業典禮，需要借用學位服。",
+    scenario_en: "You are about to attend the graduation ceremony and need to rent a graduation gown.",
+    target_unit_type: "office",
+    target_unit_id: "oga_property",
+    recommended_service_categories: ["campus_life", "student_affairs"],
+    required_documents: [
+      { zh: "學生證", en: "Student ID" },
+      { zh: "借用押金（視規定）", en: "Deposit (as required)" }
+    ],
+    navigation_tip_zh: "行政大樓西棟 B1｜總務處保管組",
+    navigation_tip_en: "Basement 1, West Wing, Administration Building｜Property Management Division",
+    steps: [
+      { zh: "依學校公告時間，至行政大樓西棟地下一樓保管組辦理", en: "During the announced period, go to the Property Management Division in Basement 1 of the West Wing" },
+      { zh: "出示學生證並繳交押金", en: "Show your student ID and pay the deposit" },
+      { zh: "典禮後依規定時間歸還，退回押金", en: "Return the gown by the specified time after the ceremony to receive your deposit back" }
+    ],
+    source_url: "https://oga.ccu.edu.tw/",
+    needs_manual_review: true
+  },
+
+  // ============================================================
+  // 8. 課外活動與社群
+  // ============================================================
+  {
+    id: "task_club",
+    task_name_zh: "加入社團或參加校園活動",
+    task_name_en: "Join a Club or Participate in Campus Activities",
+    scenario_zh: "你想加入學生社團，或了解校園活動的報名方式。",
+    scenario_en: "You want to join a student club or learn how to sign up for campus activities.",
+    target_unit_type: "office",
+    target_unit_id: "osa_extracurricular",
+    recommended_service_categories: ["student_affairs"],
+    required_documents: [],
+    navigation_tip_zh: "活動中心 2F｜課外活動組，或社博會時直接向社團報名",
+    navigation_tip_en: "Activity Center, 2F｜Extra-Curricular Division, or sign up directly at the Club Expo",
+    steps: [
+      { zh: "注意每學期初（通常第 1–2 週）舉辦的社團博覽會，現場報名", en: "Look out for the Club Expo held at the start of each semester (usually weeks 1–2) to sign up in person" },
+      { zh: "查詢社團資訊：至課外活動組詢問或查看學校公佈欄", en: "Find club information: ask at the Extra-Curricular Division or check school bulletin boards" },
+      { zh: "也可透過社團 Instagram 或 LINE 等社群聯繫社團幹部加入", en: "You can also contact club officers through their Instagram or LINE accounts to join" }
+    ],
+    source_url: "https://studaffairs.ccu.edu.tw/",
+    needs_manual_review: true
+  },
+  {
+    id: "task_language_support",
+    task_name_zh: "取得語言學習與中文課程支援",
+    task_name_en: "Get Language Learning and Mandarin Course Support",
+    scenario_zh: "你是國際生，需要補強中文能力或尋找語言學習資源。",
+    scenario_en: "As an international student, you want to improve your Mandarin or find language learning resources.",
+    target_unit_type: "office",
+    target_unit_id: "language_center",
+    recommended_service_categories: ["international_support", "academic_affairs"],
+    required_documents: [],
+    navigation_tip_zh: "圖書資訊大樓｜語言中心",
+    navigation_tip_en: "Information and Library Building｜Language Center",
+    steps: [
+      { zh: "至語言中心詢問國際學生華語課程開課資訊", en: "Visit the Language Center to inquire about Mandarin courses for international students" },
+      { zh: "語言中心也提供同儕語言輔導，可預約語言夥伴", en: "The Language Center also offers peer language tutoring — you can book a language partner" },
+      { zh: "查詢語言測驗（TOEIC、GEPT）相關資訊也可洽語言中心", en: "For language proficiency test info (TOEIC, GEPT), contact the Language Center" }
+    ],
+    source_url: "https://cls.ccu.edu.tw/",
     needs_manual_review: true
   }
 ];

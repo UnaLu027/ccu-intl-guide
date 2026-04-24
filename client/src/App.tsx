@@ -13,6 +13,7 @@ import Departments from "./pages/Departments";
 import Offices from "./pages/Offices";
 import Tasks from "./pages/Tasks";
 import Navigation from "./pages/Navigation";
+import CCUGPTWidget from "@/components/CCUGPTWidget";
 
 function Router() {
   return (
@@ -39,6 +40,7 @@ function App() {
           <TooltipProvider>
             <Toaster />
             <Router />
+            <CCUGPTWidget />
           </TooltipProvider>
         </LanguageProvider>
       </ThemeProvider>
