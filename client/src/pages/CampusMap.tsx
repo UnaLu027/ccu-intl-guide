@@ -6,13 +6,13 @@ import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { offices, departments } from "@/data/campusData";
 import { MapView } from "@/components/Map";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Link } from "wouter";
 import { ArrowLeft, Building2, Briefcase, MapPin, X } from "lucide-react";
 
 type MarkerType = "office" | "department";
 
-interface MapMarker {
+interface MapItem {
   id: string;
   type: MarkerType;
   name_en: string;
@@ -20,56 +20,21 @@ interface MapMarker {
   building_en: string;
   building_zh: string;
   floor: string;
-  lat: number;
-  lng: number;
   detail_en: string;
   detail_zh: string;
+  google_maps_query: string;
   navLink: string;
 }
 
-function buildMarkers(): MapMarker[] {
-  const markers: MapMarker[] = [];
-  offices.forEach(o => {
-    markers.push({
-      id: o.id,
-      type: "office",
-      name_en: o.name_en,
-      name_zh: o.name_zh,
-      building_en: o.building_name_en,
-      building_zh: o.building_name_zh,
-      floor: o.floor,
-      lat: o.latitude,
-      lng: o.longitude,
-      detail_en: o.function_desc_en,
-      detail_zh: o.function_desc_zh,
-      navLink: `/navigate/office/${o.id}`,
-    });
-  });
-  departments.forEach(d => {
-    markers.push({
-      id: d.id,
-      type: "department",
-      name_en: d.name_en,
-      name_zh: d.name_zh,
-      building_en: d.building_name_en,
-      building_zh: d.building_name_zh,
-      floor: d.floor,
-      lat: d.latitude,
-      lng: d.longitude,
-      detail_en: d.function_desc_en,
-      detail_zh: d.function_desc_zh,
-      navLink: `/navigate/dept/${d.id}`,
-    });
-  });
-  return markers;
+interface SelectedItem extends MapItem {
+  lat: number;
+  lng: number;
 }
-
-const allMarkers = buildMarkers();
 
 const filterOptions: { type: MarkerType | "all"; label_en: string; label_zh: string; icon: any }[] = [
   { type: "all", label_en: "All", label_zh: "全部", icon: MapPin },
-  { type: "office", label_en: "Offices", label_zh: "行政單位", icon: Briefcase },
-  { type: "department", label_en: "Departments", label_zh: "系所", icon: Building2 },
+  { type: "office", label_en: "Administrative Offices", label_zh: "行政單位", icon: Briefcase },
+  { type: "department", label_en: "Departments & Colleges", label_zh: "系所與學院", icon: Building2 },
 ];
 
 const markerColors: Record<MarkerType, string> = {
@@ -77,40 +42,87 @@ const markerColors: Record<MarkerType, string> = {
   department: "#7A9E7E",
 };
 
+const allItems: MapItem[] = [
+  ...offices.map(o => ({
+    id: o.id,
+    type: "office" as MarkerType,
+    name_en: o.name_en,
+    name_zh: o.name_zh,
+    building_en: o.building_name_en,
+    building_zh: o.building_name_zh,
+    floor: o.floor,
+    detail_en: o.function_desc_en,
+    detail_zh: o.function_desc_zh,
+    google_maps_query: o.google_maps_query,
+    navLink: `/navigate/office/${o.id}`,
+  })),
+  ...departments.map(d => ({
+    id: d.id,
+    type: "department" as MarkerType,
+    name_en: d.name_en,
+    name_zh: d.name_zh,
+    building_en: d.building_name_en,
+    building_zh: d.building_name_zh,
+    floor: d.floor,
+    detail_en: d.function_desc_en,
+    detail_zh: d.function_desc_zh,
+    google_maps_query: d.google_maps_query,
+    navLink: `/navigate/dept/${d.id}`,
+  })),
+];
+
 export default function CampusMap() {
   const { t } = useLanguage();
   const [filter, setFilter] = useState<MarkerType | "all">("all");
-  const [selected, setSelected] = useState<MapMarker | null>(null);
+  const [selected, setSelected] = useState<SelectedItem | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
+  const markersRef = useRef<{ marker: google.maps.marker.AdvancedMarkerElement; type: MarkerType }[]>([]);
+  const filterRef = useRef<MarkerType | "all">("all");
 
-  const visibleMarkers = filter === "all" ? allMarkers : allMarkers.filter(m => m.type === filter);
+  useEffect(() => {
+    filterRef.current = filter;
+    markersRef.current.forEach(({ marker, type }) => {
+      marker.map = filter === "all" || type === filter ? mapRef.current : null;
+    });
+  }, [filter]);
 
   const handleMapReady = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
     map.setCenter({ lat: 23.5640, lng: 120.4710 });
     map.setZoom(16);
 
-    // Create markers
-    visibleMarkers.forEach(m => {
-      const pinColor = markerColors[m.type];
-      const pin = new google.maps.marker.PinElement({
-        background: pinColor,
-        borderColor: "#ffffff",
-        glyphColor: "#ffffff",
-        scale: 0.9,
+    const geocoder = new google.maps.Geocoder();
+
+    allItems.forEach(item => {
+      geocoder.geocode({ address: item.google_maps_query }, (results, status) => {
+        if (status !== "OK" || !results?.[0]) return;
+
+        const position = results[0].geometry.location;
+        const lat = position.lat();
+        const lng = position.lng();
+
+        const pin = new google.maps.marker.PinElement({
+          background: markerColors[item.type],
+          borderColor: "#ffffff",
+          glyphColor: "#ffffff",
+          scale: 0.9,
+        });
+
+        const shouldShow = filterRef.current === "all" || filterRef.current === item.type;
+        const marker = new google.maps.marker.AdvancedMarkerElement({
+          map: shouldShow ? map : null,
+          position,
+          title: item.name_en,
+          content: pin.element,
+        });
+
+        marker.addListener("click", () => {
+          setSelected({ ...item, lat, lng });
+          map.panTo(position);
+        });
+
+        markersRef.current.push({ marker, type: item.type });
       });
-      const marker = new google.maps.marker.AdvancedMarkerElement({
-        map,
-        position: { lat: m.lat, lng: m.lng },
-        title: m.name_en,
-        content: pin.element,
-      });
-      marker.addListener("click", () => {
-        setSelected(m);
-        map.panTo({ lat: m.lat, lng: m.lng });
-      });
-      markersRef.current.push(marker);
     });
   }, []);
 
@@ -150,7 +162,6 @@ export default function CampusMap() {
       <div className="flex-1 relative" style={{ minHeight: "60vh" }}>
         <MapView onMapReady={handleMapReady} />
 
-        {/* Selected marker info panel */}
         {selected && (
           <div className="absolute bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-card rounded-xl shadow-xl border border-border overflow-hidden z-10">
             <div className="h-1" style={{ backgroundColor: markerColors[selected.type] }} />
