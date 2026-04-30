@@ -8,6 +8,7 @@ import { z } from "zod";
 import {
   serviceCategories,
   offices,
+  departments,
   tasks,
   searchByNeed,
 } from "../shared/campusData.js";
@@ -93,6 +94,27 @@ function registerTools(server: McpServer) {
         `**${task.task_name_en}**`,
         `📌 Scenario: ${task.scenario_en}`,
         `\n🗺️ Steps:\n${steps}`,
+      ].join("\n");
+      return { content: [{ type: "text", text }] };
+    }
+  );
+
+  server.tool(
+    "get_department_info",
+    "Get information about a specific CCU academic department or college office, including location, floor, room, and contact.",
+    { dept_id: z.string().describe("Department ID, e.g. 'mis', 'cs', 'economics', 'law', 'college_management_office'") },
+    async ({ dept_id }) => {
+      const dept = departments.find((d) => d.id === dept_id);
+      if (!dept) {
+        const list = departments.map((d) => `${d.id} (${d.name_en})`).join(", ");
+        return { content: [{ type: "text", text: `Department not found. Available IDs: ${list}` }] };
+      }
+      const text = [
+        `**${dept.name_en}** (${dept.name_zh})`,
+        `🏫 College: ${dept.college_en} (${dept.college_zh})`,
+        `📍 Location: ${dept.indoor_location_note_en}`,
+        `🔗 Website: ${dept.official_url}`,
+        `📋 Services: ${dept.service_scope_en}`,
       ].join("\n");
       return { content: [{ type: "text", text }] };
     }
