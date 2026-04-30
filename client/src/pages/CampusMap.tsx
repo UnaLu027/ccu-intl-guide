@@ -13,7 +13,7 @@ import { offices, departments } from "@/data/campusData";
 import { MapView } from "@/components/Map";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, Building2, Briefcase, DoorOpen, MapPin, X } from "lucide-react";
+import { ArrowLeft, Building2, Briefcase, DoorOpen, Loader2, Locate, MapPin, X } from "lucide-react";
 
 type MarkerType = "office" | "department";
 
@@ -140,9 +140,12 @@ export default function CampusMap() {
   const { t } = useLanguage();
   const [filter, setFilter] = useState<MarkerType | "all">("all");
   const [selected, setSelected] = useState<SelectedItem | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<{ marker: google.maps.marker.AdvancedMarkerElement; type: MarkerType }[]>([]);
   const filterRef = useRef<MarkerType | "all">("all");
+  const userLocationMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
 
   useEffect(() => {
     filterRef.current = filter;
@@ -217,6 +220,53 @@ export default function CampusMap() {
     });
   }, [t]);
 
+  const handleLocate = useCallback(() => {
+    if (!navigator.geolocation) {
+      setLocationError("Location access denied. Please enable location in your browser settings.");
+      return;
+    }
+
+    setLocating(true);
+    setLocationError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        const { latitude, longitude } = coords;
+
+        if (userLocationMarkerRef.current) {
+          userLocationMarkerRef.current.map = null;
+          userLocationMarkerRef.current = null;
+        }
+
+        if (mapRef.current) {
+          const dot = document.createElement("div");
+          dot.style.cssText =
+            "width:16px;height:16px;border-radius:50%;background:#2563EB;border:3px solid #ffffff;box-shadow:0 2px 6px rgba(0,0,0,0.35);";
+
+          userLocationMarkerRef.current = new google.maps.marker.AdvancedMarkerElement({
+            map: mapRef.current,
+            position: { lat: latitude, lng: longitude },
+            title: "Your Location",
+            content: dot,
+          });
+
+          mapRef.current.panTo({ lat: latitude, lng: longitude });
+
+          const inCampus =
+            latitude >= 23.558 && latitude <= 23.568 &&
+            longitude >= 120.468 && longitude <= 120.478;
+          if (inCampus) mapRef.current.setZoom(18);
+        }
+
+        setLocating(false);
+      },
+      () => {
+        setLocationError("Location access denied. Please enable location in your browser settings.");
+        setLocating(false);
+      }
+    );
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
@@ -254,6 +304,25 @@ export default function CampusMap() {
 
       <div className="flex-1 relative" style={{ minHeight: "60vh" }}>
         <MapView onMapReady={handleMapReady} />
+
+        <div className="absolute bottom-4 right-4 z-10 flex flex-col items-end gap-2">
+          {locationError && (
+            <p className="bg-white border border-red-200 text-red-600 text-xs px-3 py-2 rounded-lg shadow-md max-w-[240px] text-right leading-snug">
+              {locationError}
+            </p>
+          )}
+          <button
+            onClick={handleLocate}
+            disabled={locating}
+            title={t("Show my location", "顯示我的位置")}
+            className="bg-white border border-gray-200 rounded-full shadow-md p-2 hover:bg-gray-50 transition disabled:opacity-70"
+          >
+            {locating
+              ? <Loader2 className="w-5 h-5 text-navy animate-spin" />
+              : <Locate className="w-5 h-5 text-navy" />
+            }
+          </button>
+        </div>
 
         {selected && (
           <div className="absolute bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-card rounded-xl shadow-xl border border-border overflow-hidden z-10">
