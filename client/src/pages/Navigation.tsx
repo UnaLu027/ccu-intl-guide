@@ -9,7 +9,7 @@ import { MapView } from "@/components/Map";
 import { Link, useParams } from "wouter";
 import { useMemo, useCallback } from "react";
 import {
-  ArrowLeft, Building2, MapPin, Clock, Phone, Mail, ExternalLink,
+  ArrowLeft, DoorOpen, MapPin, Clock, Phone, Mail, ExternalLink,
   Navigation as NavIcon, AlertTriangle, CheckCircle2, ClipboardList
 } from "lucide-react";
 
@@ -200,18 +200,14 @@ export default function Navigation() {
           {/* Right: Location & Map */}
           <div className="lg:col-span-2 space-y-5">
             {/* Location card */}
+            {indoor_en && (
             <div className="bg-card rounded-xl border border-border p-5">
               <h2 className="font-display font-bold text-base text-navy mb-3">
                 {t("Location", "位置")}
               </h2>
               <div className="space-y-2.5">
-                <div className="flex items-center gap-2 text-sm">
-                  <Building2 className="w-4 h-4 text-navy shrink-0" />
-                  <span className="font-medium">{t(building_en, building_zh)}</span>
-                  <span className="text-muted-foreground">· {floor}</span>
-                </div>
                 <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
+                  <DoorOpen className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{t(indoor_en, indoor_zh)}</span>
                 </div>
                 {office_hours && (
@@ -257,6 +253,7 @@ export default function Navigation() {
                 )}
               </div>
             </div>
+            )}
 
             {/* Map */}
             <div className="bg-card rounded-xl border border-border overflow-hidden" style={{ height: "300px" }}>
