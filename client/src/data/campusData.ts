@@ -4916,3 +4916,21 @@ export function getTaskById(id: string) {
 export function getServiceCategoryById(id: string) {
   return serviceCategories.find(category => category.id === id);
 }
+
+export function filterByCategory(categoryId: string) {
+  return {
+    offices: offices.filter(o => o.service_categories.includes(categoryId)),
+    departments: departments.filter(d => d.service_categories.includes(categoryId)),
+    tasks: tasks.filter(t => t.category_id === categoryId),
+  };
+}
+
+export function getColleges() {
+  const seen = new Map<string, { zh: string; en: string }>();
+  departments.forEach(d => {
+    if (!seen.has(d.college_en)) {
+      seen.set(d.college_en, { zh: d.college_zh, en: d.college_en });
+    }
+  });
+  return Array.from(seen.values());
+}
