@@ -4,7 +4,7 @@
  */
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "wouter";
-import { MapPin, Navigation, ExternalLink, Clock, Phone, Mail, AlertTriangle, Building2, ArrowRight } from "lucide-react";
+import { MapPin, Navigation, ExternalLink, Clock, Phone, Mail, AlertTriangle, DoorOpen, ArrowRight } from "lucide-react";
 import type { Office, Department } from "@/data/campusData";
 
 interface OfficeCardProps {
@@ -78,15 +78,12 @@ export function OfficeCard({ office, reason }: OfficeCardProps) {
 
         {/* Location info */}
         <div className="bg-cream rounded-md p-3 mb-3 space-y-1.5">
-          <div className="flex items-center gap-2 text-sm">
-            <Building2 className="w-4 h-4 text-navy shrink-0" />
-            <span className="font-medium">{t(o.building_name_en, o.building_name_zh)}</span>
-            <span className="text-muted-foreground">· {o.floor}</span>
-          </div>
-          <div className="flex items-start gap-2 text-sm text-muted-foreground">
-            <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
-            <span>{t(o.indoor_location_note_en, o.indoor_location_note_zh)}</span>
-          </div>
+          {t(o.indoor_location_note_en, o.indoor_location_note_zh) && (
+            <div className="flex items-start gap-2 text-sm text-muted-foreground">
+              <DoorOpen className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{t(o.indoor_location_note_en, o.indoor_location_note_zh)}</span>
+            </div>
+          )}
           {o.office_hours && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="w-4 h-4 shrink-0" />
@@ -179,15 +176,12 @@ export function DeptCard({ dept }: DeptCardProps) {
         </p>
 
         <div className="bg-cream rounded-md p-3 mb-3 space-y-1.5">
-          <div className="flex items-center gap-2 text-sm">
-            <Building2 className="w-4 h-4 text-navy shrink-0" />
-            <span className="font-medium">{t(d.building_name_en, d.building_name_zh)}</span>
-            <span className="text-muted-foreground">· {d.floor}</span>
-          </div>
-          <div className="flex items-start gap-2 text-sm text-muted-foreground">
-            <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
-            <span>{t(d.indoor_location_note_en, d.indoor_location_note_zh)}</span>
-          </div>
+          {t(d.indoor_location_note_en, d.indoor_location_note_zh) && (
+            <div className="flex items-start gap-2 text-sm text-muted-foreground">
+              <DoorOpen className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{t(d.indoor_location_note_en, d.indoor_location_note_zh)}</span>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-2">
