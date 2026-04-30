@@ -88,10 +88,6 @@ const allItems: MapItem[] = [
   })),
 ];
 
-function coordinateKey(item: MapItem) {
-  return `${item.latitude.toFixed(5)},${item.longitude.toFixed(5)}`;
-}
-
 function getDisplayPosition(item: MapItem, indexWithinSameCoordinate: number, totalAtSameCoordinate: number) {
   if (totalAtSameCoordinate <= 1) {
     return { lat: item.latitude, lng: item.longitude };
@@ -111,6 +107,35 @@ function formatLocation(building: string, floor: string, room?: string) {
   return [building, floor ? `· ${floor}` : "", room ? ` ${room}` : ""].join("").replace(/\s+/g, " ").trim();
 }
 
+function lookupPlaceLocation(
+  service: google.maps.places.PlacesService,
+  query: string
+): Promise<google.maps.LatLng | null> {
+  const cacheKey = "ccu_place_" + query;
+  const cached = sessionStorage.getItem(cacheKey);
+  if (cached) {
+    const { lat, lng } = JSON.parse(cached);
+    return Promise.resolve(new google.maps.LatLng(lat, lng));
+  }
+  return new Promise(resolve => {
+    service.findPlaceFromQuery(
+      { query, fields: ["geometry.location"] },
+      (results, status) => {
+        if (
+          status === google.maps.places.PlacesServiceStatus.OK &&
+          results && results[0]?.geometry?.location
+        ) {
+          const loc = results[0].geometry.location;
+          sessionStorage.setItem(cacheKey, JSON.stringify({ lat: loc.lat(), lng: loc.lng() }));
+          resolve(loc);
+        } else {
+          resolve(null);
+        }
+      }
+    );
+  });
+}
+
 export default function CampusMap() {
   const { t } = useLanguage();
   const [filter, setFilter] = useState<MarkerType | "all">("all");
@@ -126,21 +151,46 @@ export default function CampusMap() {
     });
   }, [filter]);
 
-  const handleMapReady = useCallback((map: google.maps.Map) => {
+  const handleMapReady = useCallback(async (map: google.maps.Map) => {
     mapRef.current = map;
     map.setCenter({ lat: 23.5628, lng: 120.4724 });
     map.setZoom(16);
 
+    const placesService = new google.maps.places.PlacesService(map);
+
+    // Group by google_maps_query so items in the same building cluster together.
     const grouped = new Map<string, MapItem[]>();
     allItems.forEach(item => {
-      const key = coordinateKey(item);
+      const key = item.google_maps_query;
       grouped.set(key, [...(grouped.get(key) || []), item]);
     });
 
+    // Query each unique google_maps_query exactly once.
+    const queryCache = new Map<string, google.maps.LatLng | null>();
+    const uniqueQueries = [...new Set(allItems.map(i => i.google_maps_query))];
+
+    await Promise.all(
+      uniqueQueries.map(async query => {
+        const loc = await lookupPlaceLocation(placesService, query);
+        queryCache.set(query, loc);
+      })
+    );
+
     allItems.forEach(item => {
-      const sameCoordinateItems = grouped.get(coordinateKey(item)) || [item];
-      const indexWithinSameCoordinate = sameCoordinateItems.findIndex(unit => unit.id === item.id && unit.type === item.type);
-      const position = getDisplayPosition(item, Math.max(indexWithinSameCoordinate, 0), sameCoordinateItems.length);
+      const sameQueryItems = grouped.get(item.google_maps_query) || [item];
+      const indexWithinGroup = sameQueryItems.findIndex(
+        u => u.id === item.id && u.type === item.type
+      );
+
+      const resolvedLoc = queryCache.get(item.google_maps_query);
+      const baseLat = resolvedLoc ? resolvedLoc.lat() : item.latitude;
+      const baseLng = resolvedLoc ? resolvedLoc.lng() : item.longitude;
+
+      const position = getDisplayPosition(
+        { ...item, latitude: baseLat, longitude: baseLng },
+        Math.max(indexWithinGroup, 0),
+        sameQueryItems.length
+      );
 
       const pin = new google.maps.marker.PinElement({
         background: markerColors[item.type],
