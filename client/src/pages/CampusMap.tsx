@@ -1,14 +1,19 @@
 /**
  * CampusMap — Wayfinding Signage System
- * Interactive Google Maps with all campus locations
+ * Updated version:
+ * 1. Uses latitude / longitude from campusData directly, so every office / department in campusData appears on the map.
+ * 2. Displays compact location format: Building · Floor Room.
+ * 3. Adds a room/classroom-style icon for the floor + room row.
+ * 4. Slightly separates markers that share the same building coordinate so users can click each unit.
  */
+
 import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { offices, departments } from "@/data/campusData";
 import { MapView } from "@/components/Map";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, Building2, Briefcase, MapPin, X } from "lucide-react";
+import { ArrowLeft, Building2, Briefcase, DoorOpen, MapPin, X } from "lucide-react";
 
 type MarkerType = "office" | "department";
 
@@ -20,9 +25,13 @@ interface MapItem {
   building_en: string;
   building_zh: string;
   floor: string;
+  room_en?: string;
+  room_zh?: string;
   detail_en: string;
   detail_zh: string;
   google_maps_query: string;
+  latitude: number;
+  longitude: number;
   navLink: string;
 }
 
@@ -51,9 +60,13 @@ const allItems: MapItem[] = [
     building_en: o.building_name_en,
     building_zh: o.building_name_zh,
     floor: o.floor,
+    room_en: o.room_en,
+    room_zh: o.room_zh,
     detail_en: o.function_desc_en,
     detail_zh: o.function_desc_zh,
     google_maps_query: o.google_maps_query,
+    latitude: o.latitude,
+    longitude: o.longitude,
     navLink: `/navigate/office/${o.id}`,
   })),
   ...departments.map(d => ({
@@ -64,12 +77,39 @@ const allItems: MapItem[] = [
     building_en: d.building_name_en,
     building_zh: d.building_name_zh,
     floor: d.floor,
+    room_en: d.room_en,
+    room_zh: d.room_zh,
     detail_en: d.function_desc_en,
     detail_zh: d.function_desc_zh,
     google_maps_query: d.google_maps_query,
+    latitude: d.latitude,
+    longitude: d.longitude,
     navLink: `/navigate/dept/${d.id}`,
   })),
 ];
+
+function coordinateKey(item: MapItem) {
+  return `${item.latitude.toFixed(5)},${item.longitude.toFixed(5)}`;
+}
+
+function getDisplayPosition(item: MapItem, indexWithinSameCoordinate: number, totalAtSameCoordinate: number) {
+  if (totalAtSameCoordinate <= 1) {
+    return { lat: item.latitude, lng: item.longitude };
+  }
+
+  // Keep markers near the correct building while making repeated offices/departments clickable.
+  const radius = 0.000045 + Math.floor(indexWithinSameCoordinate / 12) * 0.000025;
+  const angle = (Math.PI * 2 * indexWithinSameCoordinate) / Math.min(totalAtSameCoordinate, 12);
+
+  return {
+    lat: item.latitude + Math.sin(angle) * radius,
+    lng: item.longitude + Math.cos(angle) * radius,
+  };
+}
+
+function formatLocation(building: string, floor: string, room?: string) {
+  return [building, floor ? `· ${floor}` : "", room ? ` ${room}` : ""].join("").replace(/\s+/g, " ").trim();
+}
 
 export default function CampusMap() {
   const { t } = useLanguage();
@@ -88,43 +128,44 @@ export default function CampusMap() {
 
   const handleMapReady = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
-    map.setCenter({ lat: 23.5640, lng: 120.4710 });
+    map.setCenter({ lat: 23.5628, lng: 120.4724 });
     map.setZoom(16);
 
-    const geocoder = new google.maps.Geocoder();
+    const grouped = new Map<string, MapItem[]>();
+    allItems.forEach(item => {
+      const key = coordinateKey(item);
+      grouped.set(key, [...(grouped.get(key) || []), item]);
+    });
 
     allItems.forEach(item => {
-      geocoder.geocode({ address: item.google_maps_query }, (results, status) => {
-        if (status !== "OK" || !results?.[0]) return;
+      const sameCoordinateItems = grouped.get(coordinateKey(item)) || [item];
+      const indexWithinSameCoordinate = sameCoordinateItems.findIndex(unit => unit.id === item.id && unit.type === item.type);
+      const position = getDisplayPosition(item, Math.max(indexWithinSameCoordinate, 0), sameCoordinateItems.length);
 
-        const position = results[0].geometry.location;
-        const lat = position.lat();
-        const lng = position.lng();
-
-        const pin = new google.maps.marker.PinElement({
-          background: markerColors[item.type],
-          borderColor: "#ffffff",
-          glyphColor: "#ffffff",
-          scale: 0.9,
-        });
-
-        const shouldShow = filterRef.current === "all" || filterRef.current === item.type;
-        const marker = new google.maps.marker.AdvancedMarkerElement({
-          map: shouldShow ? map : null,
-          position,
-          title: item.name_en,
-          content: pin.element,
-        });
-
-        marker.addListener("click", () => {
-          setSelected({ ...item, lat, lng });
-          map.panTo(position);
-        });
-
-        markersRef.current.push({ marker, type: item.type });
+      const pin = new google.maps.marker.PinElement({
+        background: markerColors[item.type],
+        borderColor: "#ffffff",
+        glyphColor: "#ffffff",
+        scale: 0.9,
       });
+
+      const shouldShow = filterRef.current === "all" || filterRef.current === item.type;
+
+      const marker = new google.maps.marker.AdvancedMarkerElement({
+        map: shouldShow ? map : null,
+        position,
+        title: t(item.name_en, item.name_zh),
+        content: pin.element,
+      });
+
+      marker.addListener("click", () => {
+        setSelected({ ...item, lat: position.lat, lng: position.lng });
+        map.panTo(position);
+      });
+
+      markersRef.current.push({ marker, type: item.type });
     });
-  }, []);
+  }, [t]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -136,10 +177,12 @@ export default function CampusMap() {
             <Link href="/" className="text-navy hover:text-amber transition-colors">
               <ArrowLeft className="w-5 h-5" />
             </Link>
+
             <h1 className="font-display font-bold text-lg text-navy">
               {t("Campus Map", "校園地圖")}
             </h1>
           </div>
+
           <div className="flex gap-2 overflow-x-auto pb-1">
             {filterOptions.map(opt => (
               <button
@@ -165,6 +208,7 @@ export default function CampusMap() {
         {selected && (
           <div className="absolute bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-card rounded-xl shadow-xl border border-border overflow-hidden z-10">
             <div className="h-1" style={{ backgroundColor: markerColors[selected.type] }} />
+
             <div className="p-4">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div>
@@ -173,19 +217,29 @@ export default function CampusMap() {
                   </h3>
                   <p className="text-xs text-muted-foreground">{t(selected.name_zh, selected.name_en)}</p>
                 </div>
+
                 <button onClick={() => setSelected(null)} className="p-1 hover:bg-muted rounded">
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                <Building2 className="w-4 h-4 shrink-0" />
-                <span>{t(selected.building_en, selected.building_zh)} · {selected.floor}</span>
+
+              <div className="flex items-start gap-2 text-sm text-muted-foreground mb-2">
+                <DoorOpen className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>
+                  {formatLocation(
+                    t(selected.building_en, selected.building_zh),
+                    selected.floor,
+                    t(selected.room_en || "", selected.room_zh || "")
+                  )}
+                </span>
               </div>
+
               {selected.detail_en && (
                 <p className="text-sm text-foreground/80 mb-3">
                   {t(selected.detail_en, selected.detail_zh)}
                 </p>
               )}
+
               <div className="flex gap-2">
                 {selected.navLink && (
                   <Link
@@ -195,6 +249,7 @@ export default function CampusMap() {
                     {t("View Details", "查看詳情")}
                   </Link>
                 )}
+
                 <a
                   href={`https://www.google.com/maps/search/?api=1&query=${selected.lat},${selected.lng}`}
                   target="_blank"

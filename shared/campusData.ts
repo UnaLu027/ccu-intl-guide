@@ -1,39 +1,13 @@
 /**
  * CCU International Student Friendly Campus Guide — Data Layer
- * Design: Wayfinding Signage System
+ * Updated from 更新資訊.docx
  *
- * ============================================================
- * CHANGE LOG（相較於 GitHub 原版）
- * ============================================================
- * [新增] Office interface：floor_plan_image?, entrance_image?
- * [新增] Department interface：floor_plan_image?, entrance_image?, is_college_office?
- * [新增] Task interface：required_documents[], navigation_tip_zh?, navigation_tip_en?
- * [修正] category 值統一：offices → "office", departments → "department"
- * [修正] 移除 campus_life serviceCategory 及 campusResources（由另一組負責）
- * [新增] serviceCategories：career, it_support, counseling
- * [新增] offices：教學發展中心、資訊處、語言中心、課外活動組、學生安全組、
- *         生活事務組、職涯發展中心、招生組、總務處事務組、總務處保管組、
- *         駐警處車輛管控中心、人事室、秘書室
- * [修正] 衛生保健組地點更正為活動中心 2F
- * [修正] 諮商中心地點更正為活動中心 3F
- * [新增] departments：全部院辦（7間）、台灣文學與創意應用研究所、語言學研究所、
- *         生物醫學科學系、運動競技學系（教育學院）
- * [新增] tasks：共 50 筆，含居留證（3種）、宿舍費、包裹、YouBike、轉系等
- * ============================================================
- * HOW TO UPDATE
- * ============================================================
- * ▶ 新增行政處室：在 offices 陣列加入，category 填 "office"
- * ▶ 新增系所：在 departments 陣列加入，category 填 "department"
- * ▶ 新增 Task：在 tasks 陣列加入，含 required_documents 與 navigation_tip
- * ▶ 新增圖片：
- *   1. 圖片放入 client/public/images/offices/[id]/ 或 departments/[id]/
- *   2. 填入 floor_plan_image / entrance_image 欄位路徑
- * ============================================================
+ * This version adds floor and room information for offices, departments, and college offices.
+ * It also exposes room_zh / room_en so CampusMap can show:
+ *   College of Management Building · 2F Room 206
+ * instead of repeating the full indoor location on a second line.
  */
 
-// ============================================================
-// Service Categories
-// ============================================================
 export interface ServiceCategory {
   id: string;
   name_en: string;
@@ -44,147 +18,17 @@ export interface ServiceCategory {
   keywords: string[];
 }
 
-export const serviceCategories: ServiceCategory[] = [
-  {
-    id: "registration",
-    name_en: "Registration",
-    name_zh: "註冊",
-    icon: "ClipboardCheck",
-    description_en: "Course registration, enrollment status, and academic records",
-    description_zh: "選課註冊、學籍與學業紀錄",
-    keywords: ["registration", "enroll", "enrollment", "register", "course selection", "選課", "註冊", "學籍"]
-  },
-  {
-    id: "student_id",
-    name_en: "Student ID",
-    name_zh: "學生證",
-    icon: "CreditCard",
-    description_en: "Student ID card issuance, replacement, and related services",
-    description_zh: "學生證核發、補辦與相關服務",
-    keywords: ["student id", "student card", "id card", "replacement", "學生證", "補辦", "卡片"]
-  },
-  {
-    id: "international_support",
-    name_en: "International Support",
-    name_zh: "國際學生支援",
-    icon: "Globe",
-    description_en: "Visa, ARC, scholarships, and international student life support",
-    description_zh: "簽證、居留證、獎學金與國際學生生活輔導",
-    keywords: ["international", "visa", "arc", "alien resident", "scholarship", "foreign", "exchange", "國際", "簽證", "居留證", "獎學金"]
-  },
-  {
-    id: "department_offices",
-    name_en: "Department Offices",
-    name_zh: "系辦公室",
-    icon: "Building2",
-    description_en: "Academic department offices for course and program inquiries",
-    description_zh: "各系所辦公室，提供課程與學程諮詢",
-    keywords: ["department", "department office", "faculty", "professor", "advisor", "系辦", "系所", "教授", "導師"]
-  },
-  {
-    id: "dormitory",
-    name_en: "Dormitory",
-    name_zh: "宿舍",
-    icon: "Home",
-    description_en: "Dormitory application, maintenance, and housing services",
-    description_zh: "宿舍申請、維修與住宿服務",
-    keywords: ["dormitory", "dorm", "housing", "room", "accommodation", "宿舍", "住宿", "房間", "parcel", "package", "laundry", "包裹", "洗衣"]
-  },
-  {
-    id: "health",
-    name_en: "Health",
-    name_zh: "健康醫療",
-    icon: "Heart",
-    description_en: "Health center, medical services, and health checkups",
-    description_zh: "健康中心、醫療服務與健康檢查",
-    keywords: ["health", "medical", "doctor", "clinic", "hospital", "sick", "injury", "insurance", "健康", "醫療", "看病", "受傷", "保險"]
-  },
-  {
-    id: "library",
-    name_en: "Library",
-    name_zh: "圖書館",
-    icon: "BookOpen",
-    description_en: "Book borrowing, study spaces, and academic resources",
-    description_zh: "圖書借閱、自習空間與學術資源",
-    keywords: ["library", "book", "study", "research", "database", "print", "圖書館", "借書", "自習", "研究", "列印"]
-  },
-  {
-    id: "student_affairs",
-    name_en: "Student Affairs",
-    name_zh: "學生事務",
-    icon: "Users",
-    description_en: "Student life, clubs, counseling, and general student services",
-    description_zh: "學生生活、社團、諮商與一般學生服務",
-    keywords: ["student affairs", "club", "counseling", "activity", "student life", "學務", "社團", "諮商", "活動"]
-  },
-  {
-    id: "academic_affairs",
-    name_en: "Academic Affairs",
-    name_zh: "教務",
-    icon: "GraduationCap",
-    description_en: "Curriculum, grades, transcripts, and academic policies",
-    description_zh: "課程、成績、成績單與學術政策",
-    keywords: ["academic", "curriculum", "grade", "transcript", "graduation", "credit", "transfer", "教務", "成績", "成績單", "畢業", "學分", "轉系"]
-  },
-  {
-    id: "course_issues",
-    name_en: "Course Issues",
-    name_zh: "選課相關",
-    icon: "FileText",
-    description_en: "Course add/drop, schedule conflicts, and course-related problems",
-    description_zh: "加退選、衝堂與選課相關問題",
-    keywords: ["course", "add", "drop", "schedule", "class", "syllabus", "professor", "email", "選課", "加選", "退選", "衝堂", "課程", "課綱", "教授"]
-  },
-  {
-    id: "tuition",
-    name_en: "Tuition & Fees",
-    name_zh: "學費繳納",
-    icon: "Wallet",
-    description_en: "Tuition payment, fee reduction, and financial matters",
-    description_zh: "學費繳納、減免與財務相關事項",
-    keywords: ["tuition", "fee", "payment", "financial", "money", "scholarship", "學費", "繳費", "減免", "財務", "獎學金"]
-  },
-  {
-    id: "career",
-    name_en: "Career Development",
-    name_zh: "職涯發展",
-    icon: "Briefcase",
-    description_en: "Job hunting, internships, career counseling, and recruitment events",
-    description_zh: "求職、實習、職涯諮詢與校園徵才",
-    keywords: ["career", "job", "internship", "resume", "recruitment", "職涯", "求職", "實習", "履歷", "徵才"]
-  },
-  {
-    id: "it_support",
-    name_en: "IT Support",
-    name_zh: "資訊服務",
-    icon: "Monitor",
-    description_en: "Campus network, accounts, software, and digital learning systems",
-    description_zh: "校園網路、帳號、軟體與數位學習系統",
-    keywords: ["wifi", "network", "account", "software", "ecourse", "sso", "email", "password", "microsoft", "google", "網路", "帳號", "軟體", "資訊", "密碼"]
-  },
-  {
-    id: "counseling",
-    name_en: "Counseling",
-    name_zh: "心理諮商",
-    icon: "HeartHandshake",
-    description_en: "Psychological counseling, mental health support, and student wellness",
-    description_zh: "心理諮商、心理健康支持與學生身心健康",
-    keywords: ["counseling", "mental health", "stress", "anxiety", "depression", "wellbeing", "諮商", "心理", "壓力", "情緒", "輔導"]
-  }
-];
-
-// ============================================================
-// Offices (Administrative Units)
-// ============================================================
 export interface Office {
   id: string;
   name_zh: string;
   name_en: string;
-  category: string;
+  category: "office";
   service_categories: string[];
   building_name_zh: string;
   building_name_en: string;
   floor: string;
+  room_zh?: string;
+  room_en?: string;
   indoor_location_note_zh: string;
   indoor_location_note_en: string;
   function_desc_zh: string;
@@ -206,670 +50,18 @@ export interface Office {
   entrance_image?: string;
 }
 
-export const offices: Office[] = [
-  {
-    id: "oia",
-    name_zh: "國際事務處",
-    name_en: "Office of International Affairs (OIA)",
-    category: "office",
-    service_categories: ["international_support", "registration", "student_affairs"],
-    building_name_zh: "行政大樓",
-    building_name_en: "Administration Building",
-    floor: "1F",
-    indoor_location_note_zh: "行政大樓一樓",
-    indoor_location_note_en: "1st floor, Administration Building",
-    function_desc_zh: "負責國際學生入學、簽證居留、獎學金、交換計畫、宿舍費繳納、國際活動與生活輔導等事務。",
-    function_desc_en: "Handles international student admissions, visa/ARC, scholarships, exchange programs, dormitory fee payment, international events, and life support.",
-    service_scope_zh: "入學諮詢、簽證與居留證辦理、獎學金申請、宿舍費繳費單領取、國際交流活動、國際學生生活輔導。",
-    service_scope_en: "Admission inquiry, Visa & ARC application, Scholarship application, Dormitory fee payment sheet collection, International exchange events, Life counseling for international students.",
-    common_scenarios_zh: "居留證問題、獎學金申請、入學手續、宿舍費繳納、國際活動報名、工作許可申請。",
-    common_scenarios_en: "ARC issues, Scholarship application, Enrollment procedures, Dormitory fee payment, International event registration, Work permit application.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2720411 ext. 17619",
-    email: "oia@ccu.edu.tw",
-    official_url: "https://oia.ccu.edu.tw/",
-    google_maps_query: "國立中正大學行政大樓",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    source_url: "https://oia.ccu.edu.tw/p/404-1008-51159.php?Lang=en",
-    needs_manual_review: false
-  },
-  {
-    id: "oaa",
-    name_zh: "教務處",
-    name_en: "Office of Academic Affairs",
-    category: "office",
-    service_categories: ["academic_affairs", "registration", "course_issues"],
-    building_name_zh: "行政大樓東棟",
-    building_name_en: "East Wing, Administration Building",
-    floor: "1F–2F",
-    indoor_location_note_zh: "行政大樓東棟一至二樓",
-    indoor_location_note_en: "1st–2nd Floor, East Wing, Administration Building",
-    function_desc_zh: "統籌全校教務事項，包括課程規劃、選課、成績管理、學籍與畢業審查。",
-    function_desc_en: "Oversees academic affairs including curriculum planning, course selection, grade management, enrollment status, and graduation review.",
-    service_scope_zh: "課程規劃、選課系統、成績查詢、學籍管理、畢業審查、轉系申請。",
-    service_scope_en: "Curriculum planning, Course selection system, Grade inquiry, Enrollment management, Graduation review, Department transfer application.",
-    common_scenarios_zh: "選課問題、成績疑義、畢業資格確認、轉系。",
-    common_scenarios_en: "Course selection issues, Grade disputes, Graduation eligibility, Department transfer.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://oaa.ccu.edu.tw/",
-    google_maps_query: "國立中正大學行政大樓",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "oaa_reg",
-    name_zh: "教務處－註冊組",
-    name_en: "Division of Registration, Office of Academic Affairs",
-    category: "office",
-    service_categories: ["registration", "student_id", "academic_affairs", "tuition"],
-    building_name_zh: "行政大樓東棟",
-    building_name_en: "East Wing, Administration Building",
-    floor: "1F",
-    indoor_location_note_zh: "行政大樓東棟一樓",
-    indoor_location_note_en: "1st Floor, East Wing, Administration Building",
-    function_desc_zh: "處理學生註冊、學籍異動、成績單核發、學生證補發、休退學等事務。",
-    function_desc_en: "Handles student registration, enrollment changes, transcript issuance, student ID replacement, leave of absence, and withdrawal.",
-    service_scope_zh: "舊生註冊、復學、休學、退學；成績單申請；學生證補發；學分抵免；畢業資格審查。",
-    service_scope_en: "Registration, reinstatement, leave of absence, withdrawal; Transcript applications; Student ID replacement; Credit transfer; Graduation review.",
-    common_scenarios_zh: "補辦學生證、申請成績單、辦理休學、學分抵免。",
-    common_scenarios_en: "Replace student ID, Apply for transcript, Process leave of absence, Credit transfer.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2720411 ext. 16102",
-    email: "",
-    official_url: "https://oaa.ccu.edu.tw/",
-    google_maps_query: "國立中正大學行政大樓",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "oaa_admissions",
-    name_zh: "教務處－招生組",
-    name_en: "Division of Admissions, Office of Academic Affairs",
-    category: "office",
-    service_categories: ["registration", "academic_affairs"],
-    building_name_zh: "行政大樓東棟",
-    building_name_en: "East Wing, Administration Building",
-    floor: "2F",
-    indoor_location_note_zh: "行政大樓東棟二樓",
-    indoor_location_note_en: "2nd Floor, East Wing, Administration Building",
-    function_desc_zh: "負責各類招生試務辦理，包含申請、考試及陳情申訴等事務。",
-    function_desc_en: "Responsible for all aspects of student admissions including applications, examinations, petitions, and appeals.",
-    service_scope_zh: "各類招生試務辦理；考生陳情、申訴與退費；公文與郵件管理。",
-    service_scope_en: "Various enrollment and examination affairs; Candidate petitions, appeals, and refunds; Document management.",
-    common_scenarios_zh: "入學申請、考試相關問題、申訴退費。",
-    common_scenarios_en: "Admission applications, Exam-related issues, Appeals and refunds.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://oaa.ccu.edu.tw/",
-    google_maps_query: "國立中正大學行政大樓",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "oaa_curriculum",
-    name_zh: "教務處－課務組",
-    name_en: "Division of Curriculum, Office of Academic Affairs",
-    category: "office",
-    service_categories: ["course_issues", "academic_affairs"],
-    building_name_zh: "行政大樓東棟",
-    building_name_en: "East Wing, Administration Building",
-    floor: "2F",
-    indoor_location_note_zh: "行政大樓東棟二樓",
-    indoor_location_note_en: "2nd Floor, East Wing, Administration Building",
-    function_desc_zh: "負責課程安排、教室調配、選課系統管理與考試事務。",
-    function_desc_en: "Responsible for course scheduling, classroom allocation, course selection system management, and examination affairs.",
-    service_scope_zh: "課程時間表、教室借用、選課加退選、課程撤選、考試安排。",
-    service_scope_en: "Course timetable, Classroom booking, Course add/drop, Course withdrawal, Exam scheduling.",
-    common_scenarios_zh: "選課衝堂、加退選問題、課程撤選、教室查詢。",
-    common_scenarios_en: "Course schedule conflicts, Add/drop issues, Course withdrawal, Classroom inquiry.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://oaa.ccu.edu.tw/",
-    google_maps_query: "國立中正大學行政大樓",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "ctld",
-    name_zh: "教學發展中心",
-    name_en: "Center for Teaching and Learning Development",
-    category: "office",
-    service_categories: ["academic_affairs"],
-    building_name_zh: "行政大樓東棟",
-    building_name_en: "East Wing, Administration Building",
-    floor: "2F",
-    indoor_location_note_zh: "行政大樓東棟二樓",
-    indoor_location_note_en: "2nd Floor, East Wing, Administration Building",
-    function_desc_zh: "辦理教學意見調查、提供教學與學習支持資源、推動教學品質提升。",
-    function_desc_en: "Administers course evaluation surveys, provides teaching and learning support resources, and promotes instructional quality.",
-    service_scope_zh: "教學意見調查與統計；教學助理（TA）認證培訓；教師教學輔導與評鑑。",
-    service_scope_en: "Course evaluation surveys; TA training and certification; Teaching improvement support and evaluation.",
-    common_scenarios_zh: "教學助理申請、教學相關諮詢。",
-    common_scenarios_en: "TA application, Teaching-related consultation.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://oaa.ccu.edu.tw/",
-    google_maps_query: "國立中正大學行政大樓",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "osa",
-    name_zh: "學生事務處",
-    name_en: "Office of Student Affairs",
-    category: "office",
-    service_categories: ["student_affairs", "dormitory", "health"],
-    building_name_zh: "行政大樓西棟",
-    building_name_en: "West Wing, Administration Building",
-    floor: "2F",
-    indoor_location_note_zh: "行政大樓西棟二樓",
-    indoor_location_note_en: "2nd Floor, West Wing, Administration Building",
-    function_desc_zh: "統籌學生生活事務，包括宿舍、社團、獎助學金、學生輔導與校園安全。",
-    function_desc_en: "Oversees student life affairs including dormitory, clubs, financial aid, student counseling, and campus safety.",
-    service_scope_zh: "宿舍管理、社團輔導、獎助學金、學生保險、校安通報。",
-    service_scope_en: "Dormitory management, Club guidance, Financial aid, Student insurance, Campus safety reporting.",
-    common_scenarios_zh: "宿舍問題、社團活動、獎助學金申請、校園安全。",
-    common_scenarios_en: "Dormitory issues, Club activities, Financial aid application, Campus safety.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://studaffairs.ccu.edu.tw/",
-    google_maps_query: "國立中正大學行政大樓",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    source_url: "https://studaffairs.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "osa_dorm",
-    name_zh: "學務處－住宿服務組",
-    name_en: "Housing Service Division, Office of Student Affairs",
-    category: "office",
-    service_categories: ["dormitory", "student_affairs"],
-    building_name_zh: "學士班宿舍 C 棟一樓（學士生）/ 研究生宿舍 B 棟（研究生）",
-    building_name_en: "Undergraduate Dorm Block C, 1F (undergrad) / Graduate Dorm Block B (grad)",
-    floor: "1F",
-    indoor_location_note_zh: "學士班宿舍 C 棟一樓櫃台 / 研究生宿舍 B 棟",
-    indoor_location_note_en: "Undergraduate Dorm Block C, 1F counter / Graduate Dorm Block B",
-    function_desc_zh: "管理學生宿舍申請、床位分配、維修報修、退宿、包裹代收及相關住宿服務。",
-    function_desc_en: "Manages dormitory applications, bed allocation, maintenance requests, move-out procedures, parcel collection, and related housing services.",
-    service_scope_zh: "宿舍申請與分配、修繕報修、冷氣卡儲值、退宿手續、包裹代收委託、宿舍規範。",
-    service_scope_en: "Dormitory application & allocation, Maintenance requests, AC card recharge, Move-out procedures, Parcel proxy collection, Dormitory regulations.",
-    common_scenarios_zh: "宿舍申請、門禁問題、設備報修、包裹代收委託、洗衣機故障。",
-    common_scenarios_en: "Dormitory application, Access issues, Equipment repair, Parcel proxy, Washing machine malfunction.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2721422 ext. 73399 (學士) / ext. 82121 (研究生)",
-    email: "",
-    official_url: "https://studaffairs.ccu.edu.tw/",
-    google_maps_query: "國立中正大學學生宿舍",
-    latitude: 23.5605,
-    longitude: 120.4730,
-    source_url: "https://studaffairs.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "osa_life",
-    name_zh: "學務處－生活事務組",
-    name_en: "Student Life and Activities Office, Office of Student Affairs",
-    category: "office",
-    service_categories: ["student_affairs", "dormitory", "tuition"],
-    building_name_zh: "行政大樓西棟",
-    building_name_en: "West Wing, Administration Building",
-    floor: "2F",
-    indoor_location_note_zh: "行政大樓西棟二樓",
-    indoor_location_note_en: "2nd Floor, West Wing, Administration Building",
-    function_desc_zh: "辦理獎助學金、就學貸款、學雜費減免、弱勢助學、學生保險及失物招領等事務。",
-    function_desc_en: "Handles scholarships, student loans, tuition reduction, financial aid for disadvantaged students, student insurance, and lost & found.",
-    service_scope_zh: "獎助學金申請；就學貸款；學雜費減免；弱勢學生補助；學生團體保險；失物招領；校安值勤。",
-    service_scope_en: "Scholarship/bursary applications; Student loans; Tuition reduction; Financial aid; Student group insurance; Lost and Found; Campus security duty.",
-    common_scenarios_zh: "申請獎學金、就學貸款、學費減免、失物招領。",
-    common_scenarios_en: "Apply for scholarship, student loan, tuition reduction, Lost and Found.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://studaffairs.ccu.edu.tw/",
-    google_maps_query: "國立中正大學行政大樓",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    source_url: "https://studaffairs.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "osa_extracurricular",
-    name_zh: "學務處－課外活動組",
-    name_en: "Division of Extra-Curricular Activities",
-    category: "office",
-    service_categories: ["student_affairs"],
-    building_name_zh: "活動中心",
-    building_name_en: "Activity Center",
-    floor: "2F",
-    indoor_location_note_zh: "活動中心二樓",
-    indoor_location_note_en: "2nd Floor, Activity Center",
-    function_desc_zh: "辦理社團成立、幹部交接、活動規劃、場地借用及學生會相關行政支援。",
-    function_desc_en: "Handles club establishment, officer handover, activity planning, venue booking, and student association administrative support.",
-    service_scope_zh: "社團成立申請；社團活動與大型活動規劃；活動中心場地借用；社團活動經費申請；學生會行政支援。",
-    service_scope_en: "Club establishment; Activity planning and major campus events; Activity Center venue booking; Funding applications; Student Association support.",
-    common_scenarios_zh: "社團成立、場地借用、活動申請、經費補助。",
-    common_scenarios_en: "Club establishment, Venue booking, Activity applications, Funding applications.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://studaffairs.ccu.edu.tw/",
-    google_maps_query: "國立中正大學活動中心",
-    latitude: 23.5618,
-    longitude: 120.4728,
-    source_url: "https://studaffairs.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "osa_safety",
-    name_zh: "學務處－學生安全組",
-    name_en: "Division of Student Safety",
-    category: "office",
-    service_categories: ["student_affairs", "health"],
-    building_name_zh: "行政大樓西棟",
-    building_name_en: "West Wing, Administration Building",
-    floor: "B1",
-    indoor_location_note_zh: "行政大樓西棟地下一樓",
-    indoor_location_note_en: "Basement 1, West Wing, Administration Building",
-    function_desc_zh: "負責學生安全事件通報、校園安全資訊、學生生活輔導及兵役諮詢。",
-    function_desc_en: "Handles student safety incident reporting, campus safety information, student life support, and military service consultation.",
-    service_scope_zh: "意外通報、24小時校安中心；校園安全資訊；學生生活關懷；性別事件處理；兵役申請與諮詢。",
-    service_scope_en: "Incident reporting, 24-hour security support; Campus safety info; Student care services; Gender incident support; Military service consultation.",
-    common_scenarios_zh: "緊急事件通報、兵役緩徵申請、安全諮詢。",
-    common_scenarios_en: "Emergency incident reporting, Military service deferment, Safety consultation.",
-    office_hours: "24 hours (security center) / Mon–Fri 08:30–17:00 (office)",
-    phone: "05-2720411 ext. 19110 (24H)",
-    email: "",
-    official_url: "https://studaffairs.ccu.edu.tw/",
-    google_maps_query: "國立中正大學行政大樓",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    source_url: "https://studaffairs.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "health_center",
-    name_zh: "衛生保健組",
-    name_en: "Health Services Division",
-    category: "office",
-    service_categories: ["health", "student_affairs"],
-    building_name_zh: "活動中心",
-    building_name_en: "Activity Center",
-    floor: "2F",
-    indoor_location_note_zh: "活動中心二樓",
-    indoor_location_note_en: "2nd Floor, Activity Center",
-    function_desc_zh: "提供基本醫療服務、健康諮詢、新生體檢、傳染病防治與學生保險理賠。",
-    function_desc_en: "Provides basic medical services, health consultation, new student checkups, infectious disease prevention, and student insurance claims.",
-    service_scope_zh: "新生健康檢查；基本醫療與轉介；傳染病防治；學生團體保險理賠；健康測量與器材借用。",
-    service_scope_en: "New student health examinations; Basic first aid and referral; Infectious disease prevention; Student insurance claims; Health measurement equipment.",
-    common_scenarios_zh: "身體不適、受傷、新生體檢、保險理賠。",
-    common_scenarios_en: "Feeling unwell, Injury, New student health checkup, Insurance claims.",
-    office_hours: "Mon–Fri 08:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://studaffairs.ccu.edu.tw/",
-    google_maps_query: "國立中正大學活動中心",
-    latitude: 23.5618,
-    longitude: 120.4728,
-    source_url: "https://studaffairs.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "counseling",
-    name_zh: "諮商中心",
-    name_en: "Counseling Center",
-    category: "office",
-    service_categories: ["counseling", "health", "student_affairs"],
-    building_name_zh: "活動中心",
-    building_name_en: "Activity Center",
-    floor: "3F",
-    indoor_location_note_zh: "活動中心三樓",
-    indoor_location_note_en: "3rd Floor, Activity Center",
-    function_desc_zh: "提供心理諮商、心理測驗、學習適應、生涯輔導及身心障礙學生支持服務。",
-    function_desc_en: "Provides psychological counseling, psychological testing, academic adaptation, career counseling, and support for students with disabilities.",
-    service_scope_zh: "個別與團體諮商；心理測驗評估；學習適應與生涯輔導；新生心理健康篩檢；自殺防治；身心障礙學生支持。",
-    service_scope_en: "Individual and group counseling; Psychological assessments; Academic adaptation and career counseling; New student mental health screening; Suicide prevention; Disability support.",
-    common_scenarios_zh: "心理壓力、適應困難、情緒問題、人際關係、生涯迷惘。",
-    common_scenarios_en: "Stress, Adjustment difficulties, Emotional issues, Interpersonal relationships, Career uncertainty.",
-    office_hours: "Mon–Fri 08:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://advising.ccu.edu.tw/",
-    google_maps_query: "國立中正大學活動中心",
-    latitude: 23.5618,
-    longitude: 120.4728,
-    source_url: "https://advising.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "library",
-    name_zh: "圖書館",
-    name_en: "Library",
-    category: "office",
-    service_categories: ["library", "academic_affairs"],
-    building_name_zh: "圖書資訊大樓",
-    building_name_en: "Information and Library Building",
-    floor: "B1–6F",
-    indoor_location_note_zh: "圖書資訊大樓，服務台在一樓",
-    indoor_location_note_en: "Information and Library Building, service desk on 1st floor",
-    function_desc_zh: "提供圖書借閱、電子資料庫、自習空間、研究小間、多媒體服務及論文上傳。",
-    function_desc_en: "Provides book borrowing, electronic databases, study spaces, research carrels, multimedia services, and thesis upload.",
-    service_scope_zh: "圖書借還與續借；電子資源與資料庫；空間申請（討論室、自習室）；館際合作；論文上傳。線上入口：https://portal.ccu.edu.tw/sso_index.php",
-    service_scope_en: "Book borrowing, renewal, reservation; Electronic databases and e-resources; Space reservations (discussion rooms, self-study); Interlibrary loan; Thesis upload. Online portal: https://portal.ccu.edu.tw/sso_index.php",
-    common_scenarios_zh: "借書還書、查論文、預約討論室、使用資料庫、列印。",
-    common_scenarios_en: "Borrow/return books, Search for thesis, Reserve discussion rooms, Use databases, Printing.",
-    office_hours: "Mon–Fri 08:20–21:30, Sat–Sun 09:00–17:00 (varies by semester)",
-    phone: "05-2720411 ext. 15101",
-    email: "",
-    official_url: "https://lib.ccu.edu.tw/",
-    google_maps_query: "國立中正大學圖書館",
-    latitude: 23.5633,
-    longitude: 120.4695,
-    source_url: "https://lib.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "it_office",
-    name_zh: "資訊處",
-    name_en: "Information Technology Office",
-    category: "office",
-    service_categories: ["it_support", "academic_affairs"],
-    building_name_zh: "圖書資訊大樓",
-    building_name_en: "Information and Library Building",
-    floor: "",
-    indoor_location_note_zh: "圖書資訊大樓（圖書館大門左手邊）",
-    indoor_location_note_en: "Information and Library Building (left of the Library main entrance)",
-    function_desc_zh: "負責校園 SSO、網路、無線網路、數位學習系統及軟體授權等資訊服務。",
-    function_desc_en: "Responsible for campus SSO, network, Wi-Fi, digital learning systems, and software licensing.",
-    service_scope_zh: "SSO 單一入口、Web Mail、Microsoft 365、Google Workspace 帳號問題；校園網路與無線網路；eCourse2 與雲端教室技術支援；軟體下載（https://software.ccu.edu.tw）；列印服務。",
-    service_scope_en: "SSO, Web Mail, Microsoft 365, Google Workspace account issues; Campus network and Wi-Fi; eCourse2 and cloud classroom support; Software downloads (https://software.ccu.edu.tw); Printing services.",
-    common_scenarios_zh: "帳號無法登入、密碼重設、網路異常、eCourse2 問題、軟體申請、沒有 e-Course 帳號。",
-    common_scenarios_en: "Account login issues, Password reset, Network problems, eCourse2 issues, Software applications, No e-Course account.",
-    office_hours: "Mon–Fri 08:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://it.ccu.edu.tw/",
-    google_maps_query: "國立中正大學圖書資訊大樓",
-    latitude: 23.5633,
-    longitude: 120.4695,
-    source_url: "https://it.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "language_center",
-    name_zh: "語言中心",
-    name_en: "Language Center",
-    category: "office",
-    service_categories: ["international_support", "academic_affairs"],
-    building_name_zh: "圖書資訊大樓",
-    building_name_en: "Information and Library Building",
-    floor: "",
-    indoor_location_note_zh: "圖書資訊大樓",
-    indoor_location_note_en: "Information and Library Building",
-    function_desc_zh: "提供英語、外語課程、國際學生華語課程，以及語言測驗資訊與語言學習輔導。",
-    function_desc_en: "Offers English and foreign language courses, Mandarin courses for international students, and language proficiency test information.",
-    service_scope_zh: "通識英文與應用外語學程；國際學生華語課程；語言學習輔導與同儕輔導；英檢、TOEIC、TOEFL、GEPT 等考試資訊。",
-    service_scope_en: "General English and applied foreign language courses; Mandarin courses for international students; Language tutoring and peer support; TOEIC, TOEFL, GEPT information.",
-    common_scenarios_zh: "華語課程諮詢、英語檢定資訊、語言學習輔導。",
-    common_scenarios_en: "Mandarin course inquiry, English proficiency test info, Language tutoring.",
-    office_hours: "Mon–Fri 08:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://cls.ccu.edu.tw/",
-    google_maps_query: "國立中正大學圖書資訊大樓",
-    latitude: 23.5633,
-    longitude: 120.4695,
-    source_url: "https://cls.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "general_affairs",
-    name_zh: "總務處",
-    name_en: "Office of General Affairs",
-    category: "office",
-    service_categories: ["student_affairs"],
-    building_name_zh: "行政大樓西棟",
-    building_name_en: "West Wing, Administration Building",
-    floor: "1F",
-    indoor_location_note_zh: "行政大樓西棟一樓",
-    indoor_location_note_en: "1st Floor, West Wing, Administration Building",
-    function_desc_zh: "負責校園設施維護、財產管理、採購與校園環境管理。",
-    function_desc_en: "Responsible for campus facility maintenance, property management, procurement, and campus environment management.",
-    service_scope_zh: "校園設施報修、停車管理、郵件收發、宿舍水電費。",
-    service_scope_en: "Campus facility repair, Parking management, Mail services, Dormitory utilities.",
-    common_scenarios_zh: "校園設施故障、停車問題、郵件領取。",
-    common_scenarios_en: "Campus facility malfunction, Parking issues, Mail collection.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://oga.ccu.edu.tw/",
-    google_maps_query: "國立中正大學行政大樓",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    source_url: "https://oga.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "oga_general_services",
-    name_zh: "總務處－事務組",
-    name_en: "General Services Division, Office of General Affairs",
-    category: "office",
-    service_categories: ["student_affairs"],
-    building_name_zh: "行政大樓西棟",
-    building_name_en: "West Wing, Administration Building",
-    floor: "1F",
-    indoor_location_note_zh: "行政大樓西棟一樓",
-    indoor_location_note_en: "1st Floor, West Wing, Administration Building",
-    function_desc_zh: "負責校園環境維護、宿舍水電費業務、招待所與住宿管理及行政大樓門禁管理。",
-    function_desc_en: "Responsible for campus environment maintenance, dormitory utilities billing, guesthouse management, and administration building access control.",
-    service_scope_zh: "公共意外責任險申請；宿舍水電費；校園環境維護；行政大樓門禁管理；簡易維修。",
-    service_scope_en: "Public accident liability insurance; Dormitory water and electricity billing; Campus maintenance; Administration building access control; Simple repairs.",
-    common_scenarios_zh: "宿舍水電費問題、校園環境維修。",
-    common_scenarios_en: "Dormitory utility billing issues, Campus maintenance requests.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://oga.ccu.edu.tw/",
-    google_maps_query: "國立中正大學行政大樓",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    source_url: "https://oga.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "cashier",
-    name_zh: "總務處－出納組",
-    name_en: "Cashier Division, Office of General Affairs",
-    category: "office",
-    service_categories: ["tuition", "academic_affairs"],
-    building_name_zh: "行政大樓西棟",
-    building_name_en: "West Wing, Administration Building",
-    floor: "1F",
-    indoor_location_note_zh: "行政大樓西棟一樓",
-    indoor_location_note_en: "1st Floor, West Wing, Administration Building",
-    function_desc_zh: "處理學雜費繳納、退費、各項費用收取與財務出納事務。",
-    function_desc_en: "Handles tuition payment, refunds, fee collection, and financial cashier affairs.",
-    service_scope_zh: "學費繳納、退費申請、各項費用收取；學生註冊與就學相關業務。",
-    service_scope_en: "Tuition payment, Refund application, Fee collection; Student registration-related financial services.",
-    common_scenarios_zh: "繳學費、申請退費、費用問題。",
-    common_scenarios_en: "Pay tuition, Apply for refund, Fee inquiries.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://oga.ccu.edu.tw/",
-    google_maps_query: "國立中正大學行政大樓",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    source_url: "https://oga.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "oga_property",
-    name_zh: "總務處－保管組",
-    name_en: "Property Management Division, Office of General Affairs",
-    category: "office",
-    service_categories: ["student_affairs"],
-    building_name_zh: "行政大樓西棟",
-    building_name_en: "West Wing, Administration Building",
-    floor: "B1",
-    indoor_location_note_zh: "行政大樓西棟地下一樓",
-    indoor_location_note_en: "Basement 1, West Wing, Administration Building",
-    function_desc_zh: "辦理畢業學位服借用、畢業生離校手續、校內鑰匙及活動器材借用管理。",
-    function_desc_en: "Handles graduation gown rental, school-leaving procedures for graduates, campus key management, and equipment borrowing.",
-    service_scope_zh: "畢業學位服借用與歸還；畢業生離校手續；校內鑰匙管理與借用；活動器材借用；校內紀念品管理。",
-    service_scope_en: "Graduation gown rental and return; School-leaving procedures; Campus key management; Equipment borrowing; University souvenir management.",
-    common_scenarios_zh: "畢業袍借用、畢業離校、器材借用。",
-    common_scenarios_en: "Graduation gown rental, School-leaving procedures, Equipment borrowing.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://oga.ccu.edu.tw/",
-    google_maps_query: "國立中正大學行政大樓",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    source_url: "https://oga.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "career_center",
-    name_zh: "職涯發展中心",
-    name_en: "Career Development Center",
-    category: "office",
-    service_categories: ["career", "student_affairs"],
-    building_name_zh: "共同教室大樓",
-    building_name_en: "Center for General Education",
-    floor: "5F",
-    indoor_location_note_zh: "共同教室大樓五樓 502 室",
-    indoor_location_note_en: "Room 502, 5th Floor, Center for General Education",
-    function_desc_zh: "提供職涯探索、就業資訊、履歷指導、校園徵才活動及實習輔導服務。",
-    function_desc_en: "Provides career exploration, employment information, resume guidance, campus recruitment events, and internship support.",
-    service_scope_zh: "企業招募資訊與履歷投遞；校園徵才活動；職涯探索與測評；職涯講座與工作坊；個別職涯諮詢；校外實習申請。",
-    service_scope_en: "Employer listings and job applications; Campus recruitment events; Career exploration and assessments; Career workshops and seminars; One-on-one career counseling; Off-campus internship applications.",
-    common_scenarios_zh: "求職諮詢、履歷指導、實習申請、參加校園徵才。",
-    common_scenarios_en: "Job search consultation, Resume guidance, Internship applications, Campus recruitment.",
-    office_hours: "Mon–Fri 08:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://studaffairs.ccu.edu.tw/",
-    google_maps_query: "國立中正大學共同教室大樓",
-    latitude: 23.5645,
-    longitude: 120.4700,
-    source_url: "https://studaffairs.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "security_vehicle",
-    name_zh: "駐警處－車輛管控中心",
-    name_en: "Vehicle Control Center, Campus Security",
-    category: "office",
-    service_categories: ["student_affairs"],
-    building_name_zh: "活動中心",
-    building_name_en: "Activity Center",
-    floor: "2F",
-    indoor_location_note_zh: "活動中心二樓",
-    indoor_location_note_en: "2nd Floor, Activity Center",
-    function_desc_zh: "負責校園車輛通行證辦理、違規收費、教職員生離校審核及障礙者臨時通行證申請。",
-    function_desc_en: "Handles campus vehicle permits, parking violation fees, faculty/staff/student departure reviews, and temporary disability vehicle passes.",
-    service_scope_zh: "車輛通行證辦理；違規收費與申訴；教職員生離校審核；行動不便者臨時通行證申請。",
-    service_scope_en: "Vehicle permit issuance; Parking violation fees and appeals; Departure reviews; Temporary disability passes.",
-    common_scenarios_zh: "申請車證、停車違規申訴、離校審核。",
-    common_scenarios_en: "Apply for vehicle permit, Parking violation appeal, Departure review.",
-    office_hours: "Mon–Fri 08:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://www.ccu.edu.tw/",
-    google_maps_query: "國立中正大學活動中心",
-    latitude: 23.5618,
-    longitude: 120.4728,
-    source_url: "https://www.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "personnel",
-    name_zh: "人事室",
-    name_en: "Personnel Office",
-    category: "office",
-    service_categories: ["student_affairs"],
-    building_name_zh: "行政大樓西棟",
-    building_name_en: "West Wing, Administration Building",
-    floor: "4F",
-    indoor_location_note_zh: "行政大樓西棟四樓",
-    indoor_location_note_en: "4th Floor, West Wing, Administration Building",
-    function_desc_zh: "處理人事相關事務，包括申訴案件。",
-    function_desc_en: "Handles personnel-related matters including appeals.",
-    service_scope_zh: "申訴案件處理。",
-    service_scope_en: "Appeal case handling.",
-    common_scenarios_zh: "申訴。",
-    common_scenarios_en: "Appeals.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2720411",
-    email: "",
-    official_url: "https://person.ccu.edu.tw/",
-    google_maps_query: "國立中正大學行政大樓",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    source_url: "https://person.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "secretariat",
-    name_zh: "秘書室",
-    name_en: "Office of the Secretariat",
-    category: "office",
-    service_categories: ["student_affairs"],
-    building_name_zh: "行政大樓西棟",
-    building_name_en: "West Wing, Administration Building",
-    floor: "5F",
-    indoor_location_note_zh: "行政大樓西棟五樓",
-    indoor_location_note_en: "5th Floor, West Wing, Administration Building",
-    function_desc_zh: "處理學校行政文書、工讀生管理等秘書室業務。",
-    function_desc_en: "Handles school administrative documents, work-study student management, and secretariat affairs.",
-    service_scope_zh: "秘書室辦公室工讀生指導、工讀金管理與核銷。",
-    service_scope_en: "Guidance for work-study students, management and reimbursement of work-study allowances.",
-    common_scenarios_zh: "行政文書、工讀相關。",
-    common_scenarios_en: "Administrative documents, work-study related.",
-    office_hours: "Mon–Fri 08:30–12:30, 13:30–17:00",
-    phone: "05-2720411",
-    email: "secretar@ccu.edu.tw",
-    official_url: "https://secretar.ccu.edu.tw/",
-    google_maps_query: "國立中正大學行政大樓",
-    latitude: 23.5640,
-    longitude: 120.4714,
-    source_url: "https://secretar.ccu.edu.tw/",
-    needs_manual_review: true
-  }
-];
-
-
-// ============================================================
-// Departments (Academic Units)
-// ============================================================
 export interface Department {
   id: string;
   name_zh: string;
   name_en: string;
+  category: "department";
   college_zh: string;
   college_en: string;
   building_name_zh: string;
   building_name_en: string;
   floor: string;
+  room_zh?: string;
+  room_en?: string;
   indoor_location_note_zh: string;
   indoor_location_note_en: string;
   function_desc_zh: string;
@@ -888,925 +80,11 @@ export interface Department {
   entrance_image?: string;
 }
 
-export const departments: Department[] = [
-  // ============================================================
-  // 院辦 College Administrative Offices (is_college_office: true)
-  // ============================================================
-  {
-    id: "college_humanities_office",
-    name_zh: "文學院院辦",
-    name_en: "College of Humanities Office",
-    college_zh: "文學院",
-    college_en: "College of Humanities",
-    building_name_zh: "文學院大樓",
-    building_name_en: "College of Humanities Building",
-    floor: "5F",
-    indoor_location_note_zh: "文學院大樓五樓 501 室",
-    indoor_location_note_en: "Room 501, 5th Floor, College of Humanities Building",
-    function_desc_zh: "文學院行政中心，處理學院層級行政事務。",
-    function_desc_en: "Administrative center for the College of Humanities.",
-    service_scope_zh: "學院行政、各系所協調事務。",
-    service_scope_en: "College administration and inter-department coordination.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://colliber.ccu.edu.tw/",
-    google_maps_query: "國立中正大學文學院大樓",
-    latitude: 23.5648,
-    longitude: 120.4682,
-    source_url: "https://colliber.ccu.edu.tw/",
-    needs_manual_review: false,
-    is_college_office: true
-  },
-  {
-    id: "college_law_office",
-    name_zh: "法學院院辦",
-    name_en: "College of Law Office",
-    college_zh: "法學院",
-    college_en: "College of Law",
-    building_name_zh: "法學院大樓",
-    building_name_en: "College of Law Building",
-    floor: "5F",
-    indoor_location_note_zh: "法學院大樓五樓 511 室",
-    indoor_location_note_en: "Room 511, 5th Floor, College of Law Building",
-    function_desc_zh: "法學院行政中心，處理學院層級行政事務。",
-    function_desc_en: "Administrative center for the College of Law.",
-    service_scope_zh: "學院行政、各系所協調事務。",
-    service_scope_en: "College administration and inter-department coordination.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://deptclaw.ccu.edu.tw/",
-    google_maps_query: "國立中正大學法學院大樓",
-    latitude: 23.5635,
-    longitude: 120.4705,
-    source_url: "https://deptclaw.ccu.edu.tw/",
-    needs_manual_review: false,
-    is_college_office: true
-  },
-  {
-    id: "college_social_sciences_office",
-    name_zh: "社會科學院院辦",
-    name_en: "College of Social Sciences Office",
-    college_zh: "社會科學院",
-    college_en: "College of Social Sciences",
-    building_name_zh: "社會科學院大樓西棟",
-    building_name_en: "West Wing, College of Social Sciences Building",
-    floor: "5F",
-    indoor_location_note_zh: "社會科學院大樓西棟五樓 513 室",
-    indoor_location_note_en: "Room 513, 5th Floor, West Wing, College of Social Sciences Building",
-    function_desc_zh: "社會科學院行政中心，處理學院層級行政事務。",
-    function_desc_en: "Administrative center for the College of Social Sciences.",
-    service_scope_zh: "學院行政、各系所協調事務。",
-    service_scope_en: "College administration and inter-department coordination.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://colsoc.ccu.edu.tw/",
-    google_maps_query: "國立中正大學社會科學院大樓",
-    latitude: 23.5630,
-    longitude: 120.4690,
-    source_url: "https://colsoc.ccu.edu.tw/",
-    needs_manual_review: false,
-    is_college_office: true
-  },
-  {
-    id: "college_engineering_office",
-    name_zh: "工學院院辦",
-    name_en: "College of Engineering Administrative Offices",
-    college_zh: "工學院",
-    college_en: "College of Engineering",
-    building_name_zh: "創新大樓",
-    building_name_en: "Innovation Building",
-    floor: "1F",
-    indoor_location_note_zh: "創新大樓一樓 111 室",
-    indoor_location_note_en: "Room 111, 1st Floor, Innovation Building",
-    function_desc_zh: "工學院行政中心，處理學院層級行政事務。",
-    function_desc_en: "Administrative center for the College of Engineering.",
-    service_scope_zh: "學院行政、各系所協調事務。",
-    service_scope_en: "College administration and inter-department coordination.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://coe.ccu.edu.tw/",
-    google_maps_query: "國立中正大學創新大樓",
-    latitude: 23.5655,
-    longitude: 120.4720,
-    source_url: "https://coe.ccu.edu.tw/",
-    needs_manual_review: false,
-    is_college_office: true
-  },
-  {
-    id: "college_management_office",
-    name_zh: "管理學院院辦",
-    name_en: "College of Management Office",
-    college_zh: "管理學院",
-    college_en: "College of Management",
-    building_name_zh: "管理學院大樓",
-    building_name_en: "College of Management Building",
-    floor: "2F",
-    indoor_location_note_zh: "管理學院大樓二樓 211 室",
-    indoor_location_note_en: "Room 211, 2nd Floor, College of Management Building",
-    function_desc_zh: "管理學院行政中心，處理學院層級行政事務。",
-    function_desc_en: "Administrative center for the College of Management.",
-    service_scope_zh: "學院行政、各系所協調事務。",
-    service_scope_en: "College administration and inter-department coordination.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://colmgt.ccu.edu.tw/",
-    google_maps_query: "國立中正大學管理學院大樓",
-    latitude: 23.5625,
-    longitude: 120.4710,
-    source_url: "https://colmgt.ccu.edu.tw/",
-    needs_manual_review: false,
-    is_college_office: true
-  },
-  {
-    id: "college_science_office",
-    name_zh: "理學院院辦",
-    name_en: "College of Science Office",
-    college_zh: "理學院",
-    college_en: "College of Science",
-    building_name_zh: "理學院大樓數學館",
-    building_name_en: "Mathematics Building, College of Science",
-    floor: "3F",
-    indoor_location_note_zh: "理學院大樓數學館三樓 302 室",
-    indoor_location_note_en: "Room 302, 3rd Floor, Mathematics Building, College of Science",
-    function_desc_zh: "理學院行政中心，處理學院層級行政事務。",
-    function_desc_en: "Administrative center for the College of Science.",
-    service_scope_zh: "學院行政、各系所協調事務。",
-    service_scope_en: "College administration and inter-department coordination.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://science.ccu.edu.tw/",
-    google_maps_query: "國立中正大學理學院",
-    latitude: 23.5655,
-    longitude: 120.4700,
-    source_url: "https://science.ccu.edu.tw/",
-    needs_manual_review: false,
-    is_college_office: true
-  },
-  {
-    id: "college_education_office",
-    name_zh: "教育學院院辦",
-    name_en: "College of Education Office",
-    college_zh: "教育學院",
-    college_en: "College of Education",
-    building_name_zh: "教育學院大樓",
-    building_name_en: "College of Education Building",
-    floor: "3F",
-    indoor_location_note_zh: "教育學院大樓三樓 303 室",
-    indoor_location_note_en: "Room 303, 3rd Floor, College of Education Building",
-    function_desc_zh: "教育學院行政中心，處理學院層級行政事務。",
-    function_desc_en: "Administrative center for the College of Education.",
-    service_scope_zh: "學院行政、各系所協調事務。",
-    service_scope_en: "College administration and inter-department coordination.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://coledu.ccu.edu.tw/",
-    google_maps_query: "國立中正大學教育學院大樓",
-    latitude: 23.5620,
-    longitude: 120.4698,
-    source_url: "https://coledu.ccu.edu.tw/",
-    needs_manual_review: false,
-    is_college_office: true
-  },
+export interface TaskStep {
+  zh: string;
+  en: string;
+}
 
-  // ============================================================
-  // 文學院 College of Humanities
-  // ============================================================
-  {
-    id: "taiwan_lit",
-    name_zh: "台灣文學與創意應用研究所",
-    name_en: "Graduate Institute of Taiwan Literature and Innovation",
-    college_zh: "文學院",
-    college_en: "College of Humanities",
-    building_name_zh: "文學院大樓",
-    building_name_en: "College of Humanities Building",
-    floor: "1F",
-    indoor_location_note_zh: "文學院大樓一樓 107-1 室",
-    indoor_location_note_en: "Room 107-1, 1st Floor, College of Humanities Building",
-    function_desc_zh: "提供台灣文學、創意應用等教學與研究。",
-    function_desc_en: "Offers teaching and research in Taiwan literature and creative applications.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://gitlci.ccu.edu.tw/",
-    google_maps_query: "國立中正大學文學院大樓",
-    latitude: 23.5648,
-    longitude: 120.4682,
-    source_url: "https://gitlci.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "chinese_lit",
-    name_zh: "中國文學系暨研究所",
-    name_en: "Department of Chinese Literature",
-    college_zh: "文學院",
-    college_en: "College of Humanities",
-    building_name_zh: "文學院大樓",
-    building_name_en: "College of Humanities Building",
-    floor: "2F",
-    indoor_location_note_zh: "文學院大樓二樓 205 室",
-    indoor_location_note_en: "Room 205, 2nd Floor, College of Humanities Building",
-    function_desc_zh: "提供中國文學、古典文獻、現代文學等教學與研究。",
-    function_desc_en: "Offers teaching and research in Chinese literature, classical texts, and modern literature.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://litera.ccu.edu.tw/",
-    google_maps_query: "國立中正大學文學院大樓",
-    latitude: 23.5648,
-    longitude: 120.4682,
-    source_url: "https://litera.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "foreign_lang",
-    name_zh: "外國語文學系暨研究所",
-    name_en: "Department of Foreign Languages and Literature",
-    college_zh: "文學院",
-    college_en: "College of Humanities",
-    building_name_zh: "文學院大樓",
-    building_name_en: "College of Humanities Building",
-    floor: "2F",
-    indoor_location_note_zh: "文學院大樓二樓 286 室",
-    indoor_location_note_en: "Room 286, 2nd Floor, College of Humanities Building",
-    function_desc_zh: "提供英語文學、語言學、翻譯等教學與研究。",
-    function_desc_en: "Offers teaching and research in English literature, linguistics, and translation.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://fllcccu.ccu.edu.tw/",
-    google_maps_query: "國立中正大學文學院大樓",
-    latitude: 23.5648,
-    longitude: 120.4682,
-    source_url: "https://fllcccu.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "history",
-    name_zh: "歷史學系暨研究所",
-    name_en: "Department of History",
-    college_zh: "文學院",
-    college_en: "College of Humanities",
-    building_name_zh: "文學院大樓",
-    building_name_en: "College of Humanities Building",
-    floor: "2F",
-    indoor_location_note_zh: "文學院大樓二樓 208 室",
-    indoor_location_note_en: "Room 208, 2nd Floor, College of Humanities Building",
-    function_desc_zh: "提供歷史學教學與研究。",
-    function_desc_en: "Offers teaching and research in history.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://depthis.ccu.edu.tw/",
-    google_maps_query: "國立中正大學文學院大樓",
-    latitude: 23.5648,
-    longitude: 120.4682,
-    source_url: "https://depthis.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "philosophy",
-    name_zh: "哲學系暨研究所",
-    name_en: "Department of Philosophy",
-    college_zh: "文學院",
-    college_en: "College of Humanities",
-    building_name_zh: "文學院大樓",
-    building_name_en: "College of Humanities Building",
-    floor: "4F",
-    indoor_location_note_zh: "文學院大樓四樓 405 室",
-    indoor_location_note_en: "Room 405, 4th Floor, College of Humanities Building",
-    function_desc_zh: "提供哲學教學與研究。",
-    function_desc_en: "Offers teaching and research in philosophy.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://deptphi.ccu.edu.tw/",
-    google_maps_query: "國立中正大學文學院大樓",
-    latitude: 23.5648,
-    longitude: 120.4682,
-    source_url: "https://deptphi.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "linguistics",
-    name_zh: "語言學研究所",
-    name_en: "Graduate Institute of Linguistics",
-    college_zh: "文學院",
-    college_en: "College of Humanities",
-    building_name_zh: "文學院大樓",
-    building_name_en: "College of Humanities Building",
-    floor: "4F",
-    indoor_location_note_zh: "文學院大樓四樓 410 室",
-    indoor_location_note_en: "Room 410, 4th Floor, College of Humanities Building",
-    function_desc_zh: "提供語言學教學與研究。",
-    function_desc_en: "Offers teaching and research in linguistics.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "http://linguist.ccu.edu.tw/",
-    google_maps_query: "國立中正大學文學院大樓",
-    latitude: 23.5648,
-    longitude: 120.4682,
-    source_url: "http://linguist.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-
-  // ============================================================
-  // 理學院 College of Science
-  // ============================================================
-  {
-    id: "math",
-    name_zh: "數學系含應用數學碩士班、博士班及統計科學碩士班",
-    name_en: "Department of Mathematics",
-    college_zh: "理學院",
-    college_en: "College of Science",
-    building_name_zh: "理學院大樓數學館",
-    building_name_en: "Mathematics Building, College of Science",
-    floor: "",
-    indoor_location_note_zh: "理學院數學館",
-    indoor_location_note_en: "Mathematics Building, College of Science",
-    function_desc_zh: "提供數學、應用數學、統計科學等教學與研究。",
-    function_desc_en: "Offers teaching and research in mathematics, applied mathematics, and statistics.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://math.ccu.edu.tw/",
-    google_maps_query: "國立中正大學理學院",
-    latitude: 23.5655,
-    longitude: 120.4700,
-    source_url: "https://math.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "earth_env",
-    name_zh: "地球與環境科學系",
-    name_en: "Department of Earth and Environmental Sciences",
-    college_zh: "理學院",
-    college_en: "College of Science",
-    building_name_zh: "地震館",
-    building_name_en: "Earthquake Building",
-    floor: "",
-    indoor_location_note_zh: "地震館",
-    indoor_location_note_en: "Earthquake Building",
-    function_desc_zh: "提供地球科學、環境科學、地震學等教學與研究。",
-    function_desc_en: "Offers teaching and research in earth science, environmental science, and seismology.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://eq.ccu.edu.tw/",
-    google_maps_query: "國立中正大學理學院",
-    latitude: 23.5655,
-    longitude: 120.4700,
-    source_url: "https://eq.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "physics",
-    name_zh: "物理學系暨研究所",
-    name_en: "Department of Physics",
-    college_zh: "理學院",
-    college_en: "College of Science",
-    building_name_zh: "物理館",
-    building_name_en: "Physics Building",
-    floor: "",
-    indoor_location_note_zh: "物理館",
-    indoor_location_note_en: "Physics Building",
-    function_desc_zh: "提供物理學教學與研究。",
-    function_desc_en: "Offers teaching and research in physics.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://physics.ccu.edu.tw/",
-    google_maps_query: "國立中正大學理學院",
-    latitude: 23.5655,
-    longitude: 120.4700,
-    source_url: "https://physics.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "chem_biochem",
-    name_zh: "化學暨生物化學系",
-    name_en: "Department of Chemistry and Biochemistry",
-    college_zh: "理學院",
-    college_en: "College of Science",
-    building_name_zh: "理學院大樓",
-    building_name_en: "College of Science Building",
-    floor: "",
-    indoor_location_note_zh: "理學院大樓",
-    indoor_location_note_en: "College of Science Building",
-    function_desc_zh: "提供化學與生物化學教學與研究。",
-    function_desc_en: "Offers teaching and research in chemistry and biochemistry.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://deptche.ccu.edu.tw/",
-    google_maps_query: "國立中正大學理學院",
-    latitude: 23.5655,
-    longitude: 120.4700,
-    source_url: "https://deptche.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "biomed",
-    name_zh: "生物醫學科學系含分子生物碩士班、博士班及生物醫學碩士班",
-    name_en: "Department of Biomedical Sciences",
-    college_zh: "理學院",
-    college_en: "College of Science",
-    building_name_zh: "理學院大樓",
-    building_name_en: "College of Science Building",
-    floor: "",
-    indoor_location_note_zh: "理學院大樓",
-    indoor_location_note_en: "College of Science Building",
-    function_desc_zh: "提供生物醫學科學教學與研究。",
-    function_desc_en: "Offers teaching and research in biomedical sciences.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://admbio.ccu.edu.tw/",
-    google_maps_query: "國立中正大學理學院",
-    latitude: 23.5655,
-    longitude: 120.4700,
-    source_url: "https://admbio.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-
-  // ============================================================
-  // 社會科學院 College of Social Sciences
-  // ============================================================
-  {
-    id: "social_welfare",
-    name_zh: "社會福利學系暨研究所",
-    name_en: "Department of Social Welfare",
-    college_zh: "社會科學院",
-    college_en: "College of Social Sciences",
-    building_name_zh: "社會科學院大樓",
-    building_name_en: "College of Social Sciences Building",
-    floor: "",
-    indoor_location_note_zh: "社會科學院大樓",
-    indoor_location_note_en: "College of Social Sciences Building",
-    function_desc_zh: "提供社會福利政策、社會工作等教學與研究。",
-    function_desc_en: "Offers teaching and research in social welfare policy and social work.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://dsw.ccu.edu.tw/",
-    google_maps_query: "國立中正大學社會科學院",
-    latitude: 23.5630,
-    longitude: 120.4690,
-    source_url: "https://dsw.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "psychology",
-    name_zh: "心理學系暨研究所",
-    name_en: "Department of Psychology",
-    college_zh: "社會科學院",
-    college_en: "College of Social Sciences",
-    building_name_zh: "社會科學院大樓",
-    building_name_en: "College of Social Sciences Building",
-    floor: "4F",
-    indoor_location_note_zh: "社會科學院大樓四樓",
-    indoor_location_note_en: "4th Floor, College of Social Sciences Building",
-    function_desc_zh: "提供心理學教學與研究。",
-    function_desc_en: "Offers teaching and research in psychology.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://psy.ccu.edu.tw/",
-    google_maps_query: "國立中正大學社會科學院",
-    latitude: 23.5630,
-    longitude: 120.4690,
-    source_url: "https://psy.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "political_science",
-    name_zh: "政治學系暨研究所",
-    name_en: "Department of Political Science",
-    college_zh: "社會科學院",
-    college_en: "College of Social Sciences",
-    building_name_zh: "社會科學院大樓（法學院館）",
-    building_name_en: "College of Social Sciences Building (College of Law Wing)",
-    floor: "7F",
-    indoor_location_note_zh: "社科院二館七樓",
-    indoor_location_note_en: "7th Floor, College of Social Sciences Building II",
-    function_desc_zh: "提供政治學教學與研究。",
-    function_desc_en: "Offers teaching and research in political science.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://polsci.ccu.edu.tw/",
-    google_maps_query: "國立中正大學社會科學院",
-    latitude: 23.5630,
-    longitude: 120.4690,
-    source_url: "https://polsci.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "communication",
-    name_zh: "傳播學系含電訊傳播碩士班",
-    name_en: "Department of Communication",
-    college_zh: "社會科學院",
-    college_en: "College of Social Sciences",
-    building_name_zh: "社會科學院大樓",
-    building_name_en: "College of Social Sciences Building",
-    floor: "2F",
-    indoor_location_note_zh: "社會科學院大樓二樓 R212 室",
-    indoor_location_note_en: "Room R212, 2nd Floor, College of Social Sciences Building",
-    function_desc_zh: "提供傳播學、電訊傳播等教學與研究。",
-    function_desc_en: "Offers teaching and research in communication and telecommunications.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://telecom.ccu.edu.tw/",
-    google_maps_query: "國立中正大學社會科學院",
-    latitude: 23.5630,
-    longitude: 120.4690,
-    source_url: "https://telecom.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "labor_relations",
-    name_zh: "勞工關係學系暨研究所",
-    name_en: "Department of Labor Relations",
-    college_zh: "社會科學院",
-    college_en: "College of Social Sciences",
-    building_name_zh: "社會科學院大樓",
-    building_name_en: "College of Social Sciences Building",
-    floor: "5F",
-    indoor_location_note_zh: "社會科學院大樓五樓 528 室",
-    indoor_location_note_en: "Room 528, 5th Floor, College of Social Sciences Building",
-    function_desc_zh: "提供勞工關係教學與研究。",
-    function_desc_en: "Offers teaching and research in labor relations.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://labor.ccu.edu.tw/",
-    google_maps_query: "國立中正大學社會科學院",
-    latitude: 23.5630,
-    longitude: 120.4690,
-    source_url: "https://labor.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-
-  // ============================================================
-  // 工學院 College of Engineering
-  // ============================================================
-  {
-    id: "cs",
-    name_zh: "資訊工程學系暨研究所",
-    name_en: "Department of Computer Science and Information Engineering",
-    college_zh: "工學院",
-    college_en: "College of Engineering",
-    building_name_zh: "工學院大樓（資工館）",
-    building_name_en: "College of Engineering Building (CS Building)",
-    floor: "1F",
-    indoor_location_note_zh: "資工館一樓 107 室",
-    indoor_location_note_en: "Room 107, 1st Floor, CS Building",
-    function_desc_zh: "提供資訊工程教學與研究。",
-    function_desc_en: "Offers teaching and research in computer science and information engineering.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://cs.ccu.edu.tw/",
-    google_maps_query: "國立中正大學工學院",
-    latitude: 23.5660,
-    longitude: 120.4720,
-    source_url: "https://cs.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "ee",
-    name_zh: "電機工程學系暨研究所",
-    name_en: "Department of Electrical Engineering",
-    college_zh: "工學院",
-    college_en: "College of Engineering",
-    building_name_zh: "工學院大樓",
-    building_name_en: "College of Engineering Building",
-    floor: "",
-    indoor_location_note_zh: "工學院大樓",
-    indoor_location_note_en: "College of Engineering Building",
-    function_desc_zh: "提供電機工程教學與研究。",
-    function_desc_en: "Offers teaching and research in electrical engineering.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://ee.ccu.edu.tw/",
-    google_maps_query: "國立中正大學工學院",
-    latitude: 23.5660,
-    longitude: 120.4720,
-    source_url: "https://ee.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "me",
-    name_zh: "機械工程學系暨研究所",
-    name_en: "Department of Mechanical Engineering",
-    college_zh: "工學院",
-    college_en: "College of Engineering",
-    building_name_zh: "工二館機械館",
-    building_name_en: "Mechanical Engineering Building",
-    floor: "3F",
-    indoor_location_note_zh: "機械館三樓 R314 室",
-    indoor_location_note_en: "Room R314, 3rd Floor, Mechanical Engineering Building",
-    function_desc_zh: "提供機械工程教學與研究。",
-    function_desc_en: "Offers teaching and research in mechanical engineering.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://deptime.ccu.edu.tw/",
-    google_maps_query: "國立中正大學工學院",
-    latitude: 23.5660,
-    longitude: 120.4720,
-    source_url: "https://deptime.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "che",
-    name_zh: "化學工程學系暨研究所",
-    name_en: "Department of Chemical Engineering",
-    college_zh: "工學院",
-    college_en: "College of Engineering",
-    building_name_zh: "工二館",
-    building_name_en: "Engineering Building II",
-    floor: "3F",
-    indoor_location_note_zh: "工二館三樓 322 室",
-    indoor_location_note_en: "Room 322, 3rd Floor, Engineering Building II",
-    function_desc_zh: "提供化學工程教學與研究。",
-    function_desc_en: "Offers teaching and research in chemical engineering.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://che.ccu.edu.tw/",
-    google_maps_query: "國立中正大學工學院",
-    latitude: 23.5660,
-    longitude: 120.4720,
-    source_url: "https://che.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "comm_eng",
-    name_zh: "通訊工程學系暨研究所",
-    name_en: "Department of Communications Engineering",
-    college_zh: "工學院",
-    college_en: "College of Engineering",
-    building_name_zh: "創新大樓",
-    building_name_en: "Innovation Building",
-    floor: "4F",
-    indoor_location_note_zh: "創新大樓四樓 429 室",
-    indoor_location_note_en: "Room 429, 4th Floor, Innovation Building",
-    function_desc_zh: "提供通訊工程教學與研究。",
-    function_desc_en: "Offers teaching and research in communications engineering.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://comm.ccu.edu.tw/",
-    google_maps_query: "國立中正大學創新大樓",
-    latitude: 23.5655,
-    longitude: 120.4720,
-    source_url: "https://comm.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-
-  // ============================================================
-  // 管理學院 College of Management
-  // ============================================================
-  {
-    id: "economics",
-    name_zh: "經濟學系含國際經濟學碩士班、在職專班、博士班",
-    name_en: "Department of Economics",
-    college_zh: "管理學院",
-    college_en: "College of Management",
-    building_name_zh: "管理學院大樓",
-    building_name_en: "College of Management Building",
-    floor: "2F",
-    indoor_location_note_zh: "管理學院大樓二樓 206 室",
-    indoor_location_note_en: "Room 206, 2nd Floor, College of Management Building",
-    function_desc_zh: "提供經濟學教學與研究。",
-    function_desc_en: "Offers teaching and research in economics.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://econ.ccu.edu.tw/",
-    google_maps_query: "國立中正大學管理學院",
-    latitude: 23.5625,
-    longitude: 120.4710,
-    source_url: "https://econ.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "finance",
-    name_zh: "財務金融學系暨研究所",
-    name_en: "Department of Finance",
-    college_zh: "管理學院",
-    college_en: "College of Management",
-    building_name_zh: "管理學院大樓",
-    building_name_en: "College of Management Building",
-    floor: "2F",
-    indoor_location_note_zh: "管理學院大樓二樓 203 室",
-    indoor_location_note_en: "Room 203, 2nd Floor, College of Management Building",
-    function_desc_zh: "提供財務金融教學與研究。",
-    function_desc_en: "Offers teaching and research in finance.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "http://deptfin.ccu.edu.tw/",
-    google_maps_query: "國立中正大學管理學院",
-    latitude: 23.5625,
-    longitude: 120.4710,
-    source_url: "http://deptfin.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "ba",
-    name_zh: "企業管理學系暨研究所含行銷管理碩士班",
-    name_en: "Department of Business Administration",
-    college_zh: "管理學院",
-    college_en: "College of Management",
-    building_name_zh: "管理學院大樓",
-    building_name_en: "College of Management Building",
-    floor: "2F",
-    indoor_location_note_zh: "管理學院大樓二樓 216 室",
-    indoor_location_note_en: "Room 216, 2nd Floor, College of Management Building",
-    function_desc_zh: "提供企業管理教學與研究。",
-    function_desc_en: "Offers teaching and research in business administration.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "http://busadm.ccu.edu.tw/",
-    google_maps_query: "國立中正大學管理學院",
-    latitude: 23.5625,
-    longitude: 120.4710,
-    source_url: "http://busadm.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "acct",
-    name_zh: "會計與資訊科技學系暨研究所",
-    name_en: "Department of Accounting and Information Technology",
-    college_zh: "管理學院",
-    college_en: "College of Management",
-    building_name_zh: "管理學院大樓",
-    building_name_en: "College of Management Building",
-    floor: "2F",
-    indoor_location_note_zh: "管理學院大樓二樓 267 室",
-    indoor_location_note_en: "Room 267, 2nd Floor, College of Management Building",
-    function_desc_zh: "提供會計學與資訊科技教學與研究。",
-    function_desc_en: "Offers teaching and research in accounting and information technology.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://ait.ccu.edu.tw/",
-    google_maps_query: "國立中正大學管理學院",
-    latitude: 23.5625,
-    longitude: 120.4710,
-    source_url: "https://ait.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "mis",
-    name_zh: "資訊管理學系暨研究所含醫療資訊管理碩士班",
-    name_en: "Department of Information Management",
-    college_zh: "管理學院",
-    college_en: "College of Management",
-    building_name_zh: "管理學院大樓",
-    building_name_en: "College of Management Building",
-    floor: "2F",
-    indoor_location_note_zh: "管理學院大樓二樓",
-    indoor_location_note_en: "2nd Floor, College of Management Building",
-    function_desc_zh: "提供資訊管理教學與研究。",
-    function_desc_en: "Offers teaching and research in information management.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://mis.ccu.edu.tw/",
-    google_maps_query: "國立中正大學管理學院",
-    latitude: 23.5625,
-    longitude: 120.4710,
-    source_url: "https://mis.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-
-  // ============================================================
-  // 法學院 College of Law
-  // ============================================================
-  {
-    id: "law",
-    name_zh: "法律學系暨研究所",
-    name_en: "Department of Law",
-    college_zh: "法學院",
-    college_en: "College of Law",
-    building_name_zh: "法學院大樓",
-    building_name_en: "College of Law Building",
-    floor: "3F",
-    indoor_location_note_zh: "法學院大樓三樓 309 室",
-    indoor_location_note_en: "Room 309, 3rd Floor, College of Law Building",
-    function_desc_zh: "提供法律學教學與研究。",
-    function_desc_en: "Offers teaching and research in law.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://deptlaw.ccu.edu.tw/",
-    google_maps_query: "國立中正大學法學院大樓",
-    latitude: 23.5635,
-    longitude: 120.4705,
-    source_url: "https://deptlaw.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "finlaw",
-    name_zh: "財經法律學系暨研究所",
-    name_en: "Department of Financial and Economic Law",
-    college_zh: "法學院",
-    college_en: "College of Law",
-    building_name_zh: "法學院大樓",
-    building_name_en: "College of Law Building",
-    floor: "4F",
-    indoor_location_note_zh: "法學院大樓四樓 411 室",
-    indoor_location_note_en: "Room 411, 4th Floor, College of Law Building",
-    function_desc_zh: "提供財經法律教學與研究。",
-    function_desc_en: "Offers teaching and research in financial and economic law.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://deptflaw.ccu.edu.tw/",
-    google_maps_query: "國立中正大學法學院大樓",
-    latitude: 23.5635,
-    longitude: 120.4705,
-    source_url: "https://deptflaw.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-
-  // ============================================================
-  // 教育學院 College of Education
-  // ============================================================
-  {
-    id: "adult_edu",
-    name_zh: "成人及繼續教育學系暨研究所含高齡者教育碩士班",
-    name_en: "Department of Adult and Continuing Education",
-    college_zh: "教育學院",
-    college_en: "College of Education",
-    building_name_zh: "教育學院大樓",
-    building_name_en: "College of Education Building",
-    floor: "",
-    indoor_location_note_zh: "教育學院大樓",
-    indoor_location_note_en: "College of Education Building",
-    function_desc_zh: "提供成人教育與繼續教育教學與研究。",
-    function_desc_en: "Offers teaching and research in adult and continuing education.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://cyiaace.ccu.edu.tw/",
-    google_maps_query: "國立中正大學教育學院",
-    latitude: 23.5620,
-    longitude: 120.4698,
-    source_url: "https://cyiaace.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "criminology",
-    name_zh: "犯罪防治學系暨研究所",
-    name_en: "Department of Criminology",
-    college_zh: "教育學院",
-    college_en: "College of Education",
-    building_name_zh: "教育學院大樓",
-    building_name_en: "College of Education Building",
-    floor: "6F",
-    indoor_location_note_zh: "教育學院大樓六樓 609 室",
-    indoor_location_note_en: "Room 609, 6th Floor, College of Education Building",
-    function_desc_zh: "提供犯罪防治教學與研究。",
-    function_desc_en: "Offers teaching and research in criminology.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://deptcrm.ccu.edu.tw/",
-    google_maps_query: "國立中正大學教育學院",
-    latitude: 23.5620,
-    longitude: 120.4698,
-    source_url: "https://deptcrm.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "sports",
-    name_zh: "運動競技學系暨運動與休閒教育碩士班",
-    name_en: "Department of Sports and Athletics",
-    college_zh: "教育學院",
-    college_en: "College of Education",
-    building_name_zh: "體育館",
-    building_name_en: "Gymnasium",
-    floor: "",
-    indoor_location_note_zh: "體育館",
-    indoor_location_note_en: "Gymnasium",
-    function_desc_zh: "提供運動競技、運動教育與休閒教育教學與研究。",
-    function_desc_en: "Offers teaching and research in sports, athletics, and leisure education.",
-    service_scope_zh: "系辦公室提供選課諮詢、學籍證明、導師聯繫等服務。",
-    service_scope_en: "Department office provides course advising, enrollment certificates, and advisor contact.",
-    service_categories: ["department_offices", "academic_affairs"],
-    official_url: "https://das-sle.ccu.edu.tw/",
-    google_maps_query: "國立中正大學體育館",
-    latitude: 23.5610,
-    longitude: 120.4740,
-    source_url: "https://das-sle.ccu.edu.tw/",
-    needs_manual_review: true
-  }
-];
-
-
-// ============================================================
-// Common Tasks — 50 筆，含 required_documents, navigation_tip
-// ============================================================
 export interface Task {
   id: string;
   task_name_zh: string;
@@ -1815,1064 +93,4826 @@ export interface Task {
   scenario_en: string;
   target_unit_type: "office" | "department";
   target_unit_id: string;
-  recommended_service_categories: string[];
-  required_documents: { zh: string; en: string }[];
-  navigation_tip_zh?: string;
-  navigation_tip_en?: string;
-  steps: { zh: string; en: string }[];
-  source_url: string;
-  needs_manual_review: boolean;
+  category_id: string;
+  required_documents_zh: string[];
+  required_documents_en: string[];
+  steps: TaskStep[];
 }
 
-export const tasks: Task[] = [
-  // ── 來台前 / 抵台手續 ──────────────────────────────────────
+export const serviceCategories: ServiceCategory[] = [
   {
-    id: "task_arc_resident_visa",
-    task_name_zh: "以居留簽證辦理居留證（ARC）",
-    task_name_en: "Apply for ARC with a Resident Visa",
-    scenario_zh: "你剛到台灣，需要在入境或取得居留簽證後 30 日內申請居留證。",
-    scenario_en: "You just arrived in Taiwan and must apply for ARC within 30 days of entry or obtaining a resident visa.",
-    target_unit_type: "office",
-    target_unit_id: "oia",
-    recommended_service_categories: ["international_support"],
-    required_documents: [
-      { zh: "有效護照與居留簽證", en: "Valid passport and resident visa" },
-      { zh: "2 吋大頭照", en: "Two-inch passport photo" },
-      { zh: "居住證明（國際處提供）", en: "Proof of accommodation (provided by OIA)" },
-      { zh: "在學或入學許可證明", en: "Admission permit or enrollment certificate" },
-      { zh: "規費 NT$1,000/年", en: "Fee: NT$1,000/year" }
-    ],
-    navigation_tip_zh: "行政大樓 1F｜國際處｜先至 OIA 確認文件再辦",
-    navigation_tip_en: "Administration Building, 1F｜OIA｜Confirm documents at OIA first",
-    steps: [
-      { zh: "使用線上申辦系統：https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=zh", en: "Use the online application system: https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=en" },
-      { zh: "進入網站註冊帳號", en: "Create and activate an account" },
-      { zh: "填寫資料並上傳所需文件", en: "Fill out the application form and upload required documents" },
-      { zh: "資料核准後繳費 NT$1,000/年", en: "Pay NT$1,000/year after approval" },
-      { zh: "攜帶繳費收據至移民署領取居留證", en: "Bring your payment receipt and collect your ARC at NIA service centers" }
-    ],
-    source_url: "https://oia.ccu.edu.tw/p/412-1008-3916.php?Lang=en",
-    needs_manual_review: false
+    "id": "registration",
+    "name_en": "Registration",
+    "name_zh": "註冊",
+    "icon": "ClipboardCheck",
+    "description_en": "Course registration, enrollment status, and academic records",
+    "description_zh": "選課註冊、學籍與學業紀錄",
+    "keywords": [
+      "registration",
+      "enroll",
+      "student ID",
+      "transcript",
+      "註冊",
+      "學籍",
+      "學生證",
+      "成績單"
+    ]
   },
   {
-    id: "task_arc_visitor_visa",
-    task_name_zh: "以停留簽證辦理居留證（ARC）",
-    task_name_en: "Apply for ARC with a Visitor Visa",
-    scenario_zh: "你持有停留簽證但想在台灣待超過六個月，應在簽證到期前 15 日申請（學期交換生非強制）。",
-    scenario_en: "You have a visitor visa but want to stay in Taiwan for more than six months; apply 15 days before visa expires (not mandatory for semester exchange students).",
-    target_unit_type: "office",
-    target_unit_id: "oia",
-    recommended_service_categories: ["international_support"],
-    required_documents: [
-      { zh: "有效護照與停留簽證", en: "Valid passport and visitor visa" },
-      { zh: "2 吋大頭照", en: "Two-inch passport photo" },
-      { zh: "居住證明（國際處提供）", en: "Proof of accommodation (from OIA)" },
-      { zh: "在學或入學許可證明", en: "Admission permit or enrollment certificate" },
-      { zh: "健康檢查合格證明", en: "Health certificate" },
-      { zh: "規費 NT$1,000/年 + NT$2,200", en: "Fee: NT$1,000/year + NT$2,200" }
-    ],
-    navigation_tip_zh: "行政大樓 1F｜國際處｜簽證到期前 15 日辦理",
-    navigation_tip_en: "Administration Building, 1F｜OIA｜Apply 15 days before visa expiry",
-    steps: [
-      { zh: "使用線上申辦系統：https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=zh", en: "Use the online application system: https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=en" },
-      { zh: "填寫資料並上傳所需文件（含健康檢查報告）", en: "Fill out the form and upload required documents (including health certificate)" },
-      { zh: "資料核准後繳費 NT$1,000/年 + NT$2,200", en: "Pay NT$1,000/year + NT$2,200 after approval" },
-      { zh: "攜帶繳費收據至移民署領取居留證", en: "Bring your payment receipt and collect your ARC at NIA service centers" }
-    ],
-    source_url: "https://oia.ccu.edu.tw/p/412-1008-3916.php?Lang=en",
-    needs_manual_review: false
+    "id": "student_id",
+    "name_en": "Student ID",
+    "name_zh": "學生證",
+    "icon": "CreditCard",
+    "description_en": "Student ID card issuance, replacement, and related services",
+    "description_zh": "學生證核發、補辦與相關服務",
+    "keywords": [
+      "student id",
+      "student card",
+      "replacement",
+      "學生證",
+      "補辦"
+    ]
   },
   {
-    id: "task_arc_extend",
-    task_name_zh: "申請延期居留證",
-    task_name_en: "Extend Your ARC",
-    scenario_zh: "你需要延長在台灣的居留期限（在居留期限到期前 3 個月內辦理）。",
-    scenario_en: "You need to extend your residency in Taiwan (apply within 3 months before ARC expiration).",
-    target_unit_type: "office",
-    target_unit_id: "oia",
-    recommended_service_categories: ["international_support"],
-    required_documents: [
-      { zh: "有效護照", en: "Valid passport" },
-      { zh: "現有居留證", en: "Current ARC" },
-      { zh: "2 吋大頭照", en: "Two-inch passport photo" },
-      { zh: "在學或註冊證明", en: "Proof of enrollment" },
-      { zh: "規費 NT$1,000/年", en: "Fee: NT$1,000/year" }
-    ],
-    navigation_tip_zh: "行政大樓 1F｜國際處｜到期前 3 個月內辦理",
-    navigation_tip_en: "Administration Building, 1F｜OIA｜Apply within 3 months before expiry",
-    steps: [
-      { zh: "使用線上申辦系統：https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=zh", en: "Use the online application system: https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=en" },
-      { zh: "填寫資料並上傳：護照、居留證、在學證明、照片", en: "Fill out the form and upload: passport, ARC, enrollment proof, photo" },
-      { zh: "資料核准後繳費 NT$1,000/年", en: "Pay NT$1,000/year after approval" },
-      { zh: "攜帶繳費收據與舊居留證至移民署領取新居留證", en: "Bring your receipt and old ARC to collect your new ARC at NIA" }
-    ],
-    source_url: "https://oia.ccu.edu.tw/p/412-1008-3916.php?Lang=en",
-    needs_manual_review: false
+    "id": "international_support",
+    "name_en": "International Support",
+    "name_zh": "國際學生支援",
+    "icon": "Globe",
+    "description_en": "Visa, ARC, scholarships, work permit, and international student support",
+    "description_zh": "簽證、居留證、獎學金、工作許可與國際學生支援",
+    "keywords": [
+      "international",
+      "visa",
+      "ARC",
+      "OIA",
+      "scholarship",
+      "work permit",
+      "exchange",
+      "國際處",
+      "簽證",
+      "居留證",
+      "獎學金",
+      "工作許可",
+      "交換生"
+    ]
   },
   {
-    id: "task_go_nia",
-    task_name_zh: "前往移民署",
-    task_name_en: "Go to the National Immigration Agency (NIA)",
-    scenario_zh: "你需要從學校前往嘉義市移民署服務站辦理相關手續。",
-    scenario_en: "You need to travel from CCU to the Chiayi NIA Service Station.",
-    target_unit_type: "office",
-    target_unit_id: "oia",
-    recommended_service_categories: ["international_support"],
-    required_documents: [],
-    navigation_tip_zh: "嘉義市東區吳鳳北路184號2樓｜週一至週五 08:00–17:00",
-    navigation_tip_en: "2F, No. 184, Wufeng N. Rd., East District, Chiayi City｜Mon–Fri 08:00–17:00",
-    steps: [
-      { zh: "嘉義市移民署服務站地址：嘉義市東區吳鳳北路184號2樓", en: "NIA Chiayi Service Station: 2F, No. 184, Wufeng N. Rd., East District, Chiayi City" },
-      { zh: "服務時間：週一至週五 08:00–17:00", en: "Service hours: Mon–Fri 08:00–17:00" },
-      { zh: "電話：(05) 216-6100", en: "Phone: (05) 216-6100" },
-      { zh: "可搭計程車從學校出發（約 20 分鐘），或依 Google Maps 指示：https://reurl.cc/M2M8GW", en: "Take a taxi from CCU (approx. 20 min) or follow Google Maps: https://reurl.cc/M2M8GW" }
-    ],
-    source_url: "https://oia.ccu.edu.tw/",
-    needs_manual_review: false
+    "id": "department_offices",
+    "name_en": "Department Offices",
+    "name_zh": "系所辦公室",
+    "icon": "Building2",
+    "description_en": "Academic department and college offices",
+    "description_zh": "各系所與學院辦公室",
+    "keywords": [
+      "department",
+      "college",
+      "advisor",
+      "office",
+      "系辦",
+      "院辦",
+      "學院",
+      "教授"
+    ]
   },
   {
-    id: "task_nhi",
-    task_name_zh: "申請全民健保（NHI）",
-    task_name_en: "Apply for National Health Insurance (NHI)",
-    scenario_zh: "你需要辦理台灣全民健保，以便在台就醫。",
-    scenario_en: "You need to enroll in Taiwan's National Health Insurance for medical care.",
-    target_unit_type: "office",
-    target_unit_id: "oia",
-    recommended_service_categories: ["international_support", "health"],
-    required_documents: [
-      { zh: "居留證（ARC）", en: "ARC" },
-      { zh: "護照", en: "Passport" },
-      { zh: "在學證明", en: "Enrollment certificate" }
-    ],
-    navigation_tip_zh: "行政大樓 1F｜國際處｜ARC 辦好後即可申請",
-    navigation_tip_en: "Administration Building, 1F｜OIA｜Apply after receiving your ARC",
-    steps: [
-      { zh: "先完成 ARC 辦理", en: "Complete your ARC application first" },
-      { zh: "至國際處詢問健保申請流程（學校會統一協助辦理）", en: "Visit OIA to inquire about NHI enrollment (the school assists with group enrollment)" },
-      { zh: "健保卡申辦完成後，持卡至健保特約診所就醫", en: "Once your NHI card is ready, use it at NHI-contracted clinics" }
-    ],
-    source_url: "https://oia.ccu.edu.tw/p/412-1008-1596.php?Lang=en",
-    needs_manual_review: true
+    "id": "dormitory",
+    "name_en": "Dormitory",
+    "name_zh": "宿舍",
+    "icon": "Home",
+    "description_en": "Dormitory application, check-in, fees, parcels, and maintenance",
+    "description_zh": "宿舍申請、報到、繳費、包裹與維修",
+    "keywords": [
+      "dormitory",
+      "dorm",
+      "housing",
+      "laundry",
+      "parcel",
+      "mattress",
+      "宿舍",
+      "住宿",
+      "包裹",
+      "洗衣",
+      "床墊"
+    ]
   },
   {
-    id: "task_dorm_fee",
-    task_name_zh: "繳交宿舍費用",
-    task_name_en: "Pay Dormitory Fees",
-    scenario_zh: "你需要繳交宿舍費、住宿押金與電費。",
-    scenario_en: "You need to pay dormitory fees, residence deposit, and electricity fee.",
-    target_unit_type: "office",
-    target_unit_id: "oia",
-    recommended_service_categories: ["dormitory", "international_support"],
-    required_documents: [
-      { zh: "繳費單（至國際處領取）", en: "Payment sheet (collect from OIA)" },
-      { zh: "現金或付款工具", en: "Cash or payment method" }
-    ],
-    navigation_tip_zh: "行政大樓 1F 國際處領取繳費單｜可至便利商店、郵局或行政大樓地下室 ATM 繳費",
-    navigation_tip_en: "Get payment sheet from OIA (Admin Building 1F)｜Pay at convenience stores, post office, or ATM in Admin Building basement",
-    steps: [
-      { zh: "至國際處（行政大樓一樓）領取繳費單", en: "Go to OIA (Administration Building 1F) to collect the payment sheet" },
-      { zh: "在期限前繳費：可至便利商店、郵局或行政大樓地下室 ATM", en: "Pay before the deadline: convenience stores, post office, or ATM in Administration Building basement" },
-      { zh: "若金額超過 NT$50,000，需至銀行繳納", en: "If the amount exceeds NT$50,000, payment must be made at a bank" },
-      { zh: "住校外者，費用直接繳給房東", en: "For off-campus housing, pay fees directly to the landlord" }
-    ],
-    source_url: "https://oia.ccu.edu.tw/",
-    needs_manual_review: false
+    "id": "health",
+    "name_en": "Health",
+    "name_zh": "健康醫療",
+    "icon": "HeartPulse",
+    "description_en": "Health checkups, medical services, insurance, and emergency care",
+    "description_zh": "健康檢查、醫療服務、保險與緊急處理",
+    "keywords": [
+      "health",
+      "medical",
+      "doctor",
+      "NHI",
+      "insurance",
+      "sick",
+      "健康",
+      "醫療",
+      "健保",
+      "保險",
+      "看病"
+    ]
   },
   {
-    id: "task_checkin",
-    task_name_zh: "辦理入學報到手續",
-    task_name_en: "Complete Enrollment / Check-in Procedures",
-    scenario_zh: "你剛到學校，需要完成入學報到的全部流程。",
-    scenario_en: "You just arrived at CCU and need to complete all enrollment check-in procedures.",
-    target_unit_type: "office",
-    target_unit_id: "oia",
-    recommended_service_categories: ["international_support", "registration"],
-    required_documents: [
-      { zh: "護照", en: "Passport" },
-      { zh: "入學許可函", en: "Admission letter" },
-      { zh: "學費繳費證明（若已繳費）", en: "Tuition payment receipt (if already paid)" }
-    ],
-    navigation_tip_zh: "行政大樓 1F 國際處 → 東棟 1F 教務處，依序辦理",
-    navigation_tip_en: "Administration Building 1F OIA → East Wing 1F Registration Division",
-    steps: [
-      { zh: "至國際處領取入學相關資料與學生手冊", en: "Go to OIA to receive enrollment materials and student handbook" },
-      { zh: "完成線上報到（CCU Portal）", en: "Complete online check-in on CCU Portal" },
-      { zh: "至教務處註冊組完成學籍登記", en: "Go to the Registration Division to complete enrollment registration" },
-      { zh: "至總務處出納組繳交學雜費", en: "Pay tuition at the Cashier Division" },
-      { zh: "領取學生證", en: "Receive your student ID card" }
-    ],
-    source_url: "https://oia.ccu.edu.tw/p/412-1008-1424.php?Lang=en",
-    needs_manual_review: false
+    "id": "library",
+    "name_en": "Library",
+    "name_zh": "圖書館",
+    "icon": "BookOpen",
+    "description_en": "Library services, study spaces, databases, and printing",
+    "description_zh": "圖書館服務、自習空間、資料庫與列印",
+    "keywords": [
+      "library",
+      "book",
+      "database",
+      "study room",
+      "print",
+      "圖書館",
+      "借書",
+      "自習",
+      "列印"
+    ]
   },
   {
-    id: "task_airport_to_ccu",
-    task_name_zh: "從機場到中正大學",
-    task_name_en: "Get from the Airport to CCU",
-    scenario_zh: "你剛抵達桃園或高雄機場，需要前往中正大學。",
-    scenario_en: "You just arrived at Taoyuan or Kaohsiung Airport and need to get to CCU.",
-    target_unit_type: "office",
-    target_unit_id: "oia",
-    recommended_service_categories: ["international_support"],
-    required_documents: [],
-    navigation_tip_zh: "可提前聯繫國際處詢問接機服務：oia@ccu.edu.tw",
-    navigation_tip_en: "Contact OIA in advance for airport pickup: oia@ccu.edu.tw",
-    steps: [
-      { zh: "提前聯繫國際處告知抵達時間（oia@ccu.edu.tw）", en: "Contact OIA in advance with your arrival time (oia@ccu.edu.tw)" },
-      { zh: "桃園機場：高鐵到嘉義站（約 1.5hr）→ 計程車到中正大學（約 20 分鐘）", en: "From Taoyuan Airport: THSR to Chiayi Station (approx. 1.5 hrs) → Taxi to CCU (approx. 20 min)" },
-      { zh: "若計程車司機不懂英文：可先在手機上以中文寫「嘉義縣民雄鄉大學路一段168號 國立中正大學」給司機看", en: "If the taxi driver doesn't speak English: show them on your phone: '嘉義縣民雄鄉大學路一段168號 國立中正大學'" },
-      { zh: "或搭客運：國光客運至嘉義，再轉乘計程車", en: "Or take intercity bus to Chiayi, then taxi to CCU" }
-    ],
-    source_url: "https://oia.ccu.edu.tw/p/406-1008-67682,r1716.php?Lang=en",
-    needs_manual_review: true
-  },
-
-  // ── 宿舍相關 ──────────────────────────────────────────────
-  {
-    id: "task_dormitory",
-    task_name_zh: "申請宿舍",
-    task_name_en: "Apply for Dormitory",
-    scenario_zh: "你需要申請學校宿舍。",
-    scenario_en: "You need to apply for on-campus housing.",
-    target_unit_type: "office",
-    target_unit_id: "osa_dorm",
-    recommended_service_categories: ["dormitory"],
-    required_documents: [
-      { zh: "CCU Portal 帳號（線上申請）", en: "CCU Portal account (online application)" },
-      { zh: "繳費證明（分配後繳費）", en: "Payment receipt (after room assignment)" }
-    ],
-    navigation_tip_zh: "學士宿舍 C 棟 1F｜住宿服務中心",
-    navigation_tip_en: "Undergrad Dorm Block C, 1F｜Housing Service Center",
-    steps: [
-      { zh: "登入 CCU Portal，點選「宿舍申請」", en: "Log in to CCU Portal and click 'Dormitory Application'" },
-      { zh: "填寫志願序並送出申請", en: "Fill in preferences and submit the application" },
-      { zh: "等待分配通知（約 2 週）", en: "Wait for room assignment notice (approx. 2 weeks)" },
-      { zh: "依通知繳費，攜帶護照至住宿服務組辦理入住", en: "Pay the fee as instructed, then bring your passport to check in at the Housing Service Division" }
-    ],
-    source_url: "https://studaffairs.ccu.edu.tw/",
-    needs_manual_review: true
+    "id": "student_affairs",
+    "name_en": "Student Affairs",
+    "name_zh": "學生事務",
+    "icon": "Users",
+    "description_en": "Student life, clubs, safety, counseling, and campus support",
+    "description_zh": "學生生活、社團、安全、諮商與校園支援",
+    "keywords": [
+      "student affairs",
+      "club",
+      "activity",
+      "safety",
+      "leave",
+      "學務",
+      "社團",
+      "活動",
+      "校安",
+      "請假"
+    ]
   },
   {
-    id: "task_dorm_checkin",
-    task_name_zh: "住宿報到程序",
-    task_name_en: "Dormitory Check-in Procedure",
-    scenario_zh: "你已分配到宿舍，需要了解報到入住的流程。",
-    scenario_en: "You have been assigned a dormitory room and need to complete the check-in procedure.",
-    target_unit_type: "office",
-    target_unit_id: "osa_dorm",
-    recommended_service_categories: ["dormitory"],
-    required_documents: [
-      { zh: "護照或居留證", en: "Passport or ARC" },
-      { zh: "繳費收據", en: "Payment receipt" },
-      { zh: "分配通知單", en: "Room assignment notice" }
-    ],
-    navigation_tip_zh: "學士宿舍 C 棟 1F｜或研究生宿舍 B 棟",
-    navigation_tip_en: "Undergrad Dorm Block C, 1F｜or Graduate Dorm Block B",
-    steps: [
-      { zh: "攜帶護照/居留證與繳費收據至住宿服務組辦理報到", en: "Bring your passport/ARC and payment receipt to the Housing Service Division to check in" },
-      { zh: "領取房間鑰匙與宿舍規定說明", en: "Receive your room key and dormitory regulations" },
-      { zh: "確認宿舍設備是否完好，有問題立即回報", en: "Check that all dormitory equipment is working; report any issues immediately" }
-    ],
-    source_url: "https://studaffairs.ccu.edu.tw/",
-    needs_manual_review: true
+    "id": "academic_affairs",
+    "name_en": "Academic Affairs",
+    "name_zh": "教務",
+    "icon": "GraduationCap",
+    "description_en": "Curriculum, grades, transcripts, academic records, and graduation",
+    "description_zh": "課程、成績、成績單、學籍與畢業",
+    "keywords": [
+      "academic",
+      "course",
+      "grade",
+      "transcript",
+      "graduation",
+      "transfer",
+      "教務",
+      "課程",
+      "成績",
+      "畢業",
+      "轉系"
+    ]
   },
   {
-    id: "task_dorm_parcel",
-    task_name_zh: "宿舍包裹服務",
-    task_name_en: "Dormitory Parcel / Package Service",
-    scenario_zh: "你收到包裹，或需要委託宿舍服務中心代收包裹。",
-    scenario_en: "You received a parcel or need to arrange proxy collection at the dormitory service center.",
-    target_unit_type: "office",
-    target_unit_id: "osa_dorm",
-    recommended_service_categories: ["dormitory"],
-    required_documents: [
-      { zh: "學生證（領取時出示）", en: "Student ID (show when collecting)" }
-    ],
-    navigation_tip_zh: "學士宿舍 C 棟 1F 櫃台 / 研究生宿舍 B 棟",
-    navigation_tip_en: "Undergrad Dorm Block C, 1F counter / Graduate Dorm Block B",
-    steps: [
-      { zh: "寄件地址（學士班）：嘉義縣民雄鄉三興村 161/162/163/164/165 號，學士班宿舍 A/B/C/D/E 棟（房號）室（姓名）收", en: "Delivery address (undergrad): No.161–165, Sanxing Village, Minxiong, Chiayi. Undergraduate Dorm Block A/B/C/D/E, Room [no.], [Name]" },
-      { zh: "寄件地址（研究生）：嘉義縣民雄鄉大學路 168 號，研究生宿舍碩士/博士（房號）室（姓名）收", en: "Delivery address (graduate): No.168, University Rd., Minxiong, Chiayi. Graduate Dorm, Master's/PhD, Room [no.], [Name]" },
-      { zh: "若無法親自收件，至宿舍服務中心填寫「代收委託單」（恕不代收冷凍、冷藏及須付費物品）", en: "If unable to receive in person, fill out a proxy collection form at the Housing Service Center (frozen/chilled items and paid deliveries excluded)" },
-      { zh: "持學生證至服務中心領取包裹", en: "Show your student ID at the service center to collect your parcel" }
-    ],
-    source_url: "https://studaffairs.ccu.edu.tw/",
-    needs_manual_review: false
+    "id": "course_issues",
+    "name_en": "Course Issues",
+    "name_zh": "選課相關",
+    "icon": "FileText",
+    "description_en": "Course selection, add/drop, syllabi, eCourse, and professor communication",
+    "description_zh": "選課、加退選、課綱、eCourse 與教授溝通",
+    "keywords": [
+      "course",
+      "add drop",
+      "syllabus",
+      "professor",
+      "eCourse",
+      "選課",
+      "加簽",
+      "課綱",
+      "教授",
+      "請假"
+    ]
   },
   {
-    id: "task_dorm_maintenance",
-    task_name_zh: "宿舍設備報修",
-    task_name_en: "Submit a Dormitory Maintenance Request",
-    scenario_zh: "你的宿舍設備壞了（包含洗衣機故障），需要申請維修。",
-    scenario_en: "Your dormitory equipment is broken (including washing machine malfunction) and you need to request a repair.",
-    target_unit_type: "office",
-    target_unit_id: "osa_dorm",
-    recommended_service_categories: ["dormitory"],
-    required_documents: [],
-    navigation_tip_zh: "學士宿舍 C 棟 1F 或 CCU Portal 線上申請",
-    navigation_tip_en: "Dorm Block C, 1F or apply online via CCU Portal",
-    steps: [
-      { zh: "透過 CCU Portal 或至住宿服務組填寫報修單", en: "Submit a maintenance request through CCU Portal or in person at the Housing Service Division" },
-      { zh: "說明損壞設備與地點（棟別、房號）", en: "Describe the broken equipment and location (building name, room number)" },
-      { zh: "等待工務人員來訪修繕", en: "Wait for maintenance staff to visit and repair" }
-    ],
-    source_url: "https://studaffairs.ccu.edu.tw/",
-    needs_manual_review: true
+    "id": "tuition",
+    "name_en": "Tuition & Fees",
+    "name_zh": "學費繳納",
+    "icon": "Wallet",
+    "description_en": "Tuition, dormitory fees, cashier services, and payments",
+    "description_zh": "學費、宿舍費、出納與繳費",
+    "keywords": [
+      "tuition",
+      "fee",
+      "payment",
+      "cashier",
+      "學費",
+      "宿舍費",
+      "繳費",
+      "出納"
+    ]
   },
   {
-    id: "task_dorm_select_room",
-    task_name_zh: "選擇下學年宿舍寢室",
-    task_name_en: "Select Your Dormitory Room for Next Year",
-    scenario_zh: "你想了解如何選擇下學年的宿舍房間。",
-    scenario_en: "You want to know how to select your dormitory room for the next academic year.",
-    target_unit_type: "office",
-    target_unit_id: "osa_dorm",
-    recommended_service_categories: ["dormitory"],
-    required_documents: [],
-    navigation_tip_zh: "學士宿舍 C 棟 1F 住宿服務組，或 CCU Portal 線上申請",
-    navigation_tip_en: "Housing Service Division, Dorm Block C 1F, or CCU Portal online",
-    steps: [
-      { zh: "依學校公告的宿舍選宿時間，登入 CCU Portal 進行選宿", en: "During the announced room selection period, log in to CCU Portal to select your room" },
-      { zh: "按照指示選擇棟別、樓層與房號", en: "Follow the instructions to select building, floor, and room number" },
-      { zh: "若有問題，至住宿服務組詢問", en: "If you have questions, visit the Housing Service Division" }
-    ],
-    source_url: "https://studaffairs.ccu.edu.tw/",
-    needs_manual_review: true
+    "id": "career",
+    "name_en": "Career Development",
+    "name_zh": "職涯發展",
+    "icon": "Briefcase",
+    "description_en": "Career counseling, recruitment, internships, and job resources",
+    "description_zh": "職涯諮詢、徵才、實習與求職資源",
+    "keywords": [
+      "career",
+      "job",
+      "internship",
+      "resume",
+      "work",
+      "職涯",
+      "求職",
+      "實習",
+      "履歷",
+      "打工"
+    ]
   },
   {
-    id: "task_dormnet",
-    task_name_zh: "申請宿舍網路（DormNet）",
-    task_name_en: "Apply for Dormitory Internet (DormNet)",
-    scenario_zh: "你住在宿舍，需要申請校園網路。",
-    scenario_en: "You live in the dormitory and need to apply for campus internet access.",
-    target_unit_type: "office",
-    target_unit_id: "it_office",
-    recommended_service_categories: ["dormitory", "it_support"],
-    required_documents: [
-      { zh: "學生證或宿舍入住證明", en: "Student ID or dormitory check-in confirmation" }
-    ],
-    navigation_tip_zh: "圖書資訊大樓｜資訊處，或線上申請",
-    navigation_tip_en: "Information and Library Building｜IT Office, or apply online",
-    steps: [
-      { zh: "至資訊處網站或 CCU Portal 申請 DormNet 帳號", en: "Apply for a DormNet account through the IT Office website or CCU Portal" },
-      { zh: "設定網路設備（依說明操作）", en: "Configure your network device (follow the instructions provided)" },
-      { zh: "若遇問題，至資訊處詢問或致電技術支援", en: "If you encounter issues, visit the IT Office or call technical support" }
-    ],
-    source_url: "https://it.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-
-  // ── 課程與學術 ─────────────────────────────────────────────
-  {
-    id: "task_sso",
-    task_name_zh: "使用 SSO 單一入口登入",
-    task_name_en: "Log in with SSO (Single Sign-On)",
-    scenario_zh: "你需要登入學校系統（選課、成績、email 等），或不知道預設密碼。",
-    scenario_en: "You need to log in to school systems (course selection, grades, email) or don't know the default password.",
-    target_unit_type: "office",
-    target_unit_id: "it_office",
-    recommended_service_categories: ["it_support", "academic_affairs"],
-    required_documents: [
-      { zh: "學號（入學後由學校提供）", en: "Student ID number (provided after enrollment)" },
-      { zh: "初始密碼（入學通知信件內）", en: "Initial password (in enrollment notification email)" }
-    ],
-    navigation_tip_zh: "portal.ccu.edu.tw｜帳號問題請至圖書資訊大樓資訊處",
-    navigation_tip_en: "portal.ccu.edu.tw｜Account issues: visit IT Office in Information and Library Building",
-    steps: [
-      { zh: "前往 https://portal.ccu.edu.tw", en: "Go to https://portal.ccu.edu.tw" },
-      { zh: "使用學號與初始密碼登入，首次登入需修改密碼", en: "Log in with your student ID and initial password; change your password on first login" },
-      { zh: "登入後可存取選課系統、成績查詢、eCourse2、Email 等", en: "After login, access course selection, grades, eCourse2, email, and more" },
-      { zh: "忘記密碼或帳號問題：至資訊處（圖書資訊大樓）處理", en: "Forgot password or account issues: visit the IT Office (Information and Library Building)" }
-    ],
-    source_url: "https://it.ccu.edu.tw/",
-    needs_manual_review: false
+    "id": "it_support",
+    "name_en": "IT Support",
+    "name_zh": "資訊服務",
+    "icon": "Monitor",
+    "description_en": "SSO, campus email, Wi-Fi, software, and eCourse support",
+    "description_zh": "單一入口、校園信箱、Wi-Fi、軟體與 eCourse 支援",
+    "keywords": [
+      "SSO",
+      "email",
+      "Wi-Fi",
+      "software",
+      "password",
+      "eCourse",
+      "資訊",
+      "密碼",
+      "信箱",
+      "網路",
+      "軟體"
+    ]
   },
   {
-    id: "task_ecourse",
-    task_name_zh: "使用 eCourse2 線上學習平台",
-    task_name_en: "Use eCourse2 Learning Platform",
-    scenario_zh: "你需要查看課程資料、繳交作業，或交換生剛開學時沒有 eCourse 帳號。",
-    scenario_en: "You need to access course materials, submit assignments, or you're an exchange student without an eCourse account at the start of semester.",
-    target_unit_type: "office",
-    target_unit_id: "it_office",
-    recommended_service_categories: ["it_support", "academic_affairs"],
-    required_documents: [],
-    navigation_tip_zh: "ecourse2.ccu.edu.tw｜使用 SSO 帳號登入",
-    navigation_tip_en: "ecourse2.ccu.edu.tw｜Log in with SSO account",
-    steps: [
-      { zh: "前往 https://ecourse2.ccu.edu.tw", en: "Go to https://ecourse2.ccu.edu.tw" },
-      { zh: "使用 SSO 帳號（學號 + 密碼）登入", en: "Log in with your SSO account (student ID + password)" },
-      { zh: "交換生若開學時無帳號，請至資訊處申請或聯繫課程教師", en: "Exchange students without an account at semester start: contact the IT Office or course instructor" },
-      { zh: "課程加入：等老師開放，或輸入選課碼加入", en: "Join courses: wait for the instructor to open enrollment, or enter the course code" }
-    ],
-    source_url: "https://it.ccu.edu.tw/",
-    needs_manual_review: false
+    "id": "counseling",
+    "name_en": "Counseling",
+    "name_zh": "心理諮商",
+    "icon": "HeartHandshake",
+    "description_en": "Psychological counseling, mental health, and student wellness",
+    "description_zh": "心理諮商、心理健康與學生身心支持",
+    "keywords": [
+      "counseling",
+      "mental health",
+      "stress",
+      "諮商",
+      "心理",
+      "壓力"
+    ]
   },
   {
-    id: "task_course_selection",
-    task_name_zh: "使用選課系統選課",
-    task_name_en: "Register for Courses via the Course Selection System",
-    scenario_zh: "你需要完成每學期的課程選課，或交換生需在開學時才能選課。",
-    scenario_en: "You need to complete course registration each semester, or you're an exchange student who can only select courses at the start of semester.",
-    target_unit_type: "office",
-    target_unit_id: "oaa_curriculum",
-    recommended_service_categories: ["course_issues", "academic_affairs"],
-    required_documents: [],
-    navigation_tip_zh: "行政大樓東棟 2F｜課務組（系統問題請洽資訊處）",
-    navigation_tip_en: "East Wing, Administration Building 2F｜Curriculum Division (system issues: contact IT Office)",
-    steps: [
-      { zh: "登入 SSO 後，進入選課系統（學期開始前 2 週開放）", en: "Log in to SSO, then access the course selection system (opens 2 weeks before the semester)" },
-      { zh: "交換生注意：通常在開學後才開放選課，請先與國際處確認", en: "Exchange students note: course selection usually opens after semester starts; confirm with OIA first" },
-      { zh: "瀏覽課表並加選課程（注意必修、選修分類）", en: "Browse the course schedule and add courses (note required vs. elective categories)" },
-      { zh: "系統主要為中文，如有困難請聯繫國際處協助", en: "System is mainly in Chinese; contact OIA if you need assistance" }
-    ],
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "task_add_drop",
-    task_name_zh: "加退選課程",
-    task_name_en: "Add or Drop a Course",
-    scenario_zh: "你想加選某門課，或想退掉已選的課，或必修課人數已滿需要加簽。",
-    scenario_en: "You want to add or drop a course, or need to get instructor approval to join a full required course.",
-    target_unit_type: "office",
-    target_unit_id: "oaa_curriculum",
-    recommended_service_categories: ["course_issues"],
-    required_documents: [
-      { zh: "加選需要老師同意者：老師簽名的加選單", en: "For courses requiring instructor approval: add-course form signed by the instructor" }
-    ],
-    navigation_tip_zh: "行政大樓東棟 2F｜課務組，或透過選課系統操作",
-    navigation_tip_en: "East Wing, Administration Building 2F｜Curriculum Division, or via the course selection system",
-    steps: [
-      { zh: "加退選期間（約學期開始後第 1–2 週）登入選課系統操作", en: "During the add/drop period (approx. 1st–2nd week of semester), make changes in the course selection system" },
-      { zh: "必修課已滿（加簽）：直接聯繫授課教授，說明情況並請求同意", en: "For full required courses (overload): contact the instructor directly, explain your situation, and request approval" },
-      { zh: "教授同意後：填寫加選申請單至課務組辦理", en: "After instructor approval: fill out the add-course form and submit to the Curriculum Division" },
-      { zh: "已選課程但教授不收國際生：請立即聯繫系辦或國際處協助處理", en: "If enrolled but instructor doesn't accept international students: contact your department office or OIA immediately" }
-    ],
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "task_credit_waiver",
-    task_name_zh: "申請學分抵免",
-    task_name_en: "Apply for Credit Waiver / Transfer",
-    scenario_zh: "你在其他學校修過的課程，想申請抵免中正大學的學分。",
-    scenario_en: "You have taken courses at another school and want to transfer those credits to CCU.",
-    target_unit_type: "office",
-    target_unit_id: "oaa_reg",
-    recommended_service_categories: ["registration", "academic_affairs"],
-    required_documents: [
-      { zh: "原校成績單（英文版）", en: "Transcript from previous school (English version)" },
-      { zh: "課程大綱（Syllabus）", en: "Course syllabus" },
-      { zh: "抵免申請表（向系辦或教務處取得）", en: "Credit transfer form (from department office or Academic Affairs)" }
-    ],
-    navigation_tip_zh: "先至系辦，再送行政大樓東棟 1F 教務處審核",
-    navigation_tip_en: "Start at your department office, then submit to Registration Division (East Wing 1F)",
-    steps: [
-      { zh: "向系辦取得抵免申請表", en: "Get the credit transfer form from your department office" },
-      { zh: "備妥原校英文成績單與課程大綱", en: "Prepare your English transcript and course syllabi from your previous school" },
-      { zh: "至系辦提交申請，由系上審查", en: "Submit the application to your department office for review" },
-      { zh: "系所審查後送交教務處核定，約 2–4 週公告結果", en: "After departmental review, sent to Academic Affairs for final approval (results in 2–4 weeks)" }
-    ],
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "task_course_withdrawal",
-    task_name_zh: "申請課程撤選",
-    task_name_en: "Apply for Course Withdrawal",
-    scenario_zh: "加退選期間已過，你想要撤選某門課程。",
-    scenario_en: "The add/drop period has passed and you want to withdraw from a course.",
-    target_unit_type: "office",
-    target_unit_id: "oaa_curriculum",
-    recommended_service_categories: ["course_issues", "academic_affairs"],
-    required_documents: [
-      { zh: "撤選申請表（向課務組索取）", en: "Course withdrawal form (available at the Curriculum Division)" },
-      { zh: "導師或系主任簽名（視規定）", en: "Advisor or department head signature (as required)" }
-    ],
-    navigation_tip_zh: "行政大樓東棟 2F｜課務組，學期中段前申請",
-    navigation_tip_en: "East Wing, Administration Building 2F｜Curriculum Division, before mid-semester",
-    steps: [
-      { zh: "至教務處課務組取得撤選申請表", en: "Get the course withdrawal form from the Curriculum Division" },
-      { zh: "填妥後請導師或系主任簽名（視規定）", en: "Complete the form and obtain required signatures (advisor or department head)" },
-      { zh: "在規定期限內送回課務組", en: "Submit the form to the Curriculum Division before the deadline" },
-      { zh: "撤選後成績單不會出現此課程", en: "After withdrawal, this course will not appear on your transcript" }
-    ],
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "task_dept_transfer",
-    task_name_zh: "申請轉系",
-    task_name_en: "Apply for Department Transfer",
-    scenario_zh: "你想申請轉至其他系所就讀。",
-    scenario_en: "You want to apply to transfer to another department.",
-    target_unit_type: "office",
-    target_unit_id: "oaa",
-    recommended_service_categories: ["academic_affairs", "registration"],
-    required_documents: [
-      { zh: "歷年成績單（含班級排名）", en: "Transcript with class ranking" },
-      { zh: "轉系理由書（各系要求不同）", en: "Transfer motivation statement (requirements vary by department)" },
-      { zh: "未來修課規劃（部分學系要求）", en: "Future study plan (required by some departments)" },
-      { zh: "其他有利審查資料（如英文能力證明等）", en: "Other supporting materials (e.g., English proficiency certificate)" }
-    ],
-    navigation_tip_zh: "先至目標系所確認轉系標準，再至教務處辦理",
-    navigation_tip_en: "First confirm transfer standards with target department, then apply at Academic Affairs",
-    steps: [
-      { zh: "查詢目標學系的轉系審查標準（教務處網站：https://oaa.ccu.edu.tw/p/404-1004-6159.php）", en: "Check the target department's transfer criteria (Academic Affairs website: https://oaa.ccu.edu.tw/p/404-1004-6159.php)" },
-      { zh: "確認是否符合成績與先修科目要求（各系不同）", en: "Confirm you meet GPA and prerequisite requirements (varies by department)" },
-      { zh: "依各系規定備妥申請資料（轉系理由書、成績單等）", en: "Prepare required materials as specified by the target department" },
-      { zh: "依規定時間提交申請，並參加書面審查及口試（視系規定）", en: "Submit application during the designated period; participate in written and oral review (as required)" },
-      { zh: "注意：轉系後均須轉入二年級就讀，名額有限", en: "Note: All transfer students enter as second-year students; spaces are limited" }
-    ],
-    source_url: "https://oaa.ccu.edu.tw/p/404-1004-6159.php?Lang=zh-tw",
-    needs_manual_review: false
-  },
-  {
-    id: "task_course_syllabus",
-    task_name_zh: "查詢課程大綱",
-    task_name_en: "Find Course Syllabus",
-    scenario_zh: "你需要找到某門課程的課綱，以了解課程內容或申請學分抵免。",
-    scenario_en: "You need to find a course syllabus to understand the course content or apply for credit transfer.",
-    target_unit_type: "office",
-    target_unit_id: "oaa_curriculum",
-    recommended_service_categories: ["course_issues", "academic_affairs"],
-    required_documents: [],
-    navigation_tip_zh: "透過 CCU Portal 或課程系統查詢",
-    navigation_tip_en: "Check via CCU Portal or the course system",
-    steps: [
-      { zh: "登入 CCU Portal，進入選課系統查看課程大綱", en: "Log in to CCU Portal and access the course selection system to view syllabi" },
-      { zh: "若系統上找不到，直接聯繫授課教授詢問", en: "If not found on the system, contact the instructor directly" },
-      { zh: "也可至課務組詢問如何取得歷年課程大綱", en: "You can also ask the Curriculum Division how to obtain syllabi from previous years" }
-    ],
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "task_email_professor",
-    task_name_zh: "如何寫電子郵件給教授",
-    task_name_en: "How to Email a Professor",
-    scenario_zh: "你需要聯繫教授，但不確定正確的寫法或禮儀。",
-    scenario_en: "You need to contact a professor but are unsure about the proper format or etiquette.",
-    target_unit_type: "office",
-    target_unit_id: "oaa",
-    recommended_service_categories: ["course_issues", "academic_affairs"],
-    required_documents: [],
-    navigation_tip_zh: "透過 CCU Email 系統（portal.ccu.edu.tw）發送",
-    navigation_tip_en: "Send via CCU Email system (portal.ccu.edu.tw)",
-    steps: [
-      { zh: "稱謂：使用「Dear Prof. [姓] / Professor [姓]」，不建議使用名字或「Hi」", en: "Salutation: Use 'Dear Prof. [Last Name]' or 'Professor [Last Name]'; avoid first names or 'Hi'" },
-      { zh: "自我介紹：說明你的姓名、學號、課程名稱（如適用）", en: "Introduce yourself: state your name, student ID, and course name (if applicable)" },
-      { zh: "簡潔說明問題或請求，語氣禮貌正式", en: "Clearly and concisely describe your question or request in a polite, formal tone" },
-      { zh: "結尾：使用「Best regards / Sincerely, [你的名字]」", en: "Closing: Use 'Best regards / Sincerely, [Your Name]'" },
-      { zh: "如需要請假，需說明請假日期、原因及補課計畫", en: "For absence requests: state the date, reason, and your plan for making up the missed work" }
-    ],
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "task_software",
-    task_name_zh: "下載校園授權軟體",
-    task_name_en: "Download Campus Licensed Software",
-    scenario_zh: "你想下載學校授權的 Office、防毒軟體或其他正版軟體。",
-    scenario_en: "You want to download officially licensed software such as Office, antivirus, or other programs.",
-    target_unit_type: "office",
-    target_unit_id: "it_office",
-    recommended_service_categories: ["it_support"],
-    required_documents: [],
-    navigation_tip_zh: "software.ccu.edu.tw｜使用 SSO 帳號登入",
-    navigation_tip_en: "software.ccu.edu.tw｜Log in with SSO account",
-    steps: [
-      { zh: "連接校內網路（若在校外可使用 VPN，參考：https://it.ccu.edu.tw/p/426100930.php）", en: "Connect to campus network (off-campus: use VPN, reference: https://it.ccu.edu.tw/p/426100930.php)" },
-      { zh: "前往 https://software.ccu.edu.tw/ 並以 SSO 帳號登入", en: "Go to https://software.ccu.edu.tw/ and log in with SSO" },
-      { zh: "選擇需要的軟體類別：Office、OS、統計、MATLAB、防毒等", en: "Select the software category: Office, OS, Statistics, MATLAB, AntiVirus, etc." },
-      { zh: "點擊下載連結，依指示安裝並認證軟體", en: "Click the download link, install, and activate the software as instructed" }
-    ],
-    source_url: "https://it.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-
-  // ── 行政手續 ──────────────────────────────────────────────
-  {
-    id: "task_student_id",
-    task_name_zh: "補辦學生證",
-    task_name_en: "Replace a Lost or Damaged Student ID Card",
-    scenario_zh: "你的學生證遺失或損壞，需要補辦。",
-    scenario_en: "Your student ID card is lost or damaged and needs to be replaced.",
-    target_unit_type: "office",
-    target_unit_id: "oaa_reg",
-    recommended_service_categories: ["student_id", "registration"],
-    required_documents: [
-      { zh: "護照或其他有效身分證件", en: "Passport or other valid ID" },
-      { zh: "補辦費用（金額請至窗口確認）", en: "Replacement fee (confirm amount at the counter)" }
-    ],
-    navigation_tip_zh: "行政大樓東棟 1F｜教務處註冊組",
-    navigation_tip_en: "East Wing, Administration Building 1F｜Registration Division",
-    steps: [
-      { zh: "前往行政大樓東棟一樓教務處註冊組", en: "Go to the Registration Division on the 1st floor of the East Wing, Administration Building" },
-      { zh: "告知工作人員需補辦學生證並提供身分證件", en: "Inform the staff you need a replacement student ID and provide your ID document" },
-      { zh: "繳交補辦費用", en: "Pay the replacement fee" },
-      { zh: "等待製作（工作人員會告知取件日）", en: "Wait for the card to be made (staff will inform you of the pickup date)" }
-    ],
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "task_transcript",
-    task_name_zh: "申請成績單",
-    task_name_en: "Apply for a Transcript",
-    scenario_zh: "你需要申請中文或英文成績單。",
-    scenario_en: "You need to apply for a Chinese or English transcript.",
-    target_unit_type: "office",
-    target_unit_id: "oaa_reg",
-    recommended_service_categories: ["registration", "academic_affairs"],
-    required_documents: [
-      { zh: "學生證或護照", en: "Student ID or passport" },
-      { zh: "工本費（每份金額請確認）", en: "Processing fee (confirm amount per copy)" }
-    ],
-    navigation_tip_zh: "行政大樓東棟 1F｜教務處註冊組",
-    navigation_tip_en: "East Wing, Administration Building 1F｜Registration Division",
-    steps: [
-      { zh: "前往行政大樓東棟一樓教務處註冊組", en: "Go to the Registration Division on the 1st floor of the East Wing, Administration Building" },
-      { zh: "說明需要中文版或英文版成績單，以及份數", en: "Specify Chinese or English transcripts and how many copies you need" },
-      { zh: "繳交工本費，當場或隔日取件", en: "Pay the fee and pick up on the spot or the next day" }
-    ],
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "task_leave_of_absence",
-    task_name_zh: "申請休學",
-    task_name_en: "Apply for Leave of Absence",
-    scenario_zh: "你因個人、健康或其他原因需要申請暫時停學。",
-    scenario_en: "You need to apply for a temporary leave of absence due to personal, health, or other reasons.",
-    target_unit_type: "office",
-    target_unit_id: "oaa_reg",
-    recommended_service_categories: ["registration", "academic_affairs"],
-    required_documents: [
-      { zh: "休學申請表（向教務處或系辦索取）", en: "Leave of absence form (from Academic Affairs or department office)" },
-      { zh: "醫療證明（健康因素者）", en: "Medical certificate (for health-related reasons)" },
-      { zh: "指導教授或系主任同意書（視規定）", en: "Advisor or department head approval (as required)" }
-    ],
-    navigation_tip_zh: "行政大樓東棟 1F｜教務處註冊組，注意申請期限",
-    navigation_tip_en: "East Wing, Administration Building 1F｜Registration Division, note the deadline",
-    steps: [
-      { zh: "至教務處或系辦取得休學申請表", en: "Get the leave of absence form from Academic Affairs or your department office" },
-      { zh: "填妥後取得必要簽名（視規定）", en: "Complete the form and obtain required signatures" },
-      { zh: "送至教務處註冊組辦理，注意申請期限", en: "Submit to the Registration Division; note the application deadline" },
-      { zh: "國際生注意：休學期間居留證效力請洽國際處確認", en: "International students: confirm the impact on your ARC/visa status during leave (contact OIA)" }
-    ],
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "task_scholarship",
-    task_name_zh: "申請獎學金",
-    task_name_en: "Apply for Scholarship",
-    scenario_zh: "你想了解並申請學校或校外提供的各項獎學金。",
-    scenario_en: "You want to learn about and apply for scholarships offered by CCU or external organizations.",
-    target_unit_type: "office",
-    target_unit_id: "oia",
-    recommended_service_categories: ["international_support", "student_affairs", "tuition"],
-    required_documents: [
-      { zh: "成績單（視獎學金要求）", en: "Transcript (depending on scholarship requirements)" },
-      { zh: "推薦函（部分獎學金需要）", en: "Recommendation letter (required for some scholarships)" },
-      { zh: "護照或居留證影本", en: "Copy of passport or ARC" }
-    ],
-    navigation_tip_zh: "行政大樓 1F 國際處（國際生獎學金）/ 西棟 2F 生活事務組（助學金）",
-    navigation_tip_en: "Administration Building 1F OIA (international scholarships) / West Wing 2F Student Life Office (financial aid)",
-    steps: [
-      { zh: "至國際處或學務處網站查看目前開放的獎學金項目", en: "Check OIA or Student Affairs websites for currently available scholarships" },
-      { zh: "確認申請資格與截止日期", en: "Confirm eligibility requirements and application deadlines" },
-      { zh: "備妥所需文件並於期限內提交", en: "Prepare required documents and submit before the deadline" }
-    ],
-    source_url: "https://oia.ccu.edu.tw/p/412-1008-3967.php?Lang=en",
-    needs_manual_review: false
-  },
-  {
-    id: "task_tuition",
-    task_name_zh: "繳交學雜費",
-    task_name_en: "Pay Tuition and Fees",
-    scenario_zh: "你需要繳交每學期的學雜費。",
-    scenario_en: "You need to pay tuition and fees each semester.",
-    target_unit_type: "office",
-    target_unit_id: "cashier",
-    recommended_service_categories: ["tuition"],
-    required_documents: [
-      { zh: "繳費通知單（Portal 或 Email）", en: "Payment notice (from Portal or email)" }
-    ],
-    navigation_tip_zh: "行政大樓西棟 1F｜出納組，或 ATM / 便利商店繳款",
-    navigation_tip_en: "West Wing, Administration Building 1F｜Cashier, or ATM / convenience store",
-    steps: [
-      { zh: "收到學校繳費通知後，確認金額與期限", en: "After receiving the payment notice, confirm the amount and deadline" },
-      { zh: "選擇繳費方式：ATM 轉帳、便利商店繳費或至出納組現金繳費", en: "Choose payment method: ATM transfer, convenience store payment, or cash at the Cashier Division" },
-      { zh: "繳費後保留收據，並確認 Portal 上的繳費狀態", en: "Keep your receipt after payment and confirm payment status on Portal" }
-    ],
-    source_url: "https://oga.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "task_work_permit",
-    task_name_zh: "申請工作許可",
-    task_name_en: "Apply for a Work Permit",
-    scenario_zh: "你是國際學生，想要在學期間兼職打工，需要申請工作許可。",
-    scenario_en: "As an international student, you want to work part-time and need to apply for a work permit.",
-    target_unit_type: "office",
-    target_unit_id: "oia",
-    recommended_service_categories: ["international_support"],
-    required_documents: [
-      { zh: "居留證（ARC）", en: "ARC" },
-      { zh: "在學證明", en: "Enrollment certificate" },
-      { zh: "護照", en: "Passport" },
-      { zh: "工作許可申請表（向國際處索取）", en: "Work permit application form (from OIA)" }
-    ],
-    navigation_tip_zh: "行政大樓 1F｜國際處｜取得許可後才能開始工作",
-    navigation_tip_en: "Administration Building 1F｜OIA｜Must have permit before starting work",
-    steps: [
-      { zh: "至國際處取得工作許可申請資料", en: "Go to OIA for work permit application materials" },
-      { zh: "填妥申請表，備齊護照、ARC、在學證明", en: "Complete the application form and prepare passport, ARC, and enrollment certificate" },
-      { zh: "申請核准後方可打工（每週不超過規定時數）", en: "After approval, you may work within the permitted scope (not exceeding the regulated weekly hours)" },
-      { zh: "每學期需更新申請", en: "The permit must be renewed each semester" }
-    ],
-    source_url: "https://oia.ccu.edu.tw/p/412-1008-3371.php?Lang=en",
-    needs_manual_review: false
-  },
-  {
-    id: "task_register_ccu_email",
-    task_name_zh: "申請 / 設定 CCU 電子信箱",
-    task_name_en: "Register / Set Up CCU Email Account",
-    scenario_zh: "你需要申請或設定中正大學的 email 帳號（@gm.ccu.edu.tw）。",
-    scenario_en: "You need to register or set up your CCU email account (@gm.ccu.edu.tw).",
-    target_unit_type: "office",
-    target_unit_id: "it_office",
-    recommended_service_categories: ["it_support"],
-    required_documents: [
-      { zh: "學號與 SSO 密碼", en: "Student ID and SSO password" }
-    ],
-    navigation_tip_zh: "透過 SSO Portal 設定｜問題請至圖書資訊大樓資訊處",
-    navigation_tip_en: "Set up via SSO Portal｜Issues: visit IT Office in Information and Library Building",
-    steps: [
-      { zh: "登入 CCU Portal（https://portal.ccu.edu.tw）", en: "Log in to CCU Portal (https://portal.ccu.edu.tw)" },
-      { zh: "找到「Web Mail / 電子信箱」圖示並點擊設定", en: "Find the 'Web Mail' icon and click to set up" },
-      { zh: "你的 CCU email 格式為：學號@gm.ccu.edu.tw", en: "Your CCU email format is: studentID@gm.ccu.edu.tw" },
-      { zh: "設定後可選擇轉寄至個人信箱，方便接收通知", en: "After setup, you can forward to your personal email for easy notification management" }
-    ],
-    source_url: "https://it.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-
-  // ── 校園服務 ──────────────────────────────────────────────
-  {
-    id: "task_oia",
-    task_name_zh: "前往國際處",
-    task_name_en: "Go to the Office of International Affairs (OIA)",
-    scenario_zh: "你有簽證、居留證、獎學金或任何國際學生相關問題需要協助。",
-    scenario_en: "You need help with visa, ARC, scholarships, or any international student-related issues.",
-    target_unit_type: "office",
-    target_unit_id: "oia",
-    recommended_service_categories: ["international_support"],
-    required_documents: [],
-    navigation_tip_zh: "行政大樓 1F｜週一至週五 08:30–17:00",
-    navigation_tip_en: "Administration Building, 1F｜Mon–Fri 08:30–17:00",
-    steps: [
-      { zh: "前往行政大樓正門進入", en: "Enter through the main entrance of the Administration Building" },
-      { zh: "國際處位於一樓，循指示牌可找到", en: "OIA is on the 1st floor — follow the signs" },
-      { zh: "向櫃台工作人員說明你的需求", en: "Tell the counter staff what you need" }
-    ],
-    source_url: "https://oia.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "task_find_dept",
-    task_name_zh: "找我的系辦公室",
-    task_name_en: "Find My Department Office",
-    scenario_zh: "你需要找到自己系所的辦公室，例如詢問選課、找導師、領取文件等。",
-    scenario_en: "You need to find your department office for course advising, meeting your advisor, or picking up documents.",
-    target_unit_type: "department",
-    target_unit_id: "",
-    recommended_service_categories: ["department_offices"],
-    required_documents: [],
-    navigation_tip_zh: "各學院大樓不同，請在地圖頁搜尋你的系所",
-    navigation_tip_en: "Location varies by college — search your department on the Map page",
-    steps: [
-      { zh: "確認你的系所名稱與所屬學院", en: "Confirm your department name and college" },
-      { zh: "在「地圖」頁搜尋你的系所，查看所在大樓與樓層", en: "Search for your department on the Map page to find the building and floor" },
-      { zh: "前往該學院大樓，搭電梯或走樓梯到指定樓層", en: "Go to the college building and take the elevator or stairs to the designated floor" },
-      { zh: "找到系辦公室門牌，向系辦人員說明需求", en: "Find the department office sign and tell the staff what you need" }
-    ],
-    source_url: "https://www.ccu.edu.tw/p/412-1000-792.php?Lang=zh-tw",
-    needs_manual_review: false
-  },
-  {
-    id: "task_library",
-    task_name_zh: "使用圖書館服務",
-    task_name_en: "Use Library Services",
-    scenario_zh: "你想借書、查論文、預約討論室或使用電子資料庫。",
-    scenario_en: "You want to borrow books, search for thesis, reserve discussion rooms, or use electronic databases.",
-    target_unit_type: "office",
-    target_unit_id: "library",
-    recommended_service_categories: ["library"],
-    required_documents: [
-      { zh: "學生證（感應入館用）", en: "Student ID card (required to enter the library)" }
-    ],
-    navigation_tip_zh: "圖書資訊大樓｜服務台在 1F 入口處",
-    navigation_tip_en: "Information and Library Building｜Service desk at the 1F entrance",
-    steps: [
-      { zh: "線上入口：https://portal.ccu.edu.tw/sso_index.php → 選擇「My圖書館 / 圖書館資源探索 / 自學空間」", en: "Online portal: https://portal.ccu.edu.tw/sso_index.php → Select 'Library / AlmaPrimo / Self-Study'" },
-      { zh: "臨櫃服務：持學生證感應入館，服務台在一樓", en: "In person: tap your student ID to enter; service desk is at the 1st floor entrance" },
-      { zh: "討論室預約：至服務台或透過圖書館網站預約", en: "Discussion room reservation: at the service desk or through the library website" }
-    ],
-    source_url: "https://lib.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "task_print",
-    task_name_zh: "在哪裡可以列印東西",
-    task_name_en: "Where to Print Documents",
-    scenario_zh: "你需要在校內或附近找地方列印文件。",
-    scenario_en: "You need to find a place on or near campus to print documents.",
-    target_unit_type: "office",
-    target_unit_id: "library",
-    recommended_service_categories: ["library", "it_support"],
-    required_documents: [],
-    navigation_tip_zh: "圖書館 1F（借影印卡）/ 電算中心（圖書館大門左側）/ 全家便利商店",
-    navigation_tip_en: "Library 1F (borrow copy card) / IT Office (left of library entrance) / FamilyMart",
-    steps: [
-      { zh: "圖書館：至服務台押學生證借影印卡 → 印文件 → 還卡，可用現金或悠遊卡付費", en: "Library: Leave your student ID as deposit to borrow a copy card → print → return card; pay with cash or EasyCard" },
-      { zh: "電算中心（圖書館大門左側）：可直接使用列印設備", en: "IT Office (left of the Library main entrance): printers available for direct use" },
-      { zh: "全家便利商店（校內活中全家）：使用雲端列印服務（https://nevent.family.com.tw/cloudprintSTORELIST/）", en: "FamilyMart (Activity Center branch): use cloud print service (https://nevent.family.com.tw/cloudprintSTORELIST/)" },
-      { zh: "校外影印店：鴻昇數位輸出影印中心（嘉義縣民雄鄉神農路143號）", en: "Off-campus copy shop: Hongsheng Digital Output Center (No.143, Shennong Rd., Minxiong, Chiayi)" }
-    ],
-    source_url: "https://it.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "task_health",
-    task_name_zh: "前往衛生保健組 / 就醫",
-    task_name_en: "Visit the Health Center / See a Doctor",
-    scenario_zh: "你身體不舒服、受傷，或需要健康諮詢與體檢。",
-    scenario_en: "You feel unwell, are injured, or need health consultation or checkup.",
-    target_unit_type: "office",
-    target_unit_id: "health_center",
-    recommended_service_categories: ["health"],
-    required_documents: [
-      { zh: "健保卡（若有）", en: "NHI card (if available)" },
-      { zh: "學生證", en: "Student ID" }
-    ],
-    navigation_tip_zh: "活動中心 2F｜週一至週五 08:30–17:00",
-    navigation_tip_en: "Activity Center, 2F｜Mon–Fri 08:30–17:00",
-    steps: [
-      { zh: "前往活動中心二樓衛生保健組（輕微症狀）", en: "For minor symptoms: visit the Health Services Division on the 2nd floor of the Activity Center" },
-      { zh: "若需進一步診療：衛生保健組可協助轉介至特約醫院", en: "For further treatment: the Health Services Division can refer you to a partner hospital" },
-      { zh: "就醫時攜帶健保卡（掛號費約 NT$150–300）", en: "Bring your NHI card to the clinic (registration fee approx. NT$150–300)" },
-      { zh: "緊急情況：撥打 119 或聯繫 24 小時校安中心：05-2720411 ext.19110", en: "Emergencies: call 119 or contact the 24-hour Campus Safety Center: 05-2720411 ext.19110" }
-    ],
-    source_url: "https://studaffairs.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "task_counseling",
-    task_name_zh: "前往諮商中心",
-    task_name_en: "Visit the Counseling Center",
-    scenario_zh: "你感到心理壓力、情緒困擾、思鄉或適應不良，想尋求支持。",
-    scenario_en: "You're experiencing stress, emotional difficulties, homesickness, or adjustment issues and want support.",
-    target_unit_type: "office",
-    target_unit_id: "counseling",
-    recommended_service_categories: ["counseling", "health"],
-    required_documents: [],
-    navigation_tip_zh: "活動中心 3F｜提供英語諮商，完全保密，免費",
-    navigation_tip_en: "Activity Center, 3F｜English counseling available, fully confidential, free",
-    steps: [
-      { zh: "前往活動中心三樓諮商中心", en: "Go to the Counseling Center on the 3rd floor of the Activity Center" },
-      { zh: "向接待人員預約或直接進行初次諮詢", en: "Make an appointment or walk in for an initial consultation" },
-      { zh: "所有諮商內容嚴格保密，可放心尋求協助", en: "All counseling sessions are strictly confidential — please feel free to seek help" }
-    ],
-    source_url: "https://advising.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "task_registration",
-    task_name_zh: "辦理各學期註冊",
-    task_name_en: "Complete Semester Registration",
-    scenario_zh: "每學期開始時需要完成正式註冊手續（繳費＋線上報到）。",
-    scenario_en: "At the start of each semester, complete formal registration (payment + online check-in).",
-    target_unit_type: "office",
-    target_unit_id: "oaa_reg",
-    recommended_service_categories: ["registration", "tuition"],
-    required_documents: [
-      { zh: "學費繳費通知單（Portal 或 Email 通知）", en: "Tuition payment notice (via Portal or email)" }
-    ],
-    navigation_tip_zh: "線上完成 Portal 報到，繳費至西棟 1F 出納組或網路繳款",
-    navigation_tip_en: "Complete online via Portal; pay at West Wing 1F Cashier or online",
-    steps: [
-      { zh: "依學校通知於期限內繳交學雜費", en: "Pay tuition and fees by the deadline as notified by the school" },
-      { zh: "完成繳費後，於 CCU Portal 完成線上報到", en: "After payment, complete online check-in on CCU Portal" },
-      { zh: "如有減免資格，需提前至生活事務組申請", en: "If eligible for fee reduction, apply at the Student Life Office in advance" }
-    ],
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: false
-  },
-  {
-    id: "task_it",
-    task_name_zh: "處理帳號或網路問題",
-    task_name_en: "Handle Account or Network Issues",
-    scenario_zh: "你的學校帳號無法登入、選課密碼顯示錯誤，或校園網路、eCourse2 出現問題。",
-    scenario_en: "Your school account login fails, course selection password shows an error, or you have network or eCourse2 issues.",
-    target_unit_type: "office",
-    target_unit_id: "it_office",
-    recommended_service_categories: ["it_support"],
-    required_documents: [
-      { zh: "學生證（身份驗證用）", en: "Student ID (for identity verification)" }
-    ],
-    navigation_tip_zh: "圖書資訊大樓｜資訊處（圖書館大門左側）",
-    navigation_tip_en: "Information and Library Building｜IT Office (left of library entrance)",
-    steps: [
-      { zh: "確認帳號與密碼是否正確（學號 + 密碼）", en: "Confirm your account and password are correct (student ID + password)" },
-      { zh: "若選課密碼錯誤：可能因帳號設定問題，請至資訊處協助重設", en: "If course selection password shows an error: likely an account issue; visit IT Office to reset" },
-      { zh: "至圖書資訊大樓資訊處，攜帶學生證向工作人員說明問題", en: "Visit the IT Office in the Information and Library Building with your student ID and explain the issue" },
-      { zh: "緊急問題也可 email：it@ccu.edu.tw", en: "For urgent issues, email: it@ccu.edu.tw" }
-    ],
-    source_url: "https://it.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "task_insurance_claim",
-    task_name_zh: "申請學生保險理賠",
-    task_name_en: "Apply for Student Insurance Claim",
-    scenario_zh: "你在校內或校外受傷或生病，想申請學生團體保險理賠。",
-    scenario_en: "You were injured or ill on or off campus and want to file a student group insurance claim.",
-    target_unit_type: "office",
-    target_unit_id: "health_center",
-    recommended_service_categories: ["health", "student_affairs"],
-    required_documents: [
-      { zh: "醫療收據與診斷書", en: "Medical receipts and diagnosis certificate" },
-      { zh: "保險理賠申請表（向衛生保健組索取）", en: "Insurance claim form (from Health Services Division)" },
-      { zh: "學生證影本", en: "Copy of student ID" }
-    ],
-    navigation_tip_zh: "活動中心 2F｜衛生保健組，或學務處生活事務組",
-    navigation_tip_en: "Activity Center 2F｜Health Services Division, or Student Life Office",
-    steps: [
-      { zh: "就醫後保留所有收據與診斷書", en: "Keep all receipts and diagnosis certificates after medical treatment" },
-      { zh: "至衛生保健組取得理賠申請表", en: "Get the insurance claim form from the Health Services Division" },
-      { zh: "填妥後附上所有文件送件審查", en: "Complete the form and submit with all documents for review" }
-    ],
-    source_url: "https://studaffairs.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "task_club",
-    task_name_zh: "加入社團或參加校園活動",
-    task_name_en: "Join a Club or Participate in Campus Activities",
-    scenario_zh: "你想加入學生社團，或了解校園活動的報名方式。",
-    scenario_en: "You want to join a student club or learn how to sign up for campus activities.",
-    target_unit_type: "office",
-    target_unit_id: "osa_extracurricular",
-    recommended_service_categories: ["student_affairs"],
-    required_documents: [],
-    navigation_tip_zh: "活動中心 2F｜課外活動組，社博會時可直接報名",
-    navigation_tip_en: "Activity Center, 2F｜Extra-Curricular Division, or sign up at the Club Expo",
-    steps: [
-      { zh: "注意每學期初（通常第 1–2 週）舉辦的社團博覽會，現場報名", en: "Look out for the Club Expo held at the start of each semester (usually weeks 1–2) to sign up in person" },
-      { zh: "查詢社團資訊：至課外活動組詢問或查看學校公佈欄", en: "Find club information: ask at the Extra-Curricular Division or check bulletin boards" },
-      { zh: "也可透過社團社群媒體（Instagram / LINE）聯繫幹部加入", en: "You can also contact club officers through their social media (Instagram/LINE) to join" }
-    ],
-    source_url: "https://studaffairs.ccu.edu.tw/",
-    needs_manual_review: true
-  },
-  {
-    id: "task_graduation",
-    task_name_zh: "確認畢業資格",
-    task_name_en: "Confirm Graduation Requirements",
-    scenario_zh: "你即將畢業，想確認自己是否符合畢業資格及所需完成的手續。",
-    scenario_en: "You are nearing graduation and want to confirm eligibility and required procedures.",
-    target_unit_type: "office",
-    target_unit_id: "oaa_reg",
-    recommended_service_categories: ["academic_affairs", "registration"],
-    required_documents: [
-      { zh: "歷年成績單（系辦或教務處取得）", en: "Transcript of all academic years" }
-    ],
-    navigation_tip_zh: "先至系辦確認，再至行政大樓東棟 1F 教務處",
-    navigation_tip_en: "Confirm with department office first, then East Wing 1F Registration Division",
-    steps: [
-      { zh: "至系辦確認畢業必修學分是否修畢", en: "Go to your department office to confirm all required graduation credits are completed" },
-      { zh: "在 CCU Portal 查看畢業審查狀態", en: "Check your graduation review status on CCU Portal" },
-      { zh: "辦理離校手續：歸還圖書館借書、清繳相關費用", en: "Complete school-leaving procedures: return library books, clear outstanding fees" }
-    ],
-    source_url: "https://oaa.ccu.edu.tw/",
-    needs_manual_review: false
+    "id": "transportation",
+    "name_en": "Transportation",
+    "name_zh": "交通",
+    "icon": "Bus",
+    "description_en": "YouBike, buses, taxis, and airport transportation",
+    "description_zh": "YouBike、公車、計程車與機場交通",
+    "keywords": [
+      "bus",
+      "taxi",
+      "YouBike",
+      "airport",
+      "交通",
+      "公車",
+      "計程車",
+      "機場",
+      "民雄"
+    ]
   }
 ];
 
-// ============================================================
-// Search Engine (unchanged from original)
-// ============================================================
-export function searchByNeed(query: string, lang: "en" | "zh" = "en") {
-  const q = query.toLowerCase().trim();
+export const offices: Office[] = [
+  {
+    "id": "oia",
+    "name_zh": "國際事務處",
+    "name_en": "Office of International Affairs (OIA)",
+    "category": "office",
+    "service_categories": [
+      "international_support",
+      "registration",
+      "dormitory",
+      "career"
+    ],
+    "building_name_zh": "國際處",
+    "building_name_en": "Office of International Affairs Building",
+    "floor": "2F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "國際處 2F",
+    "indoor_location_note_en": "Office of International Affairs Building · 2F",
+    "function_desc_zh": "協助國際學生處理簽證、居留證、獎學金、報到、交換計畫、工作許可與生活適應問題。",
+    "function_desc_en": "Supports international students with visa/ARC, scholarships, registration, exchange programs, work permits, and daily life issues.",
+    "service_scope_zh": "簽證與居留證、獎學金、國際生報到、宿舍費繳費單、工作許可、國際學生生活輔導。",
+    "service_scope_en": "Visa and ARC, scholarships, international student registration, dormitory payment sheets, work permits, and life support.",
+    "common_scenarios_zh": "簽證、居留證、獎學金、工作許可、國際學生報到與生活問題。",
+    "common_scenarios_en": "Visa, ARC, scholarships, work permit, international student registration, and life support.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411 ext. 17619",
+    "email": "ccuoiais@ccu.edu.tw",
+    "official_url": "https://oia.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學國際事務處",
+    "latitude": 23.5606,
+    "longitude": 120.4736,
+    "source_url": "https://oia.ccu.edu.tw/",
+    "needs_manual_review": false
+  },
+  {
+    "id": "oaa",
+    "name_zh": "教務處",
+    "name_en": "Office of Academic Affairs",
+    "category": "office",
+    "service_categories": [
+      "academic_affairs",
+      "registration",
+      "course_issues",
+      "student_id"
+    ],
+    "building_name_zh": "行政大樓東棟",
+    "building_name_en": "East Wing, Administration Building",
+    "floor": "1F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "行政大樓東棟 1F",
+    "indoor_location_note_en": "East Wing, Administration Building · 1F",
+    "function_desc_zh": "辦理註冊、復學、休學、退學、選課、加退選、成績、學生證、學分抵免與畢業資格審查等教務事項。",
+    "function_desc_en": "Handles registration status, leave/reinstatement/withdrawal, course enrollment, grades, student ID reissue, credit transfer, and graduation review.",
+    "service_scope_zh": "註冊、學籍、選課、成績、學生證補發、學分抵免、畢業資格與證書。",
+    "service_scope_en": "Registration, enrollment status, course issues, grades, student ID, credit transfer, graduation requirements and certificates.",
+    "common_scenarios_zh": "註冊、學籍、選課、成績、學生證補發、學分抵免、畢業資格與證書。",
+    "common_scenarios_en": "Registration, enrollment status, course issues, grades, student ID, credit transfer, graduation requirements and certificates.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "",
+    "google_maps_query": "國立中正大學 行政大樓東棟",
+    "latitude": 23.564,
+    "longitude": 120.4714,
+    "source_url": "",
+    "needs_manual_review": false
+  },
+  {
+    "id": "oaa_admissions",
+    "name_zh": "教務處－招生組",
+    "name_en": "Division of Admissions, Office of Academic Affairs",
+    "category": "office",
+    "service_categories": [
+      "registration",
+      "academic_affairs"
+    ],
+    "building_name_zh": "行政大樓東棟",
+    "building_name_en": "East Wing, Administration Building",
+    "floor": "2F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "行政大樓東棟 2F",
+    "indoor_location_note_en": "East Wing, Administration Building · 2F",
+    "function_desc_zh": "負責學生招生、申請、考試、考生陳情、申訴與退費等業務。",
+    "function_desc_en": "Responsible for student admissions, applications, examinations, candidates' petitions, appeals, and refunds.",
+    "service_scope_zh": "各類招生試務辦理；考生陳情、申訴與退費；公文、工讀生與郵件管理。",
+    "service_scope_en": "Enrollment and examination affairs; candidates' petitions, appeals, and refunds; document, work-study student, and email management.",
+    "common_scenarios_zh": "各類招生試務辦理；考生陳情、申訴與退費；公文、工讀生與郵件管理。",
+    "common_scenarios_en": "Enrollment and examination affairs; candidates' petitions, appeals, and refunds; document, work-study student, and email management.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "",
+    "google_maps_query": "國立中正大學 行政大樓東棟",
+    "latitude": 23.564,
+    "longitude": 120.4714,
+    "source_url": "",
+    "needs_manual_review": true
+  },
+  {
+    "id": "ctld",
+    "name_zh": "教學發展中心",
+    "name_en": "Center for Teaching and Learning Development",
+    "category": "office",
+    "service_categories": [
+      "academic_affairs"
+    ],
+    "building_name_zh": "行政大樓東棟",
+    "building_name_en": "East Wing, Administration Building",
+    "floor": "2F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "行政大樓東棟 2F",
+    "indoor_location_note_en": "East Wing, Administration Building · 2F",
+    "function_desc_zh": "辦理教學意見調查、教學與學習支持資源、TA 認證培訓、教師教學輔導與評鑑。",
+    "function_desc_en": "Administers course evaluation surveys, teaching and learning support resources, TA training, instructional consultation, and teaching evaluation.",
+    "service_scope_zh": "教學意見調查、教學支持、TA 認證培訓、教學改進與評鑑。",
+    "service_scope_en": "Course evaluation surveys, teaching support, TA certification, teaching improvement, and evaluation.",
+    "common_scenarios_zh": "教學意見調查、教學支持、TA 認證培訓、教學改進與評鑑。",
+    "common_scenarios_en": "Course evaluation surveys, teaching support, TA certification, teaching improvement, and evaluation.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "",
+    "google_maps_query": "國立中正大學 行政大樓東棟",
+    "latitude": 23.564,
+    "longitude": 120.4714,
+    "source_url": "",
+    "needs_manual_review": true
+  },
+  {
+    "id": "osa",
+    "name_zh": "學生事務處－學務長室",
+    "name_en": "Office of Student Affairs / Dean of Student Affairs Office",
+    "category": "office",
+    "service_categories": [
+      "student_affairs"
+    ],
+    "building_name_zh": "行政大樓西棟",
+    "building_name_en": "West Wing, Administration Building",
+    "floor": "2F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "行政大樓西棟 2F",
+    "indoor_location_note_en": "West Wing, Administration Building · 2F",
+    "function_desc_zh": "負責學生事務政策制定、跨單位協調、學生行政流程與申訴問題處理。",
+    "function_desc_en": "Responsible for student affairs policy making, cross-department coordination, administrative procedures, and student appeals.",
+    "service_scope_zh": "學生事務政策、跨單位協調、學生行政流程與申訴協助。",
+    "service_scope_en": "Student affairs policy, cross-unit coordination, administrative procedures, and student appeals.",
+    "common_scenarios_zh": "學生事務政策、跨單位協調、學生行政流程與申訴協助。",
+    "common_scenarios_en": "Student affairs policy, cross-unit coordination, administrative procedures, and student appeals.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "",
+    "google_maps_query": "國立中正大學 行政大樓西棟",
+    "latitude": 23.564,
+    "longitude": 120.4714,
+    "source_url": "",
+    "needs_manual_review": true
+  },
+  {
+    "id": "osa_life",
+    "name_zh": "學務處－生活事務組",
+    "name_en": "Student Life and Activities Office, Office of Student Affairs",
+    "category": "office",
+    "service_categories": [
+      "student_affairs",
+      "dormitory",
+      "tuition",
+      "health"
+    ],
+    "building_name_zh": "行政大樓西棟",
+    "building_name_en": "West Wing, Administration Building",
+    "floor": "2F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "行政大樓西棟 2F",
+    "indoor_location_note_en": "West Wing, Administration Building · 2F",
+    "function_desc_zh": "辦理獎助學金、就學貸款、學雜費減免、弱勢助學、學生宿舍、校外賃居、學生保險、失物招領與校安值勤。",
+    "function_desc_en": "Handles scholarships, student loans, tuition reduction, financial aid, dormitory services, off-campus housing, student insurance, lost and found, and campus security duty.",
+    "service_scope_zh": "獎助學金、就學貸款、學雜費減免、學生宿舍、學生保險、失物招領與學生生活服務。",
+    "service_scope_en": "Scholarships, loans, tuition reduction, dormitory services, student insurance, lost and found, and student life support.",
+    "common_scenarios_zh": "獎助學金、就學貸款、學雜費減免、學生宿舍、學生保險、失物招領與學生生活服務。",
+    "common_scenarios_en": "Scholarships, loans, tuition reduction, dormitory services, student insurance, lost and found, and student life support.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "",
+    "google_maps_query": "國立中正大學 行政大樓西棟",
+    "latitude": 23.564,
+    "longitude": 120.4714,
+    "source_url": "",
+    "needs_manual_review": true
+  },
+  {
+    "id": "osa_extracurricular",
+    "name_zh": "學務處－課外活動組",
+    "name_en": "Division of Extra-Curricular Activities",
+    "category": "office",
+    "service_categories": [
+      "student_affairs"
+    ],
+    "building_name_zh": "活動中心",
+    "building_name_en": "Activity Center",
+    "floor": "2F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "活動中心 2F",
+    "indoor_location_note_en": "Activity Center · 2F",
+    "function_desc_zh": "辦理社團成立、社團幹部交接、社團活動與校內大型活動、社團經費補助、活動中心場地設備借用與學生會行政支援。",
+    "function_desc_en": "Handles club establishment, officer handover, student organization activities, major campus events, funding applications, Activity Center facilities, and Student Association administrative support.",
+    "service_scope_zh": "社團成立、社團活動、經費補助、活動中心場地與設備借用、學生自治組織行政流程支援。",
+    "service_scope_en": "Club establishment, activities, funding, Activity Center facility booking, and student governance administrative support.",
+    "common_scenarios_zh": "社團成立、社團活動、經費補助、活動中心場地與設備借用、學生自治組織行政流程支援。",
+    "common_scenarios_en": "Club establishment, activities, funding, Activity Center facility booking, and student governance administrative support.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "",
+    "google_maps_query": "國立中正大學 活動中心",
+    "latitude": 23.5618,
+    "longitude": 120.4728,
+    "source_url": "",
+    "needs_manual_review": true
+  },
+  {
+    "id": "osa_safety",
+    "name_zh": "學務處－學生安全組",
+    "name_en": "Division of Student Safety",
+    "category": "office",
+    "service_categories": [
+      "student_affairs",
+      "health"
+    ],
+    "building_name_zh": "行政大樓西棟",
+    "building_name_en": "West Wing, Administration Building",
+    "floor": "B1",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "行政大樓西棟 B1",
+    "indoor_location_note_en": "West Wing, Administration Building · B1",
+    "function_desc_zh": "負責學生安全事件通報、24小時校安中心、校園安全資訊、防災預警、學生生活輔導、性別事件處理、法律諮詢與兵役申請諮詢。",
+    "function_desc_en": "Handles student safety incident reporting, 24-hour campus safety support, safety information, risk alerts, student support, gender incident support, legal consultation, and military service applications.",
+    "service_scope_zh": "緊急通報、校園安全資訊、學生生活輔導、性別事件處理、法律諮詢、兵役緩徵與出境諮詢。",
+    "service_scope_en": "Emergency reporting, campus safety information, student care, gender incident support, legal consultation, and military service deferment/travel consultation.",
+    "common_scenarios_zh": "緊急通報、校園安全資訊、學生生活輔導、性別事件處理、法律諮詢、兵役緩徵與出境諮詢。",
+    "common_scenarios_en": "Emergency reporting, campus safety information, student care, gender incident support, legal consultation, and military service deferment/travel consultation.",
+    "office_hours": "24-hour hotline / Office hours Mon–Fri 08:30–17:00",
+    "phone": "05-2721114 / 0910-896-288",
+    "email": "",
+    "official_url": "",
+    "google_maps_query": "國立中正大學 行政大樓西棟",
+    "latitude": 23.564,
+    "longitude": 120.4714,
+    "source_url": "",
+    "needs_manual_review": true
+  },
+  {
+    "id": "health_center",
+    "name_zh": "衛生保健組",
+    "name_en": "Health Services Division",
+    "category": "office",
+    "service_categories": [
+      "health",
+      "student_affairs"
+    ],
+    "building_name_zh": "活動中心",
+    "building_name_en": "Activity Center",
+    "floor": "2F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "活動中心 2F",
+    "indoor_location_note_en": "Activity Center · 2F",
+    "function_desc_zh": "提供新生健康檢查、健康諮詢、校園意外簡易處理、傳染病防治、學生團體保險理賠、健康測量與醫療器材借用等服務。",
+    "function_desc_en": "Provides new student health examinations, health consultation, basic first aid, infectious disease prevention, student insurance claims, health measurements, and medical equipment loans.",
+    "service_scope_zh": "健檢、簡易醫療處理、保險理賠、健康教育、器材借用、校園活動救護支援。",
+    "service_scope_en": "Health checkups, basic first aid, insurance claims, health education, equipment loans, and first-aid support for campus events.",
+    "common_scenarios_zh": "健檢、簡易醫療處理、保險理賠、健康教育、器材借用、校園活動救護支援。",
+    "common_scenarios_en": "Health checkups, basic first aid, insurance claims, health education, equipment loans, and first-aid support for campus events.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "",
+    "google_maps_query": "國立中正大學 活動中心",
+    "latitude": 23.5618,
+    "longitude": 120.4728,
+    "source_url": "",
+    "needs_manual_review": true
+  },
+  {
+    "id": "counseling",
+    "name_zh": "諮商中心",
+    "name_en": "Counseling Center",
+    "category": "office",
+    "service_categories": [
+      "counseling",
+      "health",
+      "student_affairs"
+    ],
+    "building_name_zh": "活動中心",
+    "building_name_en": "Activity Center",
+    "floor": "3F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "活動中心 3F",
+    "indoor_location_note_en": "Activity Center · 3F",
+    "function_desc_zh": "提供心理諮商、心理測驗與評估、學習適應、生涯輔導、學生申訴諮詢、身心障礙學生支持、心理健康講座與自殺防治。",
+    "function_desc_en": "Provides counseling, psychological assessments, academic adaptation and career counseling, student complaint consultation, disability support, mental health activities, and suicide prevention.",
+    "service_scope_zh": "個別晤談、情緒支持、心理測驗、學習與生涯輔導、身心障礙學生資源支持。",
+    "service_scope_en": "Individual counseling, emotional support, assessments, academic/career counseling, and support for students with disabilities.",
+    "common_scenarios_zh": "個別晤談、情緒支持、心理測驗、學習與生涯輔導、身心障礙學生資源支持。",
+    "common_scenarios_en": "Individual counseling, emotional support, assessments, academic/career counseling, and support for students with disabilities.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "https://advising.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 活動中心",
+    "latitude": 23.5618,
+    "longitude": 120.4728,
+    "source_url": "https://advising.ccu.edu.tw/",
+    "needs_manual_review": false
+  },
+  {
+    "id": "oga_services",
+    "name_zh": "總務處－事務組",
+    "name_en": "General Services Division, Office of General Affairs",
+    "category": "office",
+    "service_categories": [
+      "student_affairs",
+      "dormitory"
+    ],
+    "building_name_zh": "行政大樓西棟",
+    "building_name_en": "West Wing, Administration Building",
+    "floor": "1F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "行政大樓西棟 1F",
+    "indoor_location_note_en": "West Wing, Administration Building · 1F",
+    "function_desc_zh": "處理公共意外責任險、宿舍水電費、校園環境維護、招待所住宿、行政大樓門禁設備、簡易維修與事務組工讀生管理。",
+    "function_desc_en": "Handles public liability insurance, dormitory utilities, campus environment maintenance, guesthouse/accommodation, administration building access and equipment, simple repairs, and work-study management.",
+    "service_scope_zh": "保險、宿舍水電、校園環境、門禁設備、簡易維修與住宿管理。",
+    "service_scope_en": "Insurance, dormitory utilities, campus environment, access control, simple repairs, and accommodation management.",
+    "common_scenarios_zh": "保險、宿舍水電、校園環境、門禁設備、簡易維修與住宿管理。",
+    "common_scenarios_en": "Insurance, dormitory utilities, campus environment, access control, simple repairs, and accommodation management.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "https://oga.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 行政大樓西棟",
+    "latitude": 23.564,
+    "longitude": 120.4714,
+    "source_url": "https://oga.ccu.edu.tw/",
+    "needs_manual_review": true
+  },
+  {
+    "id": "cashier",
+    "name_zh": "總務處－出納組",
+    "name_en": "Cashier Division, Office of General Affairs",
+    "category": "office",
+    "service_categories": [
+      "tuition",
+      "registration"
+    ],
+    "building_name_zh": "行政大樓西棟",
+    "building_name_en": "West Wing, Administration Building",
+    "floor": "1F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "行政大樓西棟 1F",
+    "indoor_location_note_en": "West Wing, Administration Building · 1F",
+    "function_desc_zh": "辦理人事費轉帳撥款、學生註冊與就學相關繳費業務。",
+    "function_desc_en": "Handles personnel expense transfers and student registration/payment-related services.",
+    "service_scope_zh": "學雜費、註冊相關繳費、行政付款與出納服務。",
+    "service_scope_en": "Tuition/fees, registration-related payments, administrative payments, and cashier services.",
+    "common_scenarios_zh": "學雜費、註冊相關繳費、行政付款與出納服務。",
+    "common_scenarios_en": "Tuition/fees, registration-related payments, administrative payments, and cashier services.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "https://oga.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 行政大樓西棟",
+    "latitude": 23.564,
+    "longitude": 120.4714,
+    "source_url": "https://oga.ccu.edu.tw/",
+    "needs_manual_review": true
+  },
+  {
+    "id": "property_management",
+    "name_zh": "總務處－保管組",
+    "name_en": "Property Management Division, Office of General Affairs",
+    "category": "office",
+    "service_categories": [
+      "student_affairs"
+    ],
+    "building_name_zh": "行政大樓西棟",
+    "building_name_en": "West Wing, Administration Building",
+    "floor": "B1",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "行政大樓西棟 B1",
+    "indoor_location_note_en": "West Wing, Administration Building · B1",
+    "function_desc_zh": "辦理畢業學位服借用與歸還、畢業生離校手續、校內鑰匙管理、活動器材與公物借用及紀念品管理。",
+    "function_desc_en": "Handles graduation gown rental/return, graduate school-leaving procedures, campus key management, equipment/public property loans, and souvenir management.",
+    "service_scope_zh": "學位服借用、畢業離校、鑰匙與器材公物借用。",
+    "service_scope_en": "Graduation gown rental, school-leaving procedures, campus keys, and equipment/public item loans.",
+    "common_scenarios_zh": "學位服借用、畢業離校、鑰匙與器材公物借用。",
+    "common_scenarios_en": "Graduation gown rental, school-leaving procedures, campus keys, and equipment/public item loans.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "https://oga.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 行政大樓西棟",
+    "latitude": 23.564,
+    "longitude": 120.4714,
+    "source_url": "https://oga.ccu.edu.tw/",
+    "needs_manual_review": true
+  },
+  {
+    "id": "personnel",
+    "name_zh": "人事室",
+    "name_en": "Personnel Office",
+    "category": "office",
+    "service_categories": [
+      "student_affairs"
+    ],
+    "building_name_zh": "行政大樓西棟",
+    "building_name_en": "West Wing, Administration Building",
+    "floor": "4F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "行政大樓西棟 4F",
+    "indoor_location_note_en": "West Wing, Administration Building · 4F",
+    "function_desc_zh": "處理人事相關行政與申訴事項。",
+    "function_desc_en": "Handles personnel-related administration and appeals.",
+    "service_scope_zh": "人事行政與申訴。",
+    "service_scope_en": "Personnel administration and appeals.",
+    "common_scenarios_zh": "人事行政與申訴。",
+    "common_scenarios_en": "Personnel administration and appeals.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "",
+    "google_maps_query": "國立中正大學 行政大樓西棟",
+    "latitude": 23.564,
+    "longitude": 120.4714,
+    "source_url": "",
+    "needs_manual_review": true
+  },
+  {
+    "id": "vehicle_control",
+    "name_zh": "駐警隊－車輛管控中心",
+    "name_en": "Campus Security - Vehicle Control Center",
+    "category": "office",
+    "service_categories": [
+      "student_affairs",
+      "transportation"
+    ],
+    "building_name_zh": "活動中心",
+    "building_name_en": "Activity Center",
+    "floor": "2F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "活動中心 2F",
+    "indoor_location_note_en": "Activity Center · 2F",
+    "function_desc_zh": "負責車輛通行證、違規收費與催繳、離校審核、行動不便者臨時通行證、疑似廢棄車輛處理與意見反應。",
+    "function_desc_en": "Handles vehicle permits, violation charges/collection, school-leaving review, temporary passes for people with mobility impairments, abandoned vehicle handling, and feedback.",
+    "service_scope_zh": "車輛通行證、違規費用、離校審核、臨時通行證與廢棄車輛處理。",
+    "service_scope_en": "Vehicle permits, violation fees, school-leaving review, temporary passes, and abandoned vehicles.",
+    "common_scenarios_zh": "車輛通行證、違規費用、離校審核、臨時通行證與廢棄車輛處理。",
+    "common_scenarios_en": "Vehicle permits, violation fees, school-leaving review, temporary passes, and abandoned vehicles.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "",
+    "google_maps_query": "國立中正大學 活動中心",
+    "latitude": 23.5618,
+    "longitude": 120.4728,
+    "source_url": "",
+    "needs_manual_review": true
+  },
+  {
+    "id": "secretariat",
+    "name_zh": "秘書室",
+    "name_en": "Office of the Secretariat",
+    "category": "office",
+    "service_categories": [
+      "student_affairs"
+    ],
+    "building_name_zh": "行政大樓西棟",
+    "building_name_en": "West Wing, Administration Building",
+    "floor": "5F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "行政大樓西棟 5F",
+    "indoor_location_note_en": "West Wing, Administration Building · 5F",
+    "function_desc_zh": "辦理秘書室行政、工讀生指導、工讀金管理與核銷等相關業務。",
+    "function_desc_en": "Handles Secretariat administration, work-study student guidance, allowance management, and reimbursement.",
+    "service_scope_zh": "秘書室行政、工讀生與工讀金管理。",
+    "service_scope_en": "Secretariat administration and work-study management.",
+    "common_scenarios_zh": "秘書室行政、工讀生與工讀金管理。",
+    "common_scenarios_en": "Secretariat administration and work-study management.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "secretar@ccu.edu.tw",
+    "official_url": "https://secretar.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 行政大樓西棟",
+    "latitude": 23.564,
+    "longitude": 120.4714,
+    "source_url": "https://secretar.ccu.edu.tw/",
+    "needs_manual_review": true
+  },
+  {
+    "id": "career_center",
+    "name_zh": "職涯發展中心",
+    "name_en": "Career Development Center",
+    "category": "office",
+    "service_categories": [
+      "career"
+    ],
+    "building_name_zh": "共同教室大樓",
+    "building_name_en": "Center for General Education",
+    "floor": "5F",
+    "room_zh": "502室",
+    "room_en": "Room 502",
+    "indoor_location_note_zh": "共同教室大樓 5F 502室",
+    "indoor_location_note_en": "Center for General Education · 5F Room 502",
+    "function_desc_zh": "提供企業招募資訊、履歷投遞、校園徵才、企業參訪、職涯探索測評、職涯講座、履歷求職技能指導、個別職涯諮詢、校外實習申請與職涯相關計畫資訊。",
+    "function_desc_en": "Provides employer listings, application opportunities, campus recruitment, company visits, career assessments, career workshops, resume and job readiness guidance, one-on-one counseling, internship guidance, and career-related programs.",
+    "service_scope_zh": "徵才、實習、履歷、職涯諮詢、企業參訪與工作坊。",
+    "service_scope_en": "Recruitment, internships, resumes, career counseling, company visits, and workshops.",
+    "common_scenarios_zh": "徵才、實習、履歷、職涯諮詢、企業參訪與工作坊。",
+    "common_scenarios_en": "Recruitment, internships, resumes, career counseling, company visits, and workshops.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "https://career.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 共同教室大樓",
+    "latitude": 23.5628,
+    "longitude": 120.4738,
+    "source_url": "https://career.ccu.edu.tw/",
+    "needs_manual_review": true
+  },
+  {
+    "id": "it_center",
+    "name_zh": "資訊處",
+    "name_en": "Information Technology Office",
+    "category": "office",
+    "service_categories": [
+      "it_support"
+    ],
+    "building_name_zh": "圖書資訊大樓",
+    "building_name_en": "Information and Library Building",
+    "floor": "",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "圖書資訊大樓",
+    "indoor_location_note_en": "Information and Library Building ·",
+    "function_desc_zh": "提供校園 SSO、WebMail、Microsoft 365、Google Workspace、校園網路、Wi-Fi、eCourse2、雲端教室、軟體下載與資訊技術諮詢。",
+    "function_desc_en": "Supports SSO, WebMail, Microsoft 365, Google Workspace, campus network, Wi-Fi, eCourse2, cloud classrooms, software downloads, and IT consultation.",
+    "service_scope_zh": "帳號、信箱、網路、eCourse、校園授權軟體與資訊諮詢。",
+    "service_scope_en": "Accounts, email, network, eCourse, campus licensed software, and IT consultation.",
+    "common_scenarios_zh": "帳號、信箱、網路、eCourse、校園授權軟體與資訊諮詢。",
+    "common_scenarios_en": "Accounts, email, network, eCourse, campus licensed software, and IT consultation.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "https://it.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 圖書資訊大樓",
+    "latitude": 23.5646,
+    "longitude": 120.4728,
+    "source_url": "https://it.ccu.edu.tw/",
+    "needs_manual_review": true
+  },
+  {
+    "id": "library",
+    "name_zh": "圖書館",
+    "name_en": "National Chung Cheng University Library",
+    "category": "office",
+    "service_categories": [
+      "library",
+      "academic_affairs"
+    ],
+    "building_name_zh": "圖書資訊大樓",
+    "building_name_en": "Information and Library Building",
+    "floor": "",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "圖書資訊大樓",
+    "indoor_location_note_en": "Information and Library Building ·",
+    "function_desc_zh": "提供圖書借還、續借、預約、電子資源、資料庫、期刊、多媒體資源、空間申請、自學空間、館際合作、研究協助與論文上傳服務。",
+    "function_desc_en": "Provides borrowing, renewal, reservation, e-resources, databases, journals, multimedia resources, space reservations, self-study spaces, interlibrary loan, research support, and thesis upload.",
+    "service_scope_zh": "借書、資料庫、自習與討論空間、館際合作與研究支援。",
+    "service_scope_en": "Book borrowing, databases, study/discussion spaces, interlibrary loan, and research support.",
+    "common_scenarios_zh": "借書、資料庫、自習與討論空間、館際合作與研究支援。",
+    "common_scenarios_en": "Book borrowing, databases, study/discussion spaces, interlibrary loan, and research support.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "https://www.lib.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 圖書資訊大樓",
+    "latitude": 23.5646,
+    "longitude": 120.4728,
+    "source_url": "https://www.lib.ccu.edu.tw/",
+    "needs_manual_review": false
+  },
+  {
+    "id": "language_center",
+    "name_zh": "語言中心",
+    "name_en": "Language Center",
+    "category": "office",
+    "service_categories": [
+      "academic_affairs",
+      "international_support"
+    ],
+    "building_name_zh": "圖書資訊大樓",
+    "building_name_en": "Information and Library Building",
+    "floor": "",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "圖書資訊大樓",
+    "indoor_location_note_en": "Information and Library Building ·",
+    "function_desc_zh": "提供英語與外語課程、國際學生華語課程與華語輔導、語言學習輔導、同儕輔導、自學資源與英檢語言測驗資訊。",
+    "function_desc_en": "Offers English and foreign language courses, Mandarin courses and support for international students, language tutoring, peer support, self-access resources, and language test information.",
+    "service_scope_zh": "外語課程、華語課程、語言輔導與語言測驗資訊。",
+    "service_scope_en": "Foreign language courses, Mandarin courses, language support, and test information.",
+    "common_scenarios_zh": "外語課程、華語課程、語言輔導與語言測驗資訊。",
+    "common_scenarios_en": "Foreign language courses, Mandarin courses, language support, and test information.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2720411",
+    "email": "",
+    "official_url": "https://lc.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 圖書資訊大樓",
+    "latitude": 23.5646,
+    "longitude": 120.4728,
+    "source_url": "https://lc.ccu.edu.tw/",
+    "needs_manual_review": true
+  },
+  {
+    "id": "dorm_service",
+    "name_zh": "宿舍服務中心",
+    "name_en": "Dormitory Service Center",
+    "category": "office",
+    "service_categories": [
+      "dormitory"
+    ],
+    "building_name_zh": "學士班宿舍 C 棟 / 研究生宿舍 B 棟",
+    "building_name_en": "Undergraduate Dorm Block C / Graduate Dorm Block B",
+    "floor": "1F",
+    "room_zh": "學士班宿舍 C 棟一樓櫃台 / 研究生宿舍 B 棟",
+    "room_en": "Undergraduate Dorm C 1F counter / Graduate Dorm B",
+    "indoor_location_note_zh": "學士班宿舍 C 棟 / 研究生宿舍 B 棟 1F 學士班宿舍 C 棟一樓櫃台 / 研究生宿舍 B 棟",
+    "indoor_location_note_en": "Undergraduate Dorm Block C / Graduate Dorm Block B · 1F Undergraduate Dorm C 1F counter / Graduate Dorm B",
+    "function_desc_zh": "辦理宿舍報到、住宿相關諮詢、包裹代收委託與宿舍服務。",
+    "function_desc_en": "Handles dormitory check-in, housing inquiries, proxy parcel collection, and dormitory services.",
+    "service_scope_zh": "宿舍報到、包裹代收、住宿諮詢與宿舍服務。",
+    "service_scope_en": "Dormitory check-in, parcel proxy collection, housing inquiries, and dormitory services.",
+    "common_scenarios_zh": "宿舍報到、包裹代收、住宿諮詢與宿舍服務。",
+    "common_scenarios_en": "Dormitory check-in, parcel proxy collection, housing inquiries, and dormitory services.",
+    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
+    "phone": "05-2721422 ext. 73399 / ext. 82121",
+    "email": "",
+    "official_url": "",
+    "google_maps_query": "國立中正大學宿舍服務中心",
+    "latitude": 23.5605,
+    "longitude": 120.473,
+    "source_url": "",
+    "needs_manual_review": true
+  }
+];
+
+export const departments: Department[] = [
+  {
+    "id": "college_engineering_office",
+    "name_zh": "工學院院辦",
+    "name_en": "College of Engineering Administrative Office",
+    "category": "department",
+    "college_zh": "工學院",
+    "college_en": "College of Engineering",
+    "building_name_zh": "創新大樓",
+    "building_name_en": "Innovation Building",
+    "floor": "1F",
+    "room_zh": "111室",
+    "room_en": "Room 111",
+    "indoor_location_note_zh": "創新大樓 1F 111室",
+    "indoor_location_note_en": "Innovation Building · 1F Room 111",
+    "function_desc_zh": "工學院院辦辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "College of Engineering Administrative Office office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 創新大樓",
+    "latitude": 23.5628,
+    "longitude": 120.4752,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": true
+  },
+  {
+    "id": "college_humanities_office",
+    "name_zh": "文學院院辦",
+    "name_en": "College of Humanities Office",
+    "category": "department",
+    "college_zh": "文學院",
+    "college_en": "College of Humanities",
+    "building_name_zh": "文學院大樓",
+    "building_name_en": "College of Humanities Building",
+    "floor": "5F",
+    "room_zh": "501室",
+    "room_en": "Room 501",
+    "indoor_location_note_zh": "文學院大樓 5F 501室",
+    "indoor_location_note_en": "College of Humanities Building · 5F Room 501",
+    "function_desc_zh": "文學院院辦辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "College of Humanities Office office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 文學院大樓",
+    "latitude": 23.5613,
+    "longitude": 120.47,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": true
+  },
+  {
+    "id": "college_law_office",
+    "name_zh": "法學院院辦",
+    "name_en": "College of Law Office",
+    "category": "department",
+    "college_zh": "法學院",
+    "college_en": "College of Law",
+    "building_name_zh": "法學院大樓",
+    "building_name_en": "College of Law Building",
+    "floor": "5F",
+    "room_zh": "511室",
+    "room_en": "Room 511",
+    "indoor_location_note_zh": "法學院大樓 5F 511室",
+    "indoor_location_note_en": "College of Law Building · 5F Room 511",
+    "function_desc_zh": "法學院院辦辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "College of Law Office office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 法學院大樓",
+    "latitude": 23.5592,
+    "longitude": 120.4702,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": true
+  },
+  {
+    "id": "college_social_sciences_office",
+    "name_zh": "社會科學院院辦",
+    "name_en": "College of Social Sciences Office",
+    "category": "department",
+    "college_zh": "社會科學院",
+    "college_en": "College of Social Sciences",
+    "building_name_zh": "社會科學院大樓西棟",
+    "building_name_en": "College of Social Sciences Building",
+    "floor": "5F",
+    "room_zh": "513室",
+    "room_en": "Room 513",
+    "indoor_location_note_zh": "社會科學院大樓西棟 5F 513室",
+    "indoor_location_note_en": "College of Social Sciences Building · 5F Room 513",
+    "function_desc_zh": "社會科學院院辦辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "College of Social Sciences Office office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 社會科學院大樓西棟",
+    "latitude": 23.5589,
+    "longitude": 120.4717,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": true
+  },
+  {
+    "id": "college_education_office",
+    "name_zh": "教育學院院辦",
+    "name_en": "College of Education Office",
+    "category": "department",
+    "college_zh": "教育學院",
+    "college_en": "College of Education",
+    "building_name_zh": "教育學院大樓",
+    "building_name_en": "College of Education Building",
+    "floor": "3F",
+    "room_zh": "303室",
+    "room_en": "Room 303",
+    "indoor_location_note_zh": "教育學院大樓 3F 303室",
+    "indoor_location_note_en": "College of Education Building · 3F Room 303",
+    "function_desc_zh": "教育學院院辦辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "College of Education Office office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 教育學院大樓",
+    "latitude": 23.5594,
+    "longitude": 120.472,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": true
+  },
+  {
+    "id": "college_science_office",
+    "name_zh": "理學院院辦",
+    "name_en": "College of Science Office",
+    "category": "department",
+    "college_zh": "理學院",
+    "college_en": "College of Science",
+    "building_name_zh": "理學院大樓數學館",
+    "building_name_en": "Mathematics Building, College of Science Building",
+    "floor": "3F",
+    "room_zh": "302室",
+    "room_en": "Room 302",
+    "indoor_location_note_zh": "理學院大樓數學館 3F 302室",
+    "indoor_location_note_en": "Mathematics Building, College of Science Building · 3F Room 302",
+    "function_desc_zh": "理學院院辦辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "College of Science Office office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 理學院大樓數學館",
+    "latitude": 23.5639,
+    "longitude": 120.4687,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": true
+  },
+  {
+    "id": "college_management_office",
+    "name_zh": "管理學院院辦",
+    "name_en": "College of Management Office",
+    "category": "department",
+    "college_zh": "管理學院",
+    "college_en": "College of Management",
+    "building_name_zh": "管理學院大樓",
+    "building_name_en": "College of Management Building",
+    "floor": "2F",
+    "room_zh": "211室",
+    "room_en": "Room 211",
+    "indoor_location_note_zh": "管理學院大樓 2F 211室",
+    "indoor_location_note_en": "College of Management Building · 2F Room 211",
+    "function_desc_zh": "管理學院院辦辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "College of Management Office office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 管理學院大樓",
+    "latitude": 23.562,
+    "longitude": 120.4695,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": true
+  },
+  {
+    "id": "ee",
+    "name_zh": "電機工程學系暨研究所",
+    "name_en": "Department of Electrical Engineering",
+    "category": "department",
+    "college_zh": "工學院",
+    "college_en": "College of Engineering",
+    "building_name_zh": "工學院一館",
+    "building_name_en": "College of Engineering I",
+    "floor": "3F",
+    "room_zh": "332辦公室",
+    "room_en": "Room 332",
+    "indoor_location_note_zh": "工學院一館 3F 332辦公室",
+    "indoor_location_note_en": "College of Engineering I · 3F Room 332",
+    "function_desc_zh": "電機工程學系暨研究所辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Electrical Engineering office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 工學院一館",
+    "latitude": 23.5632,
+    "longitude": 120.4762,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "telecom_research",
+    "name_zh": "電信研究中心",
+    "name_en": "Center for Telecommunication Research",
+    "category": "department",
+    "college_zh": "工學院",
+    "college_en": "College of Engineering",
+    "building_name_zh": "創新大樓",
+    "building_name_en": "Innovation Building",
+    "floor": "4F",
+    "room_zh": "414辦公室",
+    "room_en": "Room 414",
+    "indoor_location_note_zh": "創新大樓 4F 414辦公室",
+    "indoor_location_note_en": "Innovation Building · 4F Room 414",
+    "function_desc_zh": "電信研究中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Center for Telecommunication Research office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 創新大樓",
+    "latitude": 23.5628,
+    "longitude": 120.4752,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "csie_digital_learning",
+    "name_zh": "資訊工程學系數位學習科技研究中心",
+    "name_en": "CSIE Digital Learning Technology Research Center",
+    "category": "department",
+    "college_zh": "工學院",
+    "college_en": "College of Engineering",
+    "building_name_zh": "創新大樓",
+    "building_name_en": "Innovation Building",
+    "floor": "3F",
+    "room_zh": "321辦公室",
+    "room_en": "Room 321",
+    "indoor_location_note_zh": "創新大樓 3F 321辦公室",
+    "indoor_location_note_en": "Innovation Building · 3F Room 321",
+    "function_desc_zh": "資訊工程學系數位學習科技研究中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "CSIE Digital Learning Technology Research Center office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 創新大樓",
+    "latitude": 23.5628,
+    "longitude": 120.4752,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "csie_sponsored_research",
+    "name_zh": "資訊工程學系建教合作中心",
+    "name_en": "CSIE Center for Sponsored Research Projects",
+    "category": "department",
+    "college_zh": "工學院",
+    "college_en": "College of Engineering",
+    "building_name_zh": "創新大樓",
+    "building_name_en": "Innovation Building",
+    "floor": "3F",
+    "room_zh": "320辦公室",
+    "room_en": "Room 320",
+    "indoor_location_note_zh": "創新大樓 3F 320辦公室",
+    "indoor_location_note_en": "Innovation Building · 3F Room 320",
+    "function_desc_zh": "資訊工程學系建教合作中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "CSIE Center for Sponsored Research Projects office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 創新大樓",
+    "latitude": 23.5628,
+    "longitude": 120.4752,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "csie",
+    "name_zh": "資訊工程學系",
+    "name_en": "Department of Computer Science and Information Engineering",
+    "category": "department",
+    "college_zh": "工學院",
+    "college_en": "College of Engineering",
+    "building_name_zh": "工學院一館",
+    "building_name_en": "College of Engineering I",
+    "floor": "1F",
+    "room_zh": "107辦公室",
+    "room_en": "Room 107",
+    "indoor_location_note_zh": "工學院一館 1F 107辦公室",
+    "indoor_location_note_en": "College of Engineering I · 1F Room 107",
+    "function_desc_zh": "資訊工程學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Computer Science and Information Engineering office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 工學院一館",
+    "latitude": 23.5632,
+    "longitude": 120.4762,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "comm_eng",
+    "name_zh": "通訊工程學系",
+    "name_en": "Department of Communications Engineering",
+    "category": "department",
+    "college_zh": "工學院",
+    "college_en": "College of Engineering",
+    "building_name_zh": "創新大樓",
+    "building_name_en": "Innovation Building",
+    "floor": "4F",
+    "room_zh": "429辦公室",
+    "room_en": "Room 429",
+    "indoor_location_note_zh": "創新大樓 4F 429辦公室",
+    "indoor_location_note_en": "Innovation Building · 4F Room 429",
+    "function_desc_zh": "通訊工程學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Communications Engineering office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 創新大樓",
+    "latitude": 23.5628,
+    "longitude": 120.4752,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "aimhi",
+    "name_zh": "前瞻製造系統頂尖研究中心",
+    "name_en": "Advanced Institute of Manufacturing with High-Tech Innovations",
+    "category": "department",
+    "college_zh": "工學院",
+    "college_en": "College of Engineering",
+    "building_name_zh": "創新大樓",
+    "building_name_en": "Innovation Building",
+    "floor": "2F",
+    "room_zh": "209~210辦公室",
+    "room_en": "Room 209~210",
+    "indoor_location_note_zh": "創新大樓 2F 209~210辦公室",
+    "indoor_location_note_en": "Innovation Building · 2F Room 209~210",
+    "function_desc_zh": "前瞻製造系統頂尖研究中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Advanced Institute of Manufacturing with High-Tech Innovations office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 創新大樓",
+    "latitude": 23.5628,
+    "longitude": 120.4752,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "ome",
+    "name_zh": "光機電整合工程研究所",
+    "name_en": "Institute of Opto-Mechatronics Engineering",
+    "category": "department",
+    "college_zh": "工學院",
+    "college_en": "College of Engineering",
+    "building_name_zh": "創新大樓",
+    "building_name_en": "Innovation Building",
+    "floor": "2F",
+    "room_zh": "234辦公室",
+    "room_en": "Room 234",
+    "indoor_location_note_zh": "創新大樓 2F 234辦公室",
+    "indoor_location_note_en": "Innovation Building · 2F Room 234",
+    "function_desc_zh": "光機電整合工程研究所辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Institute of Opto-Mechatronics Engineering office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 創新大樓",
+    "latitude": 23.5628,
+    "longitude": 120.4752,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "chemical_engineering",
+    "name_zh": "化學工程學系",
+    "name_en": "Department of Chemical Engineering",
+    "category": "department",
+    "college_zh": "工學院",
+    "college_en": "College of Engineering",
+    "building_name_zh": "工學院二館",
+    "building_name_en": "College of Engineering II",
+    "floor": "3F",
+    "room_zh": "322辦公室",
+    "room_en": "Room 322",
+    "indoor_location_note_zh": "工學院二館 3F 322辦公室",
+    "indoor_location_note_en": "College of Engineering II · 3F Room 322",
+    "function_desc_zh": "化學工程學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Chemical Engineering office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 工學院二館",
+    "latitude": 23.5624,
+    "longitude": 120.4764,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "mechanical_engineering",
+    "name_zh": "機械工程學系",
+    "name_en": "Department of Mechanical Engineering",
+    "category": "department",
+    "college_zh": "工學院",
+    "college_en": "College of Engineering",
+    "building_name_zh": "工學院二館",
+    "building_name_en": "College of Engineering II",
+    "floor": "3F",
+    "room_zh": "314辦公室",
+    "room_en": "Room 314",
+    "indoor_location_note_zh": "工學院二館 3F 314辦公室",
+    "indoor_location_note_en": "College of Engineering II · 3F Room 314",
+    "function_desc_zh": "機械工程學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Mechanical Engineering office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 工學院二館",
+    "latitude": 23.5624,
+    "longitude": 120.4764,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "athletic_sports",
+    "name_zh": "運動競技學系",
+    "name_en": "Department of Athletic Sports",
+    "category": "department",
+    "college_zh": "教育學院",
+    "college_en": "College of Education",
+    "building_name_zh": "田徑場",
+    "building_name_en": "Track and Field",
+    "floor": "1F",
+    "room_zh": "108辦公室",
+    "room_en": "Room 108",
+    "indoor_location_note_zh": "田徑場 1F 108辦公室",
+    "indoor_location_note_en": "Track and Field · 1F Room 108",
+    "function_desc_zh": "運動競技學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Athletic Sports office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 田徑場",
+    "latitude": 23.5586,
+    "longitude": 120.4763,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "graduate_education",
+    "name_zh": "教育學研究所",
+    "name_en": "Graduate Institute of Education",
+    "category": "department",
+    "college_zh": "教育學院",
+    "college_en": "College of Education",
+    "building_name_zh": "教育學院",
+    "building_name_en": "College of Education Building",
+    "floor": "4F",
+    "room_zh": "409~410辦公室",
+    "room_en": "Room 409~410",
+    "indoor_location_note_zh": "教育學院 4F 409~410辦公室",
+    "indoor_location_note_en": "College of Education Building · 4F Room 409~410",
+    "function_desc_zh": "教育學研究所辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Graduate Institute of Education office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 教育學院",
+    "latitude": 23.5594,
+    "longitude": 120.472,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "educational_gerontology",
+    "name_zh": "高齡教育研究中心",
+    "name_en": "Institute of Educational Gerontology",
+    "category": "department",
+    "college_zh": "教育學院",
+    "college_en": "College of Education",
+    "building_name_zh": "教育學院",
+    "building_name_en": "College of Education Building",
+    "floor": "2F",
+    "room_zh": "202辦公室",
+    "room_en": "Room 202",
+    "indoor_location_note_zh": "教育學院 2F 202辦公室",
+    "indoor_location_note_en": "College of Education Building · 2F Room 202",
+    "function_desc_zh": "高齡教育研究中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Institute of Educational Gerontology office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 教育學院",
+    "latitude": 23.5594,
+    "longitude": 120.472,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "teacher_education",
+    "name_zh": "師資培育中心教育學研究所",
+    "name_en": "Center for Teacher Education / Graduate Institute of Education",
+    "category": "department",
+    "college_zh": "教育學院",
+    "college_en": "College of Education",
+    "building_name_zh": "教育學院",
+    "building_name_en": "College of Education Building",
+    "floor": "1F",
+    "room_zh": "112辦公室",
+    "room_en": "Room 112",
+    "indoor_location_note_zh": "教育學院 1F 112辦公室",
+    "indoor_location_note_en": "College of Education Building · 1F Room 112",
+    "function_desc_zh": "師資培育中心教育學研究所辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Center for Teacher Education / Graduate Institute of Education office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 教育學院",
+    "latitude": 23.5594,
+    "longitude": 120.472,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "adult_continuing_education",
+    "name_zh": "成人及繼續教育學系",
+    "name_en": "Department of Adult and Continuing Education",
+    "category": "department",
+    "college_zh": "教育學院",
+    "college_en": "College of Education",
+    "building_name_zh": "教育學院",
+    "building_name_en": "College of Education Building",
+    "floor": "3F",
+    "room_zh": "308辦公室",
+    "room_en": "Room 308",
+    "indoor_location_note_zh": "教育學院 3F 308辦公室",
+    "indoor_location_note_en": "College of Education Building · 3F Room 308",
+    "function_desc_zh": "成人及繼續教育學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Adult and Continuing Education office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 教育學院",
+    "latitude": 23.5594,
+    "longitude": 120.472,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "criminology",
+    "name_zh": "犯罪防治學系",
+    "name_en": "Department of Criminology",
+    "category": "department",
+    "college_zh": "教育學院",
+    "college_en": "College of Education",
+    "building_name_zh": "教育學院",
+    "building_name_en": "College of Education Building",
+    "floor": "6F",
+    "room_zh": "609辦公室",
+    "room_en": "Room 609",
+    "indoor_location_note_zh": "教育學院 6F 609辦公室",
+    "indoor_location_note_en": "College of Education Building · 6F Room 609",
+    "function_desc_zh": "犯罪防治學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Criminology office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 教育學院",
+    "latitude": 23.5594,
+    "longitude": 120.472,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "taiwan_lit",
+    "name_zh": "台灣文學與創意應用研究所",
+    "name_en": "Graduate Institute of Taiwan Literature and Innovation",
+    "category": "department",
+    "college_zh": "文學院",
+    "college_en": "College of Humanities",
+    "building_name_zh": "文學院大樓",
+    "building_name_en": "College of Humanities Building",
+    "floor": "1F",
+    "room_zh": "107-1辦公室",
+    "room_en": "Room 107-1",
+    "indoor_location_note_zh": "文學院大樓 1F 107-1辦公室",
+    "indoor_location_note_en": "College of Humanities Building · 1F Room 107-1",
+    "function_desc_zh": "台灣文學與創意應用研究所辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Graduate Institute of Taiwan Literature and Innovation office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 文學院大樓",
+    "latitude": 23.5613,
+    "longitude": 120.47,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "chinese_lit",
+    "name_zh": "中國文學系",
+    "name_en": "Department of Chinese Literature",
+    "category": "department",
+    "college_zh": "文學院",
+    "college_en": "College of Humanities",
+    "building_name_zh": "文學院大樓",
+    "building_name_en": "College of Humanities Building",
+    "floor": "2F",
+    "room_zh": "205辦公室",
+    "room_en": "Room 205",
+    "indoor_location_note_zh": "文學院大樓 2F 205辦公室",
+    "indoor_location_note_en": "College of Humanities Building · 2F Room 205",
+    "function_desc_zh": "中國文學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Chinese Literature office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 文學院大樓",
+    "latitude": 23.5613,
+    "longitude": 120.47,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "foreign_languages",
+    "name_zh": "外國語文學系",
+    "name_en": "Department of Foreign Languages and Literature",
+    "category": "department",
+    "college_zh": "文學院",
+    "college_en": "College of Humanities",
+    "building_name_zh": "文學院大樓",
+    "building_name_en": "College of Humanities Building",
+    "floor": "2F",
+    "room_zh": "286辦公室",
+    "room_en": "Room 286",
+    "indoor_location_note_zh": "文學院大樓 2F 286辦公室",
+    "indoor_location_note_en": "College of Humanities Building · 2F Room 286",
+    "function_desc_zh": "外國語文學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Foreign Languages and Literature office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 文學院大樓",
+    "latitude": 23.5613,
+    "longitude": 120.47,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "history",
+    "name_zh": "歷史學系",
+    "name_en": "Department of History",
+    "category": "department",
+    "college_zh": "文學院",
+    "college_en": "College of Humanities",
+    "building_name_zh": "文學院大樓",
+    "building_name_en": "College of Humanities Building",
+    "floor": "2F",
+    "room_zh": "208辦公室",
+    "room_en": "Room 208",
+    "indoor_location_note_zh": "文學院大樓 2F 208辦公室",
+    "indoor_location_note_en": "College of Humanities Building · 2F Room 208",
+    "function_desc_zh": "歷史學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of History office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 文學院大樓",
+    "latitude": 23.5613,
+    "longitude": 120.47,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "east_asian_classics",
+    "name_zh": "東亞漢籍與儒學研究中心",
+    "name_en": "East Asian Center for Classical Chinese Texts and Confucian Studies",
+    "category": "department",
+    "college_zh": "文學院",
+    "college_en": "College of Humanities",
+    "building_name_zh": "文學院大樓",
+    "building_name_en": "College of Humanities Building",
+    "floor": "2F",
+    "room_zh": "203辦公室",
+    "room_en": "Room 203",
+    "indoor_location_note_zh": "文學院大樓 2F 203辦公室",
+    "indoor_location_note_en": "College of Humanities Building · 2F Room 203",
+    "function_desc_zh": "東亞漢籍與儒學研究中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "East Asian Center for Classical Chinese Texts and Confucian Studies office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 文學院大樓",
+    "latitude": 23.5613,
+    "longitude": 120.47,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "philosophy",
+    "name_zh": "哲學系",
+    "name_en": "Department of Philosophy",
+    "category": "department",
+    "college_zh": "文學院",
+    "college_en": "College of Humanities",
+    "building_name_zh": "文學院大樓",
+    "building_name_en": "College of Humanities Building",
+    "floor": "4F",
+    "room_zh": "405辦公室",
+    "room_en": "Room 405",
+    "indoor_location_note_zh": "文學院大樓 4F 405辦公室",
+    "indoor_location_note_en": "College of Humanities Building · 4F Room 405",
+    "function_desc_zh": "哲學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Philosophy office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 文學院大樓",
+    "latitude": 23.5613,
+    "longitude": 120.47,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "linguistics",
+    "name_zh": "語言學研究所",
+    "name_en": "Graduate Institute of Linguistics",
+    "category": "department",
+    "college_zh": "文學院",
+    "college_en": "College of Humanities",
+    "building_name_zh": "文學院大樓",
+    "building_name_en": "College of Humanities Building",
+    "floor": "4F",
+    "room_zh": "410辦公室",
+    "room_en": "Room 410",
+    "indoor_location_note_zh": "文學院大樓 4F 410辦公室",
+    "indoor_location_note_en": "College of Humanities Building · 4F Room 410",
+    "function_desc_zh": "語言學研究所辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Graduate Institute of Linguistics office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 文學院大樓",
+    "latitude": 23.5613,
+    "longitude": 120.47,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "law",
+    "name_zh": "法律學系暨研究所",
+    "name_en": "Department of Law",
+    "category": "department",
+    "college_zh": "法學院",
+    "college_en": "College of Law",
+    "building_name_zh": "法學院大樓",
+    "building_name_en": "College of Law Building",
+    "floor": "3F",
+    "room_zh": "309辦公室",
+    "room_en": "Room 309",
+    "indoor_location_note_zh": "法學院大樓 3F 309辦公室",
+    "indoor_location_note_en": "College of Law Building · 3F Room 309",
+    "function_desc_zh": "法律學系暨研究所辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Law office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 法學院大樓",
+    "latitude": 23.5592,
+    "longitude": 120.4702,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "financial_economic_law",
+    "name_zh": "財經法律學系暨研究所",
+    "name_en": "Department of Financial and Economic Law",
+    "category": "department",
+    "college_zh": "法學院",
+    "college_en": "College of Law",
+    "building_name_zh": "法學院大樓",
+    "building_name_en": "College of Law Building",
+    "floor": "4F",
+    "room_zh": "411辦公室",
+    "room_en": "Room 411",
+    "indoor_location_note_zh": "法學院大樓 4F 411辦公室",
+    "indoor_location_note_en": "College of Law Building · 4F Room 411",
+    "function_desc_zh": "財經法律學系暨研究所辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Financial and Economic Law office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 法學院大樓",
+    "latitude": 23.5592,
+    "longitude": 120.4702,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "economics",
+    "name_zh": "經濟學系",
+    "name_en": "Department of Economics",
+    "category": "department",
+    "college_zh": "管理學院",
+    "college_en": "College of Management",
+    "building_name_zh": "管理學院大樓",
+    "building_name_en": "College of Management Building",
+    "floor": "2F",
+    "room_zh": "206辦公室",
+    "room_en": "Room 206",
+    "indoor_location_note_zh": "管理學院大樓 2F 206辦公室",
+    "indoor_location_note_en": "College of Management Building · 2F Room 206",
+    "function_desc_zh": "經濟學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Economics office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 管理學院大樓",
+    "latitude": 23.562,
+    "longitude": 120.4695,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "finance",
+    "name_zh": "財務金融學系",
+    "name_en": "Department of Finance",
+    "category": "department",
+    "college_zh": "管理學院",
+    "college_en": "College of Management",
+    "building_name_zh": "管理學院大樓",
+    "building_name_en": "College of Management Building",
+    "floor": "2F",
+    "room_zh": "203辦公室",
+    "room_en": "Room 203",
+    "indoor_location_note_zh": "管理學院大樓 2F 203辦公室",
+    "indoor_location_note_en": "College of Management Building · 2F Room 203",
+    "function_desc_zh": "財務金融學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Finance office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 管理學院大樓",
+    "latitude": 23.562,
+    "longitude": 120.4695,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "business_administration",
+    "name_zh": "企業管理學系",
+    "name_en": "Department of Business Administration",
+    "category": "department",
+    "college_zh": "管理學院",
+    "college_en": "College of Management",
+    "building_name_zh": "管理學院大樓",
+    "building_name_en": "College of Management Building",
+    "floor": "2F",
+    "room_zh": "216辦公室",
+    "room_en": "Room 216",
+    "indoor_location_note_zh": "管理學院大樓 2F 216辦公室",
+    "indoor_location_note_en": "College of Management Building · 2F Room 216",
+    "function_desc_zh": "企業管理學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Business Administration office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 管理學院大樓",
+    "latitude": 23.562,
+    "longitude": 120.4695,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "ait",
+    "name_zh": "會計與資訊科技學系",
+    "name_en": "Department of Accounting and Information Technology",
+    "category": "department",
+    "college_zh": "管理學院",
+    "college_en": "College of Management",
+    "building_name_zh": "創新大樓（管理學院樓層）",
+    "building_name_en": "Innovation Building (College of Management Section)",
+    "floor": "2F",
+    "room_zh": "267辦公室",
+    "room_en": "Room 267",
+    "indoor_location_note_zh": "創新大樓（管理學院樓層） 2F 267辦公室",
+    "indoor_location_note_en": "Innovation Building (College of Management Section) · 2F Room 267",
+    "function_desc_zh": "會計與資訊科技學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Accounting and Information Technology office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 創新大樓（管理學院樓層）",
+    "latitude": 23.5628,
+    "longitude": 120.4752,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "ait_excellence",
+    "name_zh": "會計與資訊科技卓越中心",
+    "name_en": "Center for Excellence in Accounting and Information Technology",
+    "category": "department",
+    "college_zh": "管理學院",
+    "college_en": "College of Management",
+    "building_name_zh": "創新大樓（管理學院樓層）",
+    "building_name_en": "Innovation Building (College of Management Section)",
+    "floor": "3F",
+    "room_zh": "377辦公室",
+    "room_en": "Room 377",
+    "indoor_location_note_zh": "創新大樓（管理學院樓層） 3F 377辦公室",
+    "indoor_location_note_en": "Innovation Building (College of Management Section) · 3F Room 377",
+    "function_desc_zh": "會計與資訊科技卓越中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Center for Excellence in Accounting and Information Technology office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 創新大樓（管理學院樓層）",
+    "latitude": 23.5628,
+    "longitude": 120.4752,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "information_management",
+    "name_zh": "資訊管理學系",
+    "name_en": "Department of Information Management",
+    "category": "department",
+    "college_zh": "管理學院",
+    "college_en": "College of Management",
+    "building_name_zh": "管理學院大樓",
+    "building_name_en": "College of Management Building",
+    "floor": "2F",
+    "room_zh": "219辦公室",
+    "room_en": "Room 219",
+    "indoor_location_note_zh": "管理學院大樓 2F 219辦公室",
+    "indoor_location_note_en": "College of Management Building · 2F Room 219",
+    "function_desc_zh": "資訊管理學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Information Management office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 管理學院大樓",
+    "latitude": 23.562,
+    "longitude": 120.4695,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "aging_innovation",
+    "name_zh": "高齡跨域創新研究中心",
+    "name_en": "Interdisciplinary Center for Aging Innovation",
+    "category": "department",
+    "college_zh": "管理學院",
+    "college_en": "College of Management",
+    "building_name_zh": "創新大樓（管理學院樓層）",
+    "building_name_en": "Innovation Building (College of Management Section)",
+    "floor": "4F",
+    "room_zh": "487辦公室",
+    "room_en": "Room 487",
+    "indoor_location_note_zh": "創新大樓（管理學院樓層） 4F 487辦公室",
+    "indoor_location_note_en": "Innovation Building (College of Management Section) · 4F Room 487",
+    "function_desc_zh": "高齡跨域創新研究中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Interdisciplinary Center for Aging Innovation office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 創新大樓（管理學院樓層）",
+    "latitude": 23.5628,
+    "longitude": 120.4752,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "fintech_master",
+    "name_zh": "金融科技碩士學位學程",
+    "name_en": "Master Program in Financial Technology",
+    "category": "department",
+    "college_zh": "管理學院",
+    "college_en": "College of Management",
+    "building_name_zh": "管理學院大樓",
+    "building_name_en": "College of Management Building",
+    "floor": "1F",
+    "room_zh": "110辦公室",
+    "room_en": "Room 110",
+    "indoor_location_note_zh": "管理學院大樓 1F 110辦公室",
+    "indoor_location_note_en": "College of Management Building · 1F Room 110",
+    "function_desc_zh": "金融科技碩士學位學程辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Master Program in Financial Technology office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 管理學院大樓",
+    "latitude": 23.562,
+    "longitude": 120.4695,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "imf",
+    "name_zh": "國際財務金融管理碩士學位學程",
+    "name_en": "International Master Program in Global Finance (IMF)",
+    "category": "department",
+    "college_zh": "管理學院",
+    "college_en": "College of Management",
+    "building_name_zh": "管理學院大樓",
+    "building_name_en": "College of Management Building",
+    "floor": "1F",
+    "room_zh": "110辦公室",
+    "room_en": "Room 110",
+    "indoor_location_note_zh": "管理學院大樓 1F 110辦公室",
+    "indoor_location_note_en": "College of Management Building · 1F Room 110",
+    "function_desc_zh": "國際財務金融管理碩士學位學程辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "International Master Program in Global Finance (IMF) office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 管理學院大樓",
+    "latitude": 23.562,
+    "longitude": 120.4695,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "manufacturing_integration",
+    "name_zh": "製商整合研究中心",
+    "name_en": "Center for Manufacturing Integration",
+    "category": "department",
+    "college_zh": "管理學院",
+    "college_en": "College of Management",
+    "building_name_zh": "創新大樓（管理學院樓層）",
+    "building_name_en": "Innovation Building (College of Management Section)",
+    "floor": "4F",
+    "room_zh": "481辦公室",
+    "room_en": "Room 481",
+    "indoor_location_note_zh": "創新大樓（管理學院樓層） 4F 481辦公室",
+    "indoor_location_note_en": "Innovation Building (College of Management Section) · 4F Room 481",
+    "function_desc_zh": "製商整合研究中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Center for Manufacturing Integration office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 創新大樓（管理學院樓層）",
+    "latitude": 23.5628,
+    "longitude": 120.4752,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "math",
+    "name_zh": "數學系",
+    "name_en": "Department of Mathematics",
+    "category": "department",
+    "college_zh": "理學院",
+    "college_en": "College of Science",
+    "building_name_zh": "理學院一館（數學館）",
+    "building_name_en": "College of Science Building I",
+    "floor": "3F",
+    "room_zh": "309-310辦公室",
+    "room_en": "Room 309-310",
+    "indoor_location_note_zh": "理學院一館（數學館） 3F 309-310辦公室",
+    "indoor_location_note_en": "College of Science Building I · 3F Room 309-310",
+    "function_desc_zh": "數學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Mathematics office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 理學院一館（數學館）",
+    "latitude": 23.5639,
+    "longitude": 120.4687,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "physics",
+    "name_zh": "物理學系",
+    "name_en": "Department of Physics",
+    "category": "department",
+    "college_zh": "理學院",
+    "college_en": "College of Science",
+    "building_name_zh": "理學院一館（物理館）",
+    "building_name_en": "College of Science Building I",
+    "floor": "2F",
+    "room_zh": "204辦公室",
+    "room_en": "Room 204",
+    "indoor_location_note_zh": "理學院一館（物理館） 2F 204辦公室",
+    "indoor_location_note_en": "College of Science Building I · 2F Room 204",
+    "function_desc_zh": "物理學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Physics office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 理學院一館（物理館）",
+    "latitude": 23.5639,
+    "longitude": 120.4687,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "chem_biochem",
+    "name_zh": "化學暨生物化學系",
+    "name_en": "Department of Chemistry and Biochemistry",
+    "category": "department",
+    "college_zh": "理學院",
+    "college_en": "College of Science",
+    "building_name_zh": "理學院二館",
+    "building_name_en": "College of Science Building II",
+    "floor": "3F",
+    "room_zh": "305辦公室",
+    "room_en": "Room 305",
+    "indoor_location_note_zh": "理學院二館 3F 305辦公室",
+    "indoor_location_note_en": "College of Science Building II · 3F Room 305",
+    "function_desc_zh": "化學暨生物化學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Chemistry and Biochemistry office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 理學院二館",
+    "latitude": 23.5634,
+    "longitude": 120.4679,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "earth_environment",
+    "name_zh": "地球與環境科學系",
+    "name_en": "Department of Earth and Environmental Sciences",
+    "category": "department",
+    "college_zh": "理學院",
+    "college_en": "College of Science",
+    "building_name_zh": "理學院一館（地科館）",
+    "building_name_en": "College of Science Building I",
+    "floor": "2F",
+    "room_zh": "201辦公室",
+    "room_en": "Room 201",
+    "indoor_location_note_zh": "理學院一館（地科館） 2F 201辦公室",
+    "indoor_location_note_en": "College of Science Building I · 2F Room 201",
+    "function_desc_zh": "地球與環境科學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Earth and Environmental Sciences office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 理學院一館（地科館）",
+    "latitude": 23.5639,
+    "longitude": 120.4687,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "biomedical_sciences",
+    "name_zh": "生物醫學科學系",
+    "name_en": "Department of Biomedical Sciences",
+    "category": "department",
+    "college_zh": "理學院",
+    "college_en": "College of Science",
+    "building_name_zh": "理學院二館",
+    "building_name_en": "College of Science Building II",
+    "floor": "2F",
+    "room_zh": "235辦公室",
+    "room_en": "Room 235",
+    "indoor_location_note_zh": "理學院二館 2F 235辦公室",
+    "indoor_location_note_en": "College of Science Building II · 2F Room 235",
+    "function_desc_zh": "生物醫學科學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Biomedical Sciences office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 理學院二館",
+    "latitude": 23.5634,
+    "longitude": 120.4679,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "interdisciplinary_studies",
+    "name_zh": "紫荊不分系學士學位學程",
+    "name_en": "Bachelor Program in Interdisciplinary Studies",
+    "category": "department",
+    "college_zh": "其他",
+    "college_en": "Other",
+    "building_name_zh": "共同教室大樓",
+    "building_name_en": "Center for General Education",
+    "floor": "2F",
+    "room_zh": "210辦公室",
+    "room_en": "Room 210",
+    "indoor_location_note_zh": "共同教室大樓 2F 210辦公室",
+    "indoor_location_note_en": "Center for General Education · 2F Room 210",
+    "function_desc_zh": "紫荊不分系學士學位學程辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_en": "Bachelor Program in Interdisciplinary Studies office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": [
+      "department_offices",
+      "academic_affairs",
+      "course_issues"
+    ],
+    "official_url": "",
+    "google_maps_query": "國立中正大學 共同教室大樓",
+    "latitude": 23.5628,
+    "longitude": 120.4738,
+    "source_url": "",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "social_welfare",
+    "name_zh": "社會福利學系暨研究所",
+    "name_en": "Department of Social Welfare",
+    "category": "department",
+    "college_zh": "社會科學院",
+    "college_en": "College of Social Sciences",
+    "building_name_zh": "社會科學院大樓",
+    "building_name_en": "College of Social Sciences Building",
+    "floor": "",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "社會科學院大樓",
+    "indoor_location_note_en": "College of Social Sciences Building",
+    "function_desc_zh": "社會福利學系暨研究所辦公室，提供系所行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Social Welfare office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": ["department_offices", "academic_affairs", "course_issues"],
+    "official_url": "https://dsw.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 社會科學院大樓",
+    "latitude": 23.5636,
+    "longitude": 120.4692,
+    "source_url": "https://dsw.ccu.edu.tw/",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "psychology",
+    "name_zh": "心理學系暨研究所",
+    "name_en": "Department of Psychology",
+    "category": "department",
+    "college_zh": "社會科學院",
+    "college_en": "College of Social Sciences",
+    "building_name_zh": "社會科學院大樓",
+    "building_name_en": "College of Social Sciences Building",
+    "floor": "4F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "社會科學院大樓 4F",
+    "indoor_location_note_en": "College of Social Sciences Building · 4F",
+    "function_desc_zh": "心理學系暨研究所辦公室，提供系所行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Psychology office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": ["department_offices", "academic_affairs", "course_issues"],
+    "official_url": "https://psy.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 社會科學院大樓",
+    "latitude": 23.5636,
+    "longitude": 120.4692,
+    "source_url": "https://psy.ccu.edu.tw/",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "political_science",
+    "name_zh": "政治學系暨研究所",
+    "name_en": "Department of Political Science",
+    "category": "department",
+    "college_zh": "社會科學院",
+    "college_en": "College of Social Sciences",
+    "building_name_zh": "社會科學院大樓",
+    "building_name_en": "College of Social Sciences Building",
+    "floor": "7F",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "社會科學院大樓 7F",
+    "indoor_location_note_en": "College of Social Sciences Building · 7F",
+    "function_desc_zh": "政治學系暨研究所辦公室，提供系所行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Political Science office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": ["department_offices", "academic_affairs", "course_issues"],
+    "official_url": "https://polsci.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 社會科學院大樓",
+    "latitude": 23.5636,
+    "longitude": 120.4692,
+    "source_url": "https://polsci.ccu.edu.tw/",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "communication",
+    "name_zh": "傳播學系含電訊傳播碩士班",
+    "name_en": "Department of Communication",
+    "category": "department",
+    "college_zh": "社會科學院",
+    "college_en": "College of Social Sciences",
+    "building_name_zh": "社會科學院大樓",
+    "building_name_en": "College of Social Sciences Building",
+    "floor": "2F",
+    "room_zh": "R212辦公室",
+    "room_en": "Room R212",
+    "indoor_location_note_zh": "社會科學院大樓 2F R212辦公室",
+    "indoor_location_note_en": "College of Social Sciences Building · 2F Room R212",
+    "function_desc_zh": "傳播學系辦公室，提供系所行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Communication office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": ["department_offices", "academic_affairs", "course_issues"],
+    "official_url": "https://telecom.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 社會科學院大樓",
+    "latitude": 23.5636,
+    "longitude": 120.4692,
+    "source_url": "https://telecom.ccu.edu.tw/",
+    "needs_manual_review": false,
+    "is_college_office": false
+  },
+  {
+    "id": "labor_relations",
+    "name_zh": "勞工關係學系暨研究所",
+    "name_en": "Department of Labor Relations",
+    "category": "department",
+    "college_zh": "社會科學院",
+    "college_en": "College of Social Sciences",
+    "building_name_zh": "社會科學院大樓",
+    "building_name_en": "College of Social Sciences Building",
+    "floor": "5F",
+    "room_zh": "528辦公室",
+    "room_en": "Room 528",
+    "indoor_location_note_zh": "社會科學院大樓 5F 528辦公室",
+    "indoor_location_note_en": "College of Social Sciences Building · 5F Room 528",
+    "function_desc_zh": "勞工關係學系暨研究所辦公室，提供系所行政、課程與學生諮詢服務。",
+    "function_desc_en": "Department of Labor Relations office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": ["department_offices", "academic_affairs", "course_issues"],
+    "official_url": "https://labor.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 社會科學院大樓",
+    "latitude": 23.5636,
+    "longitude": 120.4692,
+    "source_url": "https://labor.ccu.edu.tw/",
+    "needs_manual_review": false,
+    "is_college_office": false
+  },
+  {
+    "id": "isia",
+    "name_zh": "戰略暨國際事務研究所",
+    "name_en": "Graduate Institute of Strategic and International Affairs",
+    "category": "department",
+    "college_zh": "社會科學院",
+    "college_en": "College of Social Sciences",
+    "building_name_zh": "社會科學院大樓",
+    "building_name_en": "College of Social Sciences Building",
+    "floor": "",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "社會科學院大樓",
+    "indoor_location_note_en": "College of Social Sciences Building",
+    "function_desc_zh": "戰略暨國際事務研究所辦公室，提供研究所行政、課程與學生諮詢服務。",
+    "function_desc_en": "Graduate Institute of Strategic and International Affairs office. Provides administrative, curriculum, and student inquiry services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": ["department_offices", "academic_affairs", "course_issues"],
+    "official_url": "https://isia.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 社會科學院大樓",
+    "latitude": 23.5636,
+    "longitude": 120.4692,
+    "source_url": "https://isia.ccu.edu.tw/",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "cogsci",
+    "name_zh": "認知科學博士學位學程",
+    "name_en": "Doctoral Program in Cognitive Science",
+    "category": "department",
+    "college_zh": "社會科學院",
+    "college_en": "College of Social Sciences",
+    "building_name_zh": "社會科學院大樓",
+    "building_name_en": "College of Social Sciences Building",
+    "floor": "",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "社會科學院大樓",
+    "indoor_location_note_en": "College of Social Sciences Building",
+    "function_desc_zh": "認知科學博士學位學程辦公室，提供跨領域博士課程行政服務。",
+    "function_desc_en": "Doctoral Program in Cognitive Science office. Provides interdisciplinary doctoral program administrative services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": ["department_offices", "academic_affairs", "course_issues"],
+    "official_url": "https://cogsci.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 社會科學院大樓",
+    "latitude": 23.5636,
+    "longitude": 120.4692,
+    "source_url": "https://cogsci.ccu.edu.tw/",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "stemphd",
+    "name_zh": "跨領域科學國際博士學位學程",
+    "name_en": "International PhD Program in Interdisciplinary Science",
+    "category": "department",
+    "college_zh": "理學院",
+    "college_en": "College of Science",
+    "building_name_zh": "理學院大樓",
+    "building_name_en": "College of Science Building",
+    "floor": "",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "理學院大樓",
+    "indoor_location_note_en": "College of Science Building",
+    "function_desc_zh": "跨領域科學國際博士學位學程辦公室，提供國際博士課程行政服務。",
+    "function_desc_en": "International PhD Program in Interdisciplinary Science office. Provides international doctoral program administrative services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": ["department_offices", "academic_affairs", "course_issues", "international_support"],
+    "official_url": "https://stemphd.ccu.edu.tw",
+    "google_maps_query": "國立中正大學 理學院",
+    "latitude": 23.5655,
+    "longitude": 120.4700,
+    "source_url": "https://stemphd.ccu.edu.tw",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "ccitelearning",
+    "name_zh": "雲端計算與物聯網數位學習碩士在職專班",
+    "name_en": "Master's Program in Cloud Computing and IoT (e-Learning, In-Service)",
+    "category": "department",
+    "college_zh": "工學院",
+    "college_en": "College of Engineering",
+    "building_name_zh": "工學院大樓",
+    "building_name_en": "College of Engineering Building",
+    "floor": "",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "工學院大樓",
+    "indoor_location_note_en": "College of Engineering Building",
+    "function_desc_zh": "雲端計算與物聯網數位學習碩士在職專班辦公室，提供在職進修碩士課程行政服務。",
+    "function_desc_en": "Master's Program in Cloud Computing and IoT (In-Service) office. Provides in-service master's program administrative services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": ["department_offices", "academic_affairs", "course_issues"],
+    "official_url": "https://ccitelearning.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 工學院一館",
+    "latitude": 23.5632,
+    "longitude": 120.4762,
+    "source_url": "https://ccitelearning.ccu.edu.tw/",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "ibpme",
+    "name_zh": "機械工程國際學士學位學程",
+    "name_en": "International Bachelor's Program in Mechanical Engineering",
+    "category": "department",
+    "college_zh": "工學院",
+    "college_en": "College of Engineering",
+    "building_name_zh": "工學院二館",
+    "building_name_en": "College of Engineering II",
+    "floor": "3F",
+    "room_zh": "314辦公室（與機械系同）",
+    "room_en": "Room 314 (shared with ME Dept.)",
+    "indoor_location_note_zh": "工學院二館 3F 314辦公室",
+    "indoor_location_note_en": "College of Engineering II · 3F Room 314",
+    "function_desc_zh": "機械工程國際學士學位學程辦公室，提供英語授課國際學士課程行政服務。",
+    "function_desc_en": "International Bachelor's Program in Mechanical Engineering office. Provides English-taught international bachelor's program services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": ["department_offices", "academic_affairs", "course_issues", "international_support"],
+    "official_url": "https://ibpme.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 工學院二館",
+    "latitude": 23.5628,
+    "longitude": 120.4738,
+    "source_url": "https://ibpme.ccu.edu.tw/",
+    "needs_manual_review": false,
+    "is_college_office": false
+  },
+  {
+    "id": "emba",
+    "name_zh": "高階主管管理碩士在職專班",
+    "name_en": "Executive Master of Business Administration (EMBA)",
+    "category": "department",
+    "college_zh": "管理學院",
+    "college_en": "College of Management",
+    "building_name_zh": "管理學院大樓",
+    "building_name_en": "College of Management Building",
+    "floor": "",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "管理學院大樓",
+    "indoor_location_note_en": "College of Management Building",
+    "function_desc_zh": "高階主管管理碩士在職專班辦公室，提供在職進修 EMBA 課程行政服務。",
+    "function_desc_en": "EMBA office. Provides in-service executive MBA program administrative services.",
+    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
+    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
+    "service_categories": ["department_offices", "academic_affairs", "course_issues"],
+    "official_url": "https://emba.ccu.edu.tw/",
+    "google_maps_query": "國立中正大學 管理學院大樓",
+    "latitude": 23.562,
+    "longitude": 120.4695,
+    "source_url": "https://emba.ccu.edu.tw/",
+    "needs_manual_review": true,
+    "is_college_office": false
+  },
+  {
+    "id": "general_edu_center",
+    "name_zh": "通識教育中心",
+    "name_en": "Center for General Education",
+    "category": "department",
+    "college_zh": "其他",
+    "college_en": "Other",
+    "building_name_zh": "共同教室大樓",
+    "building_name_en": "Center for General Education Building",
+    "floor": "",
+    "room_zh": "",
+    "room_en": "",
+    "indoor_location_note_zh": "共同教室大樓",
+    "indoor_location_note_en": "Center for General Education Building",
+    "function_desc_zh": "通識教育中心，負責全校通識教育課程規劃、通識學分確認與相關行政。",
+    "function_desc_en": "Center for General Education. Responsible for planning general education courses, confirming general education credits, and related administration.",
+    "service_scope_zh": "通識課程諮詢、通識學分確認。",
+    "service_scope_en": "General education course consultation, general credit confirmation.",
+    "service_categories": ["department_offices", "academic_affairs", "course_issues"],
+    "official_url": "https://deptcge.ccu.edu.tw",
+    "google_maps_query": "國立中正大學 共同教室大樓",
+    "latitude": 23.5628,
+    "longitude": 120.4738,
+    "source_url": "https://deptcge.ccu.edu.tw",
+    "needs_manual_review": false,
+    "is_college_office": false
+  }
+
+];
+
+export const tasks: Task[] = [
+  {
+    "id": "arc_resident_visa",
+    "task_name_zh": "以居留簽證辦理居留證",
+    "task_name_en": "Changing Resident Visa to ARC",
+    "scenario_zh": "你剛到台灣，需要在入境或取得居留簽證後30日內申請居留證。",
+    "scenario_en": "You just arrived in Taiwan and must apply within 30 days of entry or obtaining a resident visa.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "international_support",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "使用線上申辦系統。",
+        "en": "Use the Students Online Application System."
+      },
+      {
+        "zh": "註冊並啟用帳號。",
+        "en": "Create and activate an account."
+      },
+      {
+        "zh": "填寫資料並上傳大頭照、護照、居留簽證、居住證明與入學/在學證明。",
+        "en": "Fill out the form and upload photo, passport, resident visa, proof of accommodation, and admission/enrollment proof."
+      },
+      {
+        "zh": "資料核准後繳費 NT$1,000/年。",
+        "en": "Pay NT$1,000 per year after approval."
+      },
+      {
+        "zh": "攜帶繳費收據至移民署領取居留證。",
+        "en": "Bring your payment receipt and collect your ARC at the NIA service center."
+      }
+    ]
+  },
+  {
+    "id": "arc_visitor_visa",
+    "task_name_zh": "以停留簽證辦理居留證",
+    "task_name_en": "Changing Visitor Visa to ARC",
+    "scenario_zh": "你持有停留簽證但想在台灣待超過六個月，應在簽證到期前15日申請。",
+    "scenario_en": "You have a visitor visa but want to stay in Taiwan for more than six months; apply 15 days before your visa expires.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "international_support",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "arc_extension",
+    "task_name_zh": "申請延期居留證",
+    "task_name_en": "Extending an ARC",
+    "scenario_zh": "你需要延長在台灣的居留期限。",
+    "scenario_en": "You need to extend your residency in Taiwan.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "international_support",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "go_to_nia",
+    "task_name_zh": "前往移民署",
+    "task_name_en": "Go to the National Immigration Agency (NIA)",
+    "scenario_zh": "你需要從學校前往嘉義市移民署服務站。",
+    "scenario_en": "You need to travel from CCU to the NIA Chiayi City Service Center.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "transportation",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "resident_visa_degree",
+    "task_name_zh": "申請居留簽證（學位生）",
+    "task_name_en": "Apply for Resident Visa (Degree-Seeking Student)",
+    "scenario_zh": "你是學位生，需要申請簽證。",
+    "scenario_en": "You are a degree-seeking student who needs to apply for a visa.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "international_support",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "resident_visa_exchange_year",
+    "task_name_zh": "申請居留簽證（學年交換生）",
+    "task_name_en": "Apply for Resident Visa (Year-Long Exchange Student)",
+    "scenario_zh": "你是交換生，會在台灣待超過六個月。",
+    "scenario_en": "You are an exchange student staying in Taiwan for more than six months.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "international_support",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "visitor_visa_exchange_semester",
+    "task_name_zh": "申請停留簽證（學期交換生）",
+    "task_name_en": "Apply for Visitor Visa (Semester Exchange Student)",
+    "scenario_zh": "你是交換生，只會在台灣待六個月以內。",
+    "scenario_en": "You are an exchange student staying in Taiwan for less than six months.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "international_support",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "find_oia",
+    "task_name_zh": "找國際處",
+    "task_name_en": "Go to the Office of International Affairs (OIA)",
+    "scenario_zh": "你有簽證、居留證、獎學金或國際學生相關問題需要協助。",
+    "scenario_en": "You need help with visa, ARC, scholarships, or international student-related issues.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "international_support",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "new_student_health_check",
+    "task_name_zh": "辦理新生健康檢查",
+    "task_name_en": "Complete New Student Health Examination",
+    "scenario_zh": "你是新生，需要完成學校規定的新生健康檢查。",
+    "scenario_en": "As a new student, you need to complete the required health examination.",
+    "target_unit_type": "office",
+    "target_unit_id": "health_center",
+    "category_id": "health",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "health_doc_reprint",
+    "task_name_zh": "健康檢查文件補印",
+    "task_name_en": "Reprinting Health Check Documents",
+    "scenario_zh": "你在健康檢查時忘了帶疫苗證明影本或其他文件。",
+    "scenario_en": "You forgot to bring vaccination records or other documents during the health check.",
+    "target_unit_type": "office",
+    "target_unit_id": "health_center",
+    "category_id": "health",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "nhi_card",
+    "task_name_zh": "申請健保卡",
+    "task_name_en": "Apply for National Health Insurance (NHI) Card",
+    "scenario_zh": "你需在台灣居住超過6個月才有資格申請健保卡。",
+    "scenario_en": "You must stay in Taiwan for more than six months to apply for an NHI card.",
+    "target_unit_type": "office",
+    "target_unit_id": "health_center",
+    "category_id": "health",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "medical_with_nhi",
+    "task_name_zh": "校外就醫看病（有健保卡）",
+    "task_name_en": "Off-Campus Medical Treatment (with NHI Card)",
+    "scenario_zh": "你身體不舒服，需要就醫且已有健保卡。",
+    "scenario_en": "You feel unwell and need to see a doctor with an NHI card.",
+    "target_unit_type": "office",
+    "target_unit_id": "health_center",
+    "category_id": "health",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "medical_without_nhi",
+    "task_name_zh": "校外就醫看病（無健保卡）",
+    "task_name_en": "Off-Campus Medical Treatment (without NHI Card)",
+    "scenario_zh": "你身體不舒服，需要就醫但沒有健保卡。",
+    "scenario_en": "You feel unwell and need to see a doctor without an NHI card.",
+    "target_unit_type": "office",
+    "target_unit_id": "health_center",
+    "category_id": "health",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "campus_basic_medical",
+    "task_name_zh": "校內簡易醫療服務",
+    "task_name_en": "On-Campus Basic Medical Services",
+    "scenario_zh": "你身體不舒服或受傷，需要簡易處理。",
+    "scenario_en": "You are feeling unwell or have a minor injury and need basic treatment.",
+    "target_unit_type": "office",
+    "target_unit_id": "health_center",
+    "category_id": "health",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "graduation_eligibility",
+    "task_name_zh": "確認畢業資格",
+    "task_name_en": "Confirming Graduation Eligibility",
+    "scenario_zh": "你即將畢業，想確認自己是否符合畢業資格。",
+    "scenario_en": "You are nearing graduation and want to confirm eligibility.",
+    "target_unit_type": "department",
+    "target_unit_id": "college_management_office",
+    "category_id": "academic_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "scholarship",
+    "task_name_zh": "申請獎學金",
+    "task_name_en": "Apply for Scholarship",
+    "scenario_zh": "你想了解並申請學校或校外獎學金。",
+    "scenario_en": "You want to learn about and apply for scholarships.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "international_support",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "postal_account",
+    "task_name_zh": "辦理郵局帳戶",
+    "task_name_en": "Apply for a Postal Account",
+    "scenario_zh": "你需要郵局帳戶以領取獎學金、存錢、提款或繳費。",
+    "scenario_en": "You need a postal account to receive scholarships, save money, withdraw cash, or pay fees.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "international_support",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "suspension",
+    "task_name_zh": "申請休學",
+    "task_name_en": "Apply for Suspension",
+    "scenario_zh": "你因個人、健康或其他原因需要申請暫時停學。",
+    "scenario_en": "You need to apply for suspension of studies.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "academic_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "arc_after_suspension",
+    "task_name_zh": "休學後的居留證處理",
+    "task_name_en": "Handling Your ARC After Suspension of Studies",
+    "scenario_zh": "你打算休學，但不確定是否能繼續留在台灣。",
+    "scenario_en": "You plan to suspend studies and are unsure whether you can remain in Taiwan.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "international_support",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "registration_degree",
+    "task_name_zh": "辦理入學報到手續（學位生）",
+    "task_name_en": "Complete Registration Procedure (Degree-Seeking Student)",
+    "scenario_zh": "你是剛到學校的學位生，需要完成入學報到流程。",
+    "scenario_en": "You are a degree-seeking student who just arrived and need to complete registration.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "registration",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "registration_exchange",
+    "task_name_zh": "辦理入學報到手續（交換生）",
+    "task_name_en": "Complete Registration Procedure (Exchange Student)",
+    "scenario_zh": "你是剛到學校的交換生，需要完成入學報到流程。",
+    "scenario_en": "You are an exchange student who just arrived and need to complete registration.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "registration",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "tuition_fee",
+    "task_name_zh": "辦理各學期註冊與繳交學雜費",
+    "task_name_en": "Pay Tuition and Fees to Complete Semester Registration",
+    "scenario_zh": "你每學期都需要完成正式註冊與繳交學費。",
+    "scenario_en": "You need to complete formal registration and pay tuition each semester.",
+    "target_unit_type": "office",
+    "target_unit_id": "cashier",
+    "category_id": "tuition",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "department_transfer",
+    "task_name_zh": "轉系申請",
+    "task_name_en": "Application for Transfer to Another Department",
+    "scenario_zh": "你想申請轉到其他學系。",
+    "scenario_en": "You want to apply for an internal transfer to another department.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "academic_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "course_syllabus",
+    "task_name_zh": "課程大綱",
+    "task_name_en": "Course Syllabus",
+    "scenario_zh": "你需要查詢課程目標、進度與評分標準，或申請正式紙本課綱。",
+    "scenario_en": "You need to check course objectives, schedule, grading criteria, or request an official syllabus.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "course_issues",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "professor_communication",
+    "task_name_zh": "與教授溝通",
+    "task_name_en": "Communicating with Professors",
+    "scenario_zh": "你在課業、專題或未來規劃上需要請教教授。",
+    "scenario_en": "You need to consult a professor about coursework, research, or academic planning.",
+    "target_unit_type": "department",
+    "target_unit_id": "college_management_office",
+    "category_id": "course_issues",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "email_professor",
+    "task_name_zh": "我要如何寫電子郵件給教授",
+    "task_name_en": "How to Write an Email to a Professor",
+    "scenario_zh": "你需要用正式且禮貌的方式寫信給教授。",
+    "scenario_en": "You need to write a formal and polite email to a professor.",
+    "target_unit_type": "department",
+    "target_unit_id": "college_management_office",
+    "category_id": "course_issues",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "course_override",
+    "task_name_zh": "必修課滿了怎麼辦（加簽）",
+    "task_name_en": "What to Do If a Required Course Is Full (Course Override)",
+    "scenario_zh": "必修課人數已滿，或沒有成功選到想要的課。",
+    "scenario_en": "A required course is full or you could not enroll in the desired course.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "course_issues",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "professor_not_accept_international",
+    "task_name_zh": "已選上課程，但教授不收國際生",
+    "task_name_en": "Enrolled in a Course, but the Professor Does Not Accept International Students",
+    "scenario_zh": "你已選上課程，但教授表示不收國際生。",
+    "scenario_en": "You enrolled in a course, but the professor does not accept international students.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "course_issues",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "exchange_ecourse_account",
+    "task_name_zh": "交換生剛開學時沒有 eCourse 帳號",
+    "task_name_en": "Exchange Students Do Not Have an eCourse Account at the Beginning of the Semester",
+    "scenario_zh": "交換生不知道如何登入 eCourse2。",
+    "scenario_en": "Exchange students do not know how to log in to eCourse2.",
+    "target_unit_type": "office",
+    "target_unit_id": "it_center",
+    "category_id": "it_support",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "exchange_course_registration",
+    "task_name_zh": "交換生要在開學時才能選課",
+    "task_name_en": "Exchange Students Can Only Register for Courses After the Semester Begins",
+    "scenario_zh": "交換生需在開學後確認選課流程。",
+    "scenario_en": "Exchange students need to finalize registration after the semester begins.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "course_issues",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "course_password_error",
+    "task_name_zh": "選課密碼輸入持續顯示錯誤",
+    "task_name_en": "Course Registration Password Keeps Showing as Incorrect",
+    "scenario_zh": "你輸入選課密碼一直顯示錯誤。",
+    "scenario_en": "Your course registration password keeps showing as incorrect.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "course_issues",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "default_password",
+    "task_name_zh": "不知道系統的預設密碼是什麼",
+    "task_name_en": "I Don't Know the System's Default Password",
+    "scenario_zh": "你不知道首次登入系統的初始密碼。",
+    "scenario_en": "You do not know the default password for first-time login.",
+    "target_unit_type": "office",
+    "target_unit_id": "it_center",
+    "category_id": "it_support",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "ccu_email",
+    "task_name_zh": "註冊 CCU 信箱",
+    "task_name_en": "Registering for a CCU Email Account",
+    "scenario_zh": "你想知道如何使用學校信箱。",
+    "scenario_en": "You want to know how to use your CCU email account.",
+    "target_unit_type": "office",
+    "target_unit_id": "it_center",
+    "category_id": "it_support",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "leave_application",
+    "task_name_zh": "請假",
+    "task_name_en": "Leave of Absence from Class",
+    "scenario_zh": "你因故無法出席課程，需要辦理請假。",
+    "scenario_en": "You cannot attend class and need to apply for leave.",
+    "target_unit_type": "department",
+    "target_unit_id": "college_management_office",
+    "category_id": "student_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "dorm_fee",
+    "task_name_zh": "如何繳宿舍費用",
+    "task_name_en": "How to Pay the Dormitory Fee",
+    "scenario_zh": "你需要繳交宿舍費、住宿押金或電費。",
+    "scenario_en": "You need to pay dormitory fees, deposit, or electricity fees.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "dormitory",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "dorm_parcel",
+    "task_name_zh": "宿舍包裹服務",
+    "task_name_en": "Dormitory Parcel Service",
+    "scenario_zh": "你需要收宿舍包裹或委託宿舍服務中心代收。",
+    "scenario_en": "You need to receive dormitory parcels or request proxy collection.",
+    "target_unit_type": "office",
+    "target_unit_id": "dorm_service",
+    "category_id": "dormitory",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "washing_machine",
+    "task_name_zh": "洗衣機故障",
+    "task_name_en": "Washing Machine Malfunction",
+    "scenario_zh": "宿舍洗衣機或烘衣機故障。",
+    "scenario_en": "A dormitory washing machine or dryer is malfunctioning.",
+    "target_unit_type": "office",
+    "target_unit_id": "dorm_service",
+    "category_id": "dormitory",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "mattress",
+    "task_name_zh": "床墊可在哪裡取得",
+    "task_name_en": "Where to Get a Mattress",
+    "scenario_zh": "你需要購買宿舍床墊或寢具。",
+    "scenario_en": "You need to buy a dormitory mattress or bedding.",
+    "target_unit_type": "office",
+    "target_unit_id": "dorm_service",
+    "category_id": "dormitory",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "dorm_checkin",
+    "task_name_zh": "住宿報到程序",
+    "task_name_en": "Dormitory Check-In Procedure",
+    "scenario_zh": "你需要完成宿舍入住報到。",
+    "scenario_en": "You need to complete dormitory check-in.",
+    "target_unit_type": "office",
+    "target_unit_id": "dorm_service",
+    "category_id": "dormitory",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "find_dorm",
+    "task_name_zh": "找不到宿舍",
+    "task_name_en": "Unable to Find the Dormitory",
+    "scenario_zh": "你剛到學校但找不到宿舍位置。",
+    "scenario_en": "You just arrived and cannot find your dormitory.",
+    "target_unit_type": "office",
+    "target_unit_id": "dorm_service",
+    "category_id": "dormitory",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "next_year_room",
+    "task_name_zh": "如何選下學年的寢室",
+    "task_name_en": "How to Select a Dormitory Room for the Next Academic Year",
+    "scenario_zh": "你想知道下學年宿舍寢室怎麼申請或選房。",
+    "scenario_en": "You want to know how to apply for or select a room for the next academic year.",
+    "target_unit_type": "office",
+    "target_unit_id": "dorm_service",
+    "category_id": "dormitory",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "youbike",
+    "task_name_zh": "如何使用 YouBike",
+    "task_name_en": "How to Use YouBike",
+    "scenario_zh": "你想在校園附近使用 YouBike。",
+    "scenario_en": "You want to use YouBike around campus.",
+    "target_unit_type": "office",
+    "target_unit_id": "vehicle_control",
+    "category_id": "transportation",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "bus_schedule",
+    "task_name_zh": "如何查詢公車時刻表",
+    "task_name_en": "How to Check Bus Schedules",
+    "scenario_zh": "你需要查詢公車班次、路線與票價。",
+    "scenario_en": "You need to check bus schedules, routes, and fares.",
+    "target_unit_type": "office",
+    "target_unit_id": "vehicle_control",
+    "category_id": "transportation",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "go_to_minxiong",
+    "task_name_zh": "如何前往民雄",
+    "task_name_en": "How to Get to Minxiong",
+    "scenario_zh": "你想從中正大學前往民雄。",
+    "scenario_en": "You want to get from CCU to Minxiong.",
+    "target_unit_type": "office",
+    "target_unit_id": "vehicle_control",
+    "category_id": "transportation",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "taxi_info",
+    "task_name_zh": "計程車服務資訊",
+    "task_name_en": "Taxi Service Information",
+    "scenario_zh": "你想知道高鐵或機場到中正大學的計程車資訊。",
+    "scenario_en": "You want taxi information from HSR or the airport to CCU.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "transportation",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "airport_taxi_language",
+    "task_name_zh": "從機場來到中正時，計程車司機不懂英文",
+    "task_name_en": "The Taxi Driver Does Not Understand English When Traveling from the Airport to CCU",
+    "scenario_zh": "你從機場搭車到中正，擔心司機不懂英文。",
+    "scenario_en": "You are traveling from the airport to CCU and worry the driver may not understand English.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "transportation",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "library_services",
+    "task_name_zh": "使用圖書館服務",
+    "task_name_en": "Using Library Services",
+    "scenario_zh": "你想借書、找論文、預約討論室或使用自習空間。",
+    "scenario_en": "You want to borrow books, search theses, reserve rooms, or use study spaces.",
+    "target_unit_type": "office",
+    "target_unit_id": "library",
+    "category_id": "library",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "licensed_software",
+    "task_name_zh": "校園授權軟體下載",
+    "task_name_en": "Downloading Campus Licensed Software",
+    "scenario_zh": "你想下載學校授權的正版軟體。",
+    "scenario_en": "You want to download licensed software provided by the university.",
+    "target_unit_type": "office",
+    "target_unit_id": "it_center",
+    "category_id": "it_support",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "printing",
+    "task_name_zh": "哪裡可以列印東西",
+    "task_name_en": "Where to Print Documents",
+    "scenario_zh": "你需要在校內或附近找地方列印文件。",
+    "scenario_en": "You need to find places on or near campus to print documents.",
+    "target_unit_type": "office",
+    "target_unit_id": "it_center",
+    "category_id": "it_support",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "graduation_gown",
+    "task_name_zh": "借用畢業學位服",
+    "task_name_en": "Borrowing Graduation Gown",
+    "scenario_zh": "你即將畢業，需要借用學位服參加典禮。",
+    "scenario_en": "You are about to graduate and need to borrow a gown for the ceremony.",
+    "target_unit_type": "office",
+    "target_unit_id": "property_management",
+    "category_id": "student_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "join_club",
+    "task_name_zh": "加入社團或參加校園活動",
+    "task_name_en": "Joining Clubs or Participating in Campus Activities",
+    "scenario_zh": "你想找到有興趣的社團或參加校內活動。",
+    "scenario_en": "You want to find clubs or participate in campus activities.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_extracurricular",
+    "category_id": "student_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "language_learning",
+    "task_name_zh": "取得語言學習與中文課程支援",
+    "task_name_en": "Chinese Language Learning and Course Support",
+    "scenario_zh": "你想報名中文課程或了解語言學習資源。",
+    "scenario_en": "You want to enroll in Chinese courses or find language learning resources.",
+    "target_unit_type": "office",
+    "target_unit_id": "language_center",
+    "category_id": "academic_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "sports_facility",
+    "task_name_zh": "預約體育設施的場地",
+    "task_name_en": "Reserving Sports Facilities",
+    "scenario_zh": "你想使用或預約校內體育設施。",
+    "scenario_en": "You want to use or reserve sports facilities on campus.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_extracurricular",
+    "category_id": "student_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "sports_hours",
+    "task_name_zh": "健身房和體育館的開放時間",
+    "task_name_en": "Gym and Sports Center Opening Hours",
+    "scenario_zh": "你想知道校內體育設施的開放時間。",
+    "scenario_en": "You want to know the opening hours of sports facilities.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_extracurricular",
+    "category_id": "student_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "holiday_closure",
+    "task_name_zh": "哪些地方會因國定假日而閉館或暫停服務",
+    "task_name_en": "Places Closed or Suspended on National Holidays",
+    "scenario_zh": "你想知道國定假日期間哪些設施會暫停服務。",
+    "scenario_en": "You want to know which campus facilities close on national holidays.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_life",
+    "category_id": "student_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "typhoon_day",
+    "task_name_zh": "如何知道是否有放颱風假",
+    "task_name_en": "How to Find Out About Typhoon Days Off",
+    "scenario_zh": "颱風來了，你想確認學校是否停課。",
+    "scenario_en": "A typhoon is approaching and you want to know whether classes are cancelled.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_safety",
+    "category_id": "student_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "career_center_visit",
+    "task_name_zh": "前往職涯發展中心",
+    "task_name_en": "Visiting the Career Development Center",
+    "scenario_zh": "你想尋求就業輔導、履歷建議或實習資源。",
+    "scenario_en": "You need career counseling, resume advice, or internship resources.",
+    "target_unit_type": "office",
+    "target_unit_id": "career_center",
+    "category_id": "career",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "work_in_taiwan",
+    "task_name_zh": "畢業後留台工作",
+    "task_name_en": "Working in Taiwan After Graduation",
+    "scenario_zh": "你畢業後想留在台灣工作。",
+    "scenario_en": "You have graduated and want to stay in Taiwan for work.",
+    "target_unit_type": "office",
+    "target_unit_id": "career_center",
+    "category_id": "career",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "work_permit",
+    "task_name_zh": "申請工作許可",
+    "task_name_en": "Applying for a Work Permit",
+    "scenario_zh": "你是在台就學的外籍學生，想申請合法打工許可。",
+    "scenario_en": "You are an international student in Taiwan and want to apply for a legal work permit.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "career",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "part_time_jobs",
+    "task_name_zh": "校園附近兼職資訊",
+    "task_name_en": "Part-Time Job Opportunities Near Campus",
+    "scenario_zh": "你想在校內或附近找打工或實習機會。",
+    "scenario_en": "You are looking for part-time work or internships on or near campus.",
+    "target_unit_type": "office",
+    "target_unit_id": "career_center",
+    "category_id": "career",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "off_campus_internship",
+    "task_name_zh": "申請校外實習",
+    "task_name_en": "Applying for Off-Campus Internships",
+    "scenario_zh": "你想透過學校管道申請校外實習機會。",
+    "scenario_en": "You want to apply for off-campus internships through university channels.",
+    "target_unit_type": "office",
+    "target_unit_id": "career_center",
+    "category_id": "career",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "scam_help",
+    "task_name_zh": "被詐騙時該如何尋求協助",
+    "task_name_en": "What to Do If You Are Scammed",
+    "scenario_zh": "你遭遇詐騙或疑似詐騙，需要立即求助。",
+    "scenario_en": "You have been scammed or suspect fraud and need immediate help.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_safety",
+    "category_id": "student_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "emergency_report",
+    "task_name_zh": "緊急事件通報處理",
+    "task_name_en": "Emergency Incident Reporting",
+    "scenario_zh": "你或他人遭遇緊急狀況，需要立即通報。",
+    "scenario_en": "You or someone else is in an emergency and needs to report it.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_safety",
+    "category_id": "student_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "emergency_aid",
+    "task_name_zh": "急難救助金",
+    "task_name_en": "Emergency Financial Aid",
+    "scenario_zh": "你遇到緊急經濟困難，需要申請急難救助。",
+    "scenario_en": "You are facing a financial emergency and need to apply for aid.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_life",
+    "category_id": "student_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "student_insurance_claim",
+    "task_name_zh": "申請學生保險理賠",
+    "task_name_en": "Applying for Student Insurance Claims",
+    "scenario_zh": "你因意外或疾病住院，需要申請學生保險理賠。",
+    "scenario_en": "You were injured or hospitalized and want to file a student insurance claim.",
+    "target_unit_type": "office",
+    "target_unit_id": "health_center",
+    "category_id": "health",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "確認需求與適用條件。",
+        "en": "Confirm your need and eligibility."
+      },
+      {
+        "zh": "準備所需文件或資訊。",
+        "en": "Prepare the required documents or information."
+      },
+      {
+        "zh": "依指引至負責單位或線上系統辦理。",
+        "en": "Follow the guide to complete the process online or at the responsible unit."
+      },
+      {
+        "zh": "完成後再次確認結果。",
+        "en": "Check the result after completion."
+      }
+    ]
+  }
+];
+
+const normalize = (text: string) => text.toLowerCase().replace(/\s+/g, " ").trim();
+
+const includesAny = (haystack: string, needles: string[]) => {
+  const normalized = normalize(haystack);
+  return needles.some(needle => normalized.includes(normalize(needle)));
+};
+
+const collectUnitText = (unit: Office | Department) => [
+  unit.name_zh,
+  unit.name_en,
+  unit.building_name_zh,
+  unit.building_name_en,
+  unit.floor,
+  unit.room_zh || "",
+  unit.room_en || "",
+  unit.indoor_location_note_zh,
+  unit.indoor_location_note_en,
+  unit.function_desc_zh,
+  unit.function_desc_en,
+  unit.service_scope_zh,
+  unit.service_scope_en,
+  unit.google_maps_query,
+  "common_scenarios_zh" in unit ? unit.common_scenarios_zh : "",
+  "common_scenarios_en" in unit ? unit.common_scenarios_en : "",
+  "college_zh" in unit ? unit.college_zh : "",
+  "college_en" in unit ? unit.college_en : "",
+].join(" ");
+
+export function searchByNeed(query: string, _language: "en" | "zh" = "en"): { offices: Office[]; departments: Department[]; tasks: Task[] } {
+  const q = normalize(query);
   if (!q) return { offices: [], departments: [], tasks: [] };
 
-  const matchedOffices = offices.filter(o => {
-    const searchFields = [
-      o.name_en.toLowerCase(),
-      o.name_zh,
-      o.function_desc_en.toLowerCase(),
-      o.function_desc_zh,
-      o.service_scope_en.toLowerCase(),
-      o.service_scope_zh,
-      o.common_scenarios_en.toLowerCase(),
-      o.common_scenarios_zh,
-      ...o.service_categories
-    ];
-    const catKeywords = o.service_categories.flatMap(catId => {
-      const cat = serviceCategories.find(c => c.id === catId);
-      return cat ? cat.keywords : [];
-    });
-    return [...searchFields, ...catKeywords].some(f => f.includes(q));
+  const keywordHints = serviceCategories
+    .filter(category => includesAny(q, [category.name_en, category.name_zh, ...category.keywords]))
+    .map(category => category.id);
+
+  const officeResults = offices.filter(office => {
+    const text = collectUnitText(office);
+    return normalize(text).includes(q) || office.service_categories.some(id => keywordHints.includes(id));
   });
 
-  const matchedDepts = departments.filter(d => {
-    const searchFields = [
-      d.name_en.toLowerCase(),
-      d.name_zh,
-      d.college_en.toLowerCase(),
-      d.college_zh,
-      d.function_desc_en.toLowerCase(),
-      d.function_desc_zh,
-      d.building_name_en.toLowerCase(),
-      d.building_name_zh
-    ];
-    return searchFields.some(f => f.includes(q));
+  const departmentResults = departments.filter(department => {
+    const text = collectUnitText(department);
+    return normalize(text).includes(q) || department.service_categories.some(id => keywordHints.includes(id));
   });
 
-  const matchedTasks = tasks.filter(t => {
-    const searchFields = [
-      t.task_name_en.toLowerCase(),
-      t.task_name_zh,
-      t.scenario_en.toLowerCase(),
-      t.scenario_zh,
-      ...t.recommended_service_categories
-    ];
-    const catKeywords = t.recommended_service_categories.flatMap(catId => {
-      const cat = serviceCategories.find(c => c.id === catId);
-      return cat ? cat.keywords : [];
-    });
-    return [...searchFields, ...catKeywords].some(f => f.includes(q));
+  const taskResults = tasks.filter(task => {
+    const text = [
+      task.task_name_zh,
+      task.task_name_en,
+      task.scenario_zh,
+      task.scenario_en,
+      task.category_id,
+      ...task.required_documents_zh,
+      ...task.required_documents_en,
+      ...task.steps.flatMap(step => [step.zh, step.en]),
+    ].join(" ");
+    return normalize(text).includes(q) || keywordHints.includes(task.category_id);
   });
 
-  return { offices: matchedOffices, departments: matchedDepts, tasks: matchedTasks };
+  return { offices: officeResults, departments: departmentResults, tasks: taskResults };
 }
 
-export function filterByCategory(categoryId: string) {
-  const matchedOffices = offices.filter(o => o.service_categories.includes(categoryId));
-  const matchedDepts = departments.filter(d => d.service_categories.includes(categoryId));
-  const matchedTasks = tasks.filter(t => t.recommended_service_categories.includes(categoryId));
-  return { offices: matchedOffices, departments: matchedDepts, tasks: matchedTasks };
+export function getOfficeById(id: string) {
+  return offices.find(office => office.id === id);
 }
 
-export function getColleges() {
-  const colleges = new Map<string, { zh: string; en: string }>();
-  departments.forEach(d => {
-    if (!colleges.has(d.college_en)) {
-      colleges.set(d.college_en, { zh: d.college_zh, en: d.college_en });
-    }
-  });
-  return Array.from(colleges.values());
+export function getDepartmentById(id: string) {
+  return departments.find(department => department.id === id);
+}
+
+export function getTaskById(id: string) {
+  return tasks.find(task => task.id === id);
+}
+
+export function getServiceCategoryById(id: string) {
+  return serviceCategories.find(category => category.id === id);
 }
