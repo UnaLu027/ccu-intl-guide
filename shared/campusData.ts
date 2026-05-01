@@ -459,7 +459,8 @@ export const offices: Office[] = [
     "latitude": 23.564,
     "longitude": 120.4714,
     "source_url": "",
-    "needs_manual_review": false
+    "needs_manual_review": false,
+    "entrance_image": "/images/offices/oaa/entrance.jpg"
   },
   {
     "id": "oaa_admissions",
@@ -491,7 +492,8 @@ export const offices: Office[] = [
     "latitude": 23.564,
     "longitude": 120.4714,
     "source_url": "",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/oaa_admissions/entrance.jpg"
   },
   {
     "id": "ctld",
@@ -522,7 +524,8 @@ export const offices: Office[] = [
     "latitude": 23.564,
     "longitude": 120.4714,
     "source_url": "",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/ctld/entrance.jpg"
   },
   {
     "id": "osa",
@@ -553,7 +556,9 @@ export const offices: Office[] = [
     "latitude": 23.564,
     "longitude": 120.4714,
     "source_url": "",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/osa/entrance.jpg",
+    "floor_plan_image": "/images/offices/osa/floor_plan.jpg"
   },
   {
     "id": "osa_life",
@@ -587,7 +592,8 @@ export const offices: Office[] = [
     "latitude": 23.564,
     "longitude": 120.4714,
     "source_url": "",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/osa_life/entrance.jpg"
   },
   {
     "id": "osa_extracurricular",
@@ -618,7 +624,9 @@ export const offices: Office[] = [
     "latitude": 23.5618,
     "longitude": 120.4728,
     "source_url": "",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/osa_extracurricular/entrance.jpg",
+    "floor_plan_image": "/images/offices/osa_extracurricular/floor_plan.jpg"
   },
   {
     "id": "osa_safety",
@@ -650,7 +658,8 @@ export const offices: Office[] = [
     "latitude": 23.564,
     "longitude": 120.4714,
     "source_url": "",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/osa_safety/entrance.jpg"
   },
   {
     "id": "health_center",
@@ -682,7 +691,9 @@ export const offices: Office[] = [
     "latitude": 23.5618,
     "longitude": 120.4728,
     "source_url": "",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/health_center/entrance.jpg",
+    "floor_plan_image": "/images/offices/health_center/floor_plan.jpg"
   },
   {
     "id": "counseling",
@@ -715,7 +726,9 @@ export const offices: Office[] = [
     "latitude": 23.5618,
     "longitude": 120.4728,
     "source_url": "https://advising.ccu.edu.tw/",
-    "needs_manual_review": false
+    "needs_manual_review": false,
+    "entrance_image": "/images/offices/counseling/entrance.jpg",
+    "floor_plan_image": "/images/offices/counseling/floor_plan.jpg"
   },
   {
     "id": "oga_services",
@@ -747,7 +760,8 @@ export const offices: Office[] = [
     "latitude": 23.564,
     "longitude": 120.4714,
     "source_url": "https://oga.ccu.edu.tw/",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/oga_services/entrance.jpg"
   },
   {
     "id": "cashier",
@@ -779,7 +793,8 @@ export const offices: Office[] = [
     "latitude": 23.564,
     "longitude": 120.4714,
     "source_url": "https://oga.ccu.edu.tw/",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/cashier/entrance.jpg"
   },
   {
     "id": "property_management",
@@ -810,7 +825,8 @@ export const offices: Office[] = [
     "latitude": 23.564,
     "longitude": 120.4714,
     "source_url": "https://oga.ccu.edu.tw/",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/property_management/entrance.jpg"
   },
   {
     "id": "personnel",
@@ -841,7 +857,8 @@ export const offices: Office[] = [
     "latitude": 23.564,
     "longitude": 120.4714,
     "source_url": "",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/personnel/entrance.jpg"
   },
   {
     "id": "vehicle_control",
@@ -873,7 +890,9 @@ export const offices: Office[] = [
     "latitude": 23.5618,
     "longitude": 120.4728,
     "source_url": "",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/vehicle_control/entrance.jpg",
+    "floor_plan_image": "/images/offices/vehicle_control/floor_plan.jpg"
   },
   {
     "id": "secretariat",
@@ -904,7 +923,8 @@ export const offices: Office[] = [
     "latitude": 23.564,
     "longitude": 120.4714,
     "source_url": "https://secretar.ccu.edu.tw/",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/secretariat/entrance.jpg"
   },
   {
     "id": "career_center",
@@ -935,7 +955,8 @@ export const offices: Office[] = [
     "latitude": 23.5628,
     "longitude": 120.4738,
     "source_url": "https://career.ccu.edu.tw/",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/career_center/entrance.jpg"
   },
   {
     "id": "it_center",
@@ -966,7 +987,8 @@ export const offices: Office[] = [
     "latitude": 23.5646,
     "longitude": 120.4728,
     "source_url": "https://it.ccu.edu.tw/",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/it_center/entrance.jpg"
   },
   {
     "id": "library",
@@ -998,7 +1020,8 @@ export const offices: Office[] = [
     "latitude": 23.5646,
     "longitude": 120.4728,
     "source_url": "https://www.lib.ccu.edu.tw/",
-    "needs_manual_review": false
+    "needs_manual_review": false,
+    "entrance_image": "/images/offices/library/entrance.jpg"
   },
   {
     "id": "language_center",
@@ -1030,7 +1053,8 @@ export const offices: Office[] = [
     "latitude": 23.5646,
     "longitude": 120.4728,
     "source_url": "https://lc.ccu.edu.tw/",
-    "needs_manual_review": true
+    "needs_manual_review": true,
+    "entrance_image": "/images/offices/language_center/entrance.jpg"
   },
   {
     "id": "dorm_service",
@@ -1095,7 +1119,9 @@ export const departments: Department[] = [
     "longitude": 120.4752,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": true
+    "is_college_office": true,
+    "entrance_image": "/images/departments/college_engineering_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering_office/floor_plan.jpg"
   },
   {
     "id": "college_humanities_office",
@@ -1126,7 +1152,9 @@ export const departments: Department[] = [
     "longitude": 120.47,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": true
+    "is_college_office": true,
+    "entrance_image": "/images/departments/college_humanities_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities_office/floor_plan.jpg"
   },
   {
     "id": "college_law_office",
@@ -1188,7 +1216,9 @@ export const departments: Department[] = [
     "longitude": 120.4717,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": true
+    "is_college_office": true,
+    "entrance_image": "/images/departments/college_social_sciences_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences_office/floor_plan.jpg"
   },
   {
     "id": "college_education_office",
@@ -1219,7 +1249,9 @@ export const departments: Department[] = [
     "longitude": 120.472,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": true
+    "is_college_office": true,
+    "entrance_image": "/images/departments/college_education_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_education_office/floor_plan.jpg"
   },
   {
     "id": "college_science_office",
@@ -1250,7 +1282,9 @@ export const departments: Department[] = [
     "longitude": 120.4687,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": true
+    "is_college_office": true,
+    "entrance_image": "/images/departments/college_science_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_science_office/floor_plan.jpg"
   },
   {
     "id": "college_management_office",
@@ -1281,7 +1315,9 @@ export const departments: Department[] = [
     "longitude": 120.4695,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": true
+    "is_college_office": true,
+    "entrance_image": "/images/departments/college_management_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management_office/floor_plan.jpg"
   },
   {
     "id": "ee",
