@@ -1,10 +1,12 @@
 /**
  * CampusMap — Wayfinding Signage System
  * Updated version:
- * 1. Uses latitude / longitude from campusData directly, so every office / department in campusData appears on the map.
+ * 1. Uses a hybrid coordinate strategy:
+ *    - Items with use_manual_coordinates: true use latitude / longitude from campusData directly.
+ *    - Other items keep the original Google Places lookup behavior.
  * 2. Displays compact location format: Building · Floor Room.
  * 3. Adds a room/classroom-style icon for the floor + room row.
- * 4. Slightly separates markers that share the same building coordinate so users can click each unit.
+ * 4. Slightly separates markers that share the same resolved coordinate so users can click each unit.
  */
 
 import Header from "@/components/Header";
@@ -32,6 +34,7 @@ interface MapItem {
   google_maps_query: string;
   latitude: number;
   longitude: number;
+  use_manual_coordinates?: boolean;
   navLink: string;
 }
 
@@ -67,6 +70,7 @@ const allItems: MapItem[] = [
     google_maps_query: o.google_maps_query,
     latitude: o.latitude,
     longitude: o.longitude,
+    use_manual_coordinates: o.use_manual_coordinates,
     navLink: `/navigate/office/${o.id}`,
   })),
   ...departments.map(d => ({
@@ -84,9 +88,20 @@ const allItems: MapItem[] = [
     google_maps_query: d.google_maps_query,
     latitude: d.latitude,
     longitude: d.longitude,
+    use_manual_coordinates: d.use_manual_coordinates,
     navLink: `/navigate/dept/${d.id}`,
   })),
 ];
+
+function shouldUseManualCoordinates(item: MapItem) {
+  return item.use_manual_coordinates === true;
+}
+
+function getGroupingKey(item: MapItem) {
+  return shouldUseManualCoordinates(item)
+    ? `manual:${item.latitude},${item.longitude}`
+    : `query:${item.google_maps_query}`;
+}
 
 function getDisplayPosition(item: MapItem, indexWithinSameCoordinate: number, totalAtSameCoordinate: number) {
   if (totalAtSameCoordinate <= 1) {
@@ -111,12 +126,19 @@ function lookupPlaceLocation(
   service: google.maps.places.PlacesService,
   query: string
 ): Promise<google.maps.LatLng | null> {
+  if (!query) return Promise.resolve(null);
+
   const cacheKey = "ccu_place_" + query;
   const cached = sessionStorage.getItem(cacheKey);
   if (cached) {
-    const { lat, lng } = JSON.parse(cached);
-    return Promise.resolve(new google.maps.LatLng(lat, lng));
+    try {
+      const { lat, lng } = JSON.parse(cached);
+      return Promise.resolve(new google.maps.LatLng(lat, lng));
+    } catch {
+      sessionStorage.removeItem(cacheKey);
+    }
   }
+
   return new Promise(resolve => {
     service.findPlaceFromQuery(
       { query, fields: ["geometry.location"] },
@@ -161,16 +183,24 @@ export default function CampusMap() {
 
     const placesService = new google.maps.places.PlacesService(map);
 
-    // Group by google_maps_query so items in the same building cluster together.
+    // Manual-coordinate items are grouped by exact coordinate.
+    // Google-resolved items keep the original grouping by google_maps_query.
     const grouped = new Map<string, MapItem[]>();
     allItems.forEach(item => {
-      const key = item.google_maps_query;
+      const key = getGroupingKey(item);
       grouped.set(key, [...(grouped.get(key) || []), item]);
     });
 
-    // Query each unique google_maps_query exactly once.
+    // Only query Google Places for items that are not manually positioned.
     const queryCache = new Map<string, google.maps.LatLng | null>();
-    const uniqueQueries = [...new Set(allItems.map(i => i.google_maps_query))];
+    const uniqueQueries = Array.from(
+      new Set(
+        allItems
+          .filter(item => !shouldUseManualCoordinates(item))
+          .map(item => item.google_maps_query)
+          .filter(Boolean)
+      )
+    );
 
     await Promise.all(
       uniqueQueries.map(async query => {
@@ -180,19 +210,23 @@ export default function CampusMap() {
     );
 
     allItems.forEach(item => {
-      const sameQueryItems = grouped.get(item.google_maps_query) || [item];
-      const indexWithinGroup = sameQueryItems.findIndex(
+      const groupKey = getGroupingKey(item);
+      const sameGroupItems = grouped.get(groupKey) || [item];
+      const indexWithinGroup = sameGroupItems.findIndex(
         u => u.id === item.id && u.type === item.type
       );
 
-      const resolvedLoc = queryCache.get(item.google_maps_query);
+      const resolvedLoc = shouldUseManualCoordinates(item)
+        ? null
+        : queryCache.get(item.google_maps_query);
+
       const baseLat = resolvedLoc ? resolvedLoc.lat() : item.latitude;
       const baseLng = resolvedLoc ? resolvedLoc.lng() : item.longitude;
 
       const position = getDisplayPosition(
         { ...item, latitude: baseLat, longitude: baseLng },
         Math.max(indexWithinGroup, 0),
-        sameQueryItems.length
+        sameGroupItems.length
       );
 
       const pin = new google.maps.marker.PinElement({
