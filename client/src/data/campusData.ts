@@ -558,8 +558,7 @@ export const offices: Office[] = [
     "longitude": 120.4714,
     "source_url": "",
     "needs_manual_review": true,
-    "entrance_image": "/images/offices/osa/entrance.jpg",
-    "floor_plan_image": "/images/offices/osa/floor_plan.jpg"
+    "entrance_image": "/images/offices/osa/entrance.jpg"
   },
   {
     "id": "osa_life",
@@ -2868,35 +2867,7 @@ export const departments: Department[] = [
     "source_url": "https://stemphd.ccu.edu.tw",
     "needs_manual_review": false,
     "is_college_office": false
-  },
-  {
-    "id": "ibpme",
-    "name_zh": "機械工程國際學士學位學程",
-    "name_en": "International Bachelor's Program in Mechanical Engineering",
-    "category": "department",
-    "college_zh": "工學院",
-    "college_en": "College of Engineering",
-    "building_name_zh": "工學院二館",
-    "building_name_en": "College of Engineering II",
-    "floor": "3F",
-    "room_zh": "314辦公室（與機械系同）",
-    "room_en": "Room 314 (shared with ME Dept.)",
-    "indoor_location_note_zh": "工學院二館 3F 314辦公室",
-    "indoor_location_note_en": "College of Engineering II · 3F · Room 314",
-    "function_desc_zh": "機械工程國際學士學位學程辦公室，提供英語授課國際學士課程行政服務。",
-    "function_desc_en": "International Bachelor's Program in Mechanical Engineering office. Provides English-taught international bachelor's program services.",
-    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
-    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
-    "service_categories": ["department_offices", "academic_affairs", "course_issues", "international_support"],
-    "official_url": "https://ibpme.ccu.edu.tw/",
-    "google_maps_query": "國立中正大學機械工程學系",
-    "latitude": 23.5628,
-    "longitude": 120.4738,
-    "source_url": "https://ibpme.ccu.edu.tw/",
-    "needs_manual_review": false,
-    "is_college_office": false
   }
-
 ];
 
 export const tasks: Task[] = [

@@ -2,10 +2,60 @@
  * ResultCard — Wayfinding Signage System
  * Displays office/department info in a card with navigation actions
  */
+import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "wouter";
 import { MapPin, Navigation, ExternalLink, Clock, Phone, Mail, AlertTriangle, DoorOpen, ArrowRight } from "lucide-react";
 import type { Office, Department } from "@/data/campusData";
+
+interface PhotoCardProps {
+  src?: string;
+  label: string;
+  alt: string;
+  fit?: "cover" | "contain";
+}
+
+function PhotoCard({ src, label, alt, fit = "cover" }: PhotoCardProps) {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) return null;
+
+  return (
+    <figure className="min-w-0">
+      <figcaption className="text-xs font-medium text-muted-foreground mb-1">
+        {label}
+      </figcaption>
+      <div className="aspect-[4/3] w-full overflow-hidden rounded-lg border border-border bg-cream">
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+          onError={() => setFailed(true)}
+          className={`h-full w-full ${fit === "contain" ? "object-contain p-2" : "object-cover"}`}
+        />
+      </div>
+    </figure>
+  );
+}
+
+interface LocationPhotosProps {
+  photos: PhotoCardProps[];
+}
+
+function LocationPhotos({ photos }: LocationPhotosProps) {
+  const availablePhotos = photos.filter(photo => Boolean(photo.src));
+
+  if (availablePhotos.length === 0) return null;
+
+  return (
+    <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {availablePhotos.map(photo => (
+        <PhotoCard key={`${photo.label}-${photo.src}`} {...photo} />
+      ))}
+    </div>
+  );
+}
 
 interface OfficeCardProps {
   office: Office;
@@ -104,34 +154,25 @@ export function OfficeCard({ office, reason }: OfficeCardProps) {
           )}
         </div>
 
-        {/* Photos */}
-        {(o.entrance_image || o.floor_plan_image) && (
-          <div className="mt-3 flex flex-col gap-2">
-            {o.entrance_image && (
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Entrance · 門口</p>
-                <img
-                  src={o.entrance_image}
-                  alt="entrance"
-                  className="w-full max-h-48 object-cover rounded-lg"
-                />
-              </div>
-            )}
-            {o.floor_plan_image && (
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Floor Plan · 平面圖</p>
-                <img
-                  src={o.floor_plan_image}
-                  alt="floor plan"
-                  className="w-full max-h-44 object-contain rounded-lg"
-                />
-              </div>
-            )}
-          </div>
-        )}
+        <LocationPhotos
+          photos={[
+            {
+              src: o.entrance_image,
+              label: "Entrance · 門口",
+              alt: `${o.name_en} entrance`,
+              fit: "cover",
+            },
+            {
+              src: o.floor_plan_image,
+              label: "Floor Plan · 平面圖",
+              alt: `${o.name_en} floor plan`,
+              fit: "contain",
+            },
+          ]}
+        />
 
         {/* Actions */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 mt-3">
           <Link
             href={`/navigate/office/${o.id}`}
             className="inline-flex items-center gap-1.5 px-3 py-2 bg-navy text-white text-xs font-semibold rounded-md hover:bg-navy-light transition-colors"
@@ -210,43 +251,30 @@ export function DeptCard({ dept }: DeptCardProps) {
           )}
         </div>
 
-        {/* Photos */}
-        {(d.entrance_image || d.floor_plan_image || d.building_entrance_image) && (
-          <div className="mt-3 flex flex-col gap-2">
-            {d.entrance_image && (
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Entrance · 門口</p>
-                <img
-                  src={d.entrance_image}
-                  alt="entrance"
-                  className="w-full max-h-48 object-cover rounded-lg"
-                />
-              </div>
-            )}
-            {d.floor_plan_image && (
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Floor Plan · 平面圖</p>
-                <img
-                  src={d.floor_plan_image}
-                  alt="floor plan"
-                  className="w-full max-h-44 object-contain rounded-lg"
-                />
-              </div>
-            )}
-            {d.building_entrance_image && (
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Building Entrance · 大樓入口</p>
-                <img
-                  src={d.building_entrance_image}
-                  alt="building entrance"
-                  className="w-full max-h-48 object-cover rounded-lg"
-                />
-              </div>
-            )}
-          </div>
-        )}
+        <LocationPhotos
+          photos={[
+            {
+              src: d.building_entrance_image,
+              label: "Building Entrance · 大樓入口",
+              alt: `${d.name_en} building entrance`,
+              fit: "cover",
+            },
+            {
+              src: d.entrance_image,
+              label: "Entrance · 門口",
+              alt: `${d.name_en} entrance`,
+              fit: "cover",
+            },
+            {
+              src: d.floor_plan_image,
+              label: "Floor Plan · 平面圖",
+              alt: `${d.name_en} floor plan`,
+              fit: "contain",
+            },
+          ]}
+        />
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 mt-3">
           <Link
             href={`/navigate/dept/${d.id}`}
             className="inline-flex items-center gap-1.5 px-3 py-2 bg-navy text-white text-xs font-semibold rounded-md hover:bg-navy-light transition-colors"
