@@ -104,6 +104,32 @@ export function OfficeCard({ office, reason }: OfficeCardProps) {
           )}
         </div>
 
+        {/* Photos */}
+        {(o.entrance_image || o.floor_plan_image) && (
+          <div className="mt-3 flex flex-col gap-2">
+            {o.entrance_image && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Entrance · 門口</p>
+                <img
+                  src={o.entrance_image}
+                  alt="entrance"
+                  className="w-full max-h-48 object-cover rounded-lg"
+                />
+              </div>
+            )}
+            {o.floor_plan_image && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Floor Plan · 平面圖</p>
+                <img
+                  src={o.floor_plan_image}
+                  alt="floor plan"
+                  className="w-full max-h-44 object-contain rounded-lg"
+                />
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Actions */}
         <div className="flex flex-wrap gap-2">
           <Link
@@ -183,6 +209,42 @@ export function DeptCard({ dept }: DeptCardProps) {
             </div>
           )}
         </div>
+
+        {/* Photos */}
+        {(d.entrance_image || d.floor_plan_image || d.building_entrance_image) && (
+          <div className="mt-3 flex flex-col gap-2">
+            {d.entrance_image && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Entrance · 門口</p>
+                <img
+                  src={d.entrance_image}
+                  alt="entrance"
+                  className="w-full max-h-48 object-cover rounded-lg"
+                />
+              </div>
+            )}
+            {d.floor_plan_image && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Floor Plan · 平面圖</p>
+                <img
+                  src={d.floor_plan_image}
+                  alt="floor plan"
+                  className="w-full max-h-44 object-contain rounded-lg"
+                />
+              </div>
+            )}
+            {d.building_entrance_image && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Building Entrance · 大樓入口</p>
+                <img
+                  src={d.building_entrance_image}
+                  alt="building entrance"
+                  className="w-full max-h-48 object-cover rounded-lg"
+                />
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-2">
           <Link
