@@ -78,6 +78,7 @@ export interface Department {
   is_college_office?: boolean;
   floor_plan_image?: string;
   entrance_image?: string;
+  building_entrance_image?: string;
 }
 
 export interface TaskStep {
@@ -711,7 +712,7 @@ export const offices: Office[] = [
     "room_zh": "",
     "room_en": "",
     "indoor_location_note_zh": "活動中心 3F",
-    "indoor_location_note_en": "Activity Center · 3F",
+    "indoor_location_note_en": "Activity Center · 3rd Floor",
     "function_desc_zh": "提供心理諮商、心理測驗與評估、學習適應、生涯輔導、學生申訴諮詢、身心障礙學生支持、心理健康講座與自殺防治。",
     "function_desc_en": "Provides counseling, psychological assessments, academic adaptation and career counseling, student complaint consultation, disability support, mental health activities, and suicide prevention.",
     "service_scope_zh": "個別晤談、情緒支持、心理測驗、學習與生涯輔導、身心障礙學生資源支持。",
@@ -862,8 +863,8 @@ export const offices: Office[] = [
   },
   {
     "id": "vehicle_control",
-    "name_zh": "駐警隊－車輛管控中心",
-    "name_en": "Campus Security - Vehicle Control Center",
+    "name_zh": "總務處-駐警隊－車輛管控中心",
+    "name_en": "Campus Security - Vehicle Control Center, Office of General Affairs",
     "category": "office",
     "service_categories": [
       "student_affairs",
@@ -883,9 +884,9 @@ export const offices: Office[] = [
     "common_scenarios_zh": "車輛通行證、違規費用、離校審核、臨時通行證與廢棄車輛處理。",
     "common_scenarios_en": "Vehicle permits, violation fees, school-leaving review, temporary passes, and abandoned vehicles.",
     "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
-    "phone": "05-2720411",
-    "email": "",
-    "official_url": "",
+    "phone": "05-2720411 ext. 13706 (Mr. Huang) / ext. 13707 (Ms. Hsu)",
+    "email": "deptvmc@ccu.edu.tw",
+    "official_url": "https://oga.ccu.edu.tw/",
     "google_maps_query": "國立中正大學活動中心",
     "latitude": 23.56081435782497,
     "longitude": 120.4720087501023,
@@ -1055,37 +1056,6 @@ export const offices: Office[] = [
     "source_url": "https://lc.ccu.edu.tw/",
     "needs_manual_review": true,
     "entrance_image": "/images/offices/language_center/entrance.jpg"
-  },
-  {
-    "id": "dorm_service",
-    "name_zh": "宿舍服務中心",
-    "name_en": "Dormitory Service Center",
-    "category": "office",
-    "service_categories": [
-      "dormitory"
-    ],
-    "building_name_zh": "學士班宿舍 C 棟 / 研究生宿舍 B 棟",
-    "building_name_en": "Undergraduate Dorm Block C / Graduate Dorm Block B",
-    "floor": "1F",
-    "room_zh": "學士班宿舍 C 棟一樓櫃台 / 研究生宿舍 B 棟",
-    "room_en": "Undergraduate Dorm C 1F counter / Graduate Dorm B",
-    "indoor_location_note_zh": "學士班宿舍 C 棟 / 研究生宿舍 B 棟 1F 學士班宿舍 C 棟一樓櫃台 / 研究生宿舍 B 棟",
-    "indoor_location_note_en": "Undergraduate Dorm Block C / Graduate Dorm Block B · 1F · Undergraduate Dorm C 1F counter / Graduate Dorm B",
-    "function_desc_zh": "辦理宿舍報到、住宿相關諮詢、包裹代收委託與宿舍服務。",
-    "function_desc_en": "Handles dormitory check-in, housing inquiries, proxy parcel collection, and dormitory services.",
-    "service_scope_zh": "宿舍報到、包裹代收、住宿諮詢與宿舍服務。",
-    "service_scope_en": "Dormitory check-in, parcel proxy collection, housing inquiries, and dormitory services.",
-    "common_scenarios_zh": "宿舍報到、包裹代收、住宿諮詢與宿舍服務。",
-    "common_scenarios_en": "Dormitory check-in, parcel proxy collection, housing inquiries, and dormitory services.",
-    "office_hours": "Mon–Fri 08:30–12:30, 13:30–17:00",
-    "phone": "05-2721422 ext. 73399 / ext. 82121",
-    "email": "",
-    "official_url": "",
-    "google_maps_query": "國立中正大學宿舍服務中心",
-    "latitude": 23.5605,
-    "longitude": 120.473,
-    "source_url": "",
-    "needs_manual_review": true
   }
 ];
 
@@ -1100,10 +1070,10 @@ export const departments: Department[] = [
     "building_name_zh": "創新大樓",
     "building_name_en": "Innovation Building",
     "floor": "1F",
-    "room_zh": "111室",
+    "room_zh": "111辦公室",
     "room_en": "Room 111",
-    "indoor_location_note_zh": "創新大樓 1F 111室",
-    "indoor_location_note_en": "Innovation Building · 1F · Room 111",
+    "indoor_location_note_zh": "創新大樓 1F 111辦公室",
+    "indoor_location_note_en": "Innovation Building · 1st Floor · Room 111",
     "function_desc_zh": "工學院院辦辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "College of Engineering Administrative Office office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1118,10 +1088,10 @@ export const departments: Department[] = [
     "latitude": 23.5628,
     "longitude": 120.4752,
     "source_url": "",
-    "needs_manual_review": true,
+    "needs_manual_review": false,
     "is_college_office": true,
-    "entrance_image": "/images/departments/college_engineering_office/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_engineering_office/floor_plan.jpg"
+    "entrance_image": "/images/departments/college_engineering/college_engineering_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/college_engineering_office/floor_plan.jpg"
   },
   {
     "id": "college_humanities_office",
@@ -1133,10 +1103,10 @@ export const departments: Department[] = [
     "building_name_zh": "文學院大樓",
     "building_name_en": "College of Humanities Building",
     "floor": "5F",
-    "room_zh": "501室",
+    "room_zh": "501辦公室",
     "room_en": "Room 501",
-    "indoor_location_note_zh": "文學院大樓 5F 501室",
-    "indoor_location_note_en": "College of Humanities Building · 5F · Room 501",
+    "indoor_location_note_zh": "文學院大樓 5F 501辦公室",
+    "indoor_location_note_en": "College of Humanities Building · 5th Floor · Room 501",
     "function_desc_zh": "文學院院辦辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "College of Humanities Office office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1151,10 +1121,10 @@ export const departments: Department[] = [
     "latitude": 23.561247279486604,
     "longitude": 120.4732939520733,
     "source_url": "",
-    "needs_manual_review": true,
+    "needs_manual_review": false,
     "is_college_office": true,
-    "entrance_image": "/images/departments/college_humanities_office/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_humanities_office/floor_plan.jpg"
+    "entrance_image": "/images/departments/college_humanities/college_humanities_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/college_humanities_office/floor_plan.jpg"
   },
   {
     "id": "college_law_office",
@@ -1166,10 +1136,10 @@ export const departments: Department[] = [
     "building_name_zh": "法學院大樓",
     "building_name_en": "College of Law Building",
     "floor": "5F",
-    "room_zh": "511室",
+    "room_zh": "511辦公室",
     "room_en": "Room 511",
-    "indoor_location_note_zh": "法學院大樓 5F 511室",
-    "indoor_location_note_en": "College of Law Building · 5F · Room 511",
+    "indoor_location_note_zh": "法學院大樓 5F 511辦公室",
+    "indoor_location_note_en": "College of Law Building · 5th Floor · Room 511",
     "function_desc_zh": "法學院院辦辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "College of Law Office office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1184,8 +1154,11 @@ export const departments: Department[] = [
     "latitude": 23.5592,
     "longitude": 120.4702,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": true
+    "needs_manual_review": false,
+    "is_college_office": true,
+    "entrance_image": "/images/departments/college_law/college_law_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_law/college_law_office/floor_plan.jpg",
+    "building_entrance_image": "/images/departments/college_law/college_law_office/building_entrance.jpg"
   },
   {
     "id": "college_social_sciences_office",
@@ -1197,10 +1170,10 @@ export const departments: Department[] = [
     "building_name_zh": "社會科學院大樓西棟",
     "building_name_en": "College of Social Sciences Building",
     "floor": "5F",
-    "room_zh": "513室",
+    "room_zh": "513辦公室",
     "room_en": "Room 513",
-    "indoor_location_note_zh": "社會科學院大樓西棟 5F 513室",
-    "indoor_location_note_en": "College of Social Sciences Building · 5F · Room 513",
+    "indoor_location_note_zh": "社會科學院大樓西棟 5F 513辦公室",
+    "indoor_location_note_en": "West Wing, College of Social Sciences Building · 5th Floor · Room 513",
     "function_desc_zh": "社會科學院院辦辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "College of Social Sciences Office office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1215,10 +1188,10 @@ export const departments: Department[] = [
     "latitude": 23.56064464374194,
     "longitude": 120.47401539035829,
     "source_url": "",
-    "needs_manual_review": true,
+    "needs_manual_review": false,
     "is_college_office": true,
-    "entrance_image": "/images/departments/college_social_sciences_office/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_social_sciences_office/floor_plan.jpg"
+    "entrance_image": "/images/departments/college_social_sciences/college_social_sciences_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/college_social_sciences_office/floor_plan.jpg"
   },
   {
     "id": "college_education_office",
@@ -1230,10 +1203,10 @@ export const departments: Department[] = [
     "building_name_zh": "教育學院大樓",
     "building_name_en": "College of Education Building",
     "floor": "3F",
-    "room_zh": "303室",
+    "room_zh": "303辦公室",
     "room_en": "Room 303",
-    "indoor_location_note_zh": "教育學院大樓 3F 303室",
-    "indoor_location_note_en": "College of Education Building · 3F · Room 303",
+    "indoor_location_note_zh": "教育學院大樓 3F 303辦公室",
+    "indoor_location_note_en": "College of Education Building · 3rd Floor · Room 303",
     "function_desc_zh": "教育學院院辦辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "College of Education Office office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1248,10 +1221,10 @@ export const departments: Department[] = [
     "latitude": 23.563316978200866,
     "longitude": 120.47666604787,
     "source_url": "",
-    "needs_manual_review": true,
+    "needs_manual_review": false,
     "is_college_office": true,
-    "entrance_image": "/images/departments/college_education_office/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_education_office/floor_plan.jpg"
+    "entrance_image": "/images/departments/college_education/college_education_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_education/college_education_office/floor_plan.jpg"
   },
   {
     "id": "college_science_office",
@@ -1263,10 +1236,10 @@ export const departments: Department[] = [
     "building_name_zh": "理學院大樓數學館",
     "building_name_en": "Mathematics Building, College of Science Building",
     "floor": "3F",
-    "room_zh": "302室",
+    "room_zh": "302辦公室",
     "room_en": "Room 302",
-    "indoor_location_note_zh": "理學院大樓數學館 3F 302室",
-    "indoor_location_note_en": "Mathematics Building, College of Science Building · 3F · Room 302",
+    "indoor_location_note_zh": "理學院一館（數學館）3F 302辦公室",
+    "indoor_location_note_en": "College of Science Building I · 3rd Floor · Room 302",
     "function_desc_zh": "理學院院辦辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "College of Science Office office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1281,10 +1254,10 @@ export const departments: Department[] = [
     "latitude": 23.564103909894776,
     "longitude": 120.47579618506781,
     "source_url": "",
-    "needs_manual_review": true,
+    "needs_manual_review": false,
     "is_college_office": true,
-    "entrance_image": "/images/departments/college_science_office/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_science_office/floor_plan.jpg"
+    "entrance_image": "/images/departments/college_science/college_science_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_science/college_science_office/floor_plan.jpg"
   },
   {
     "id": "college_management_office",
@@ -1299,7 +1272,7 @@ export const departments: Department[] = [
     "room_zh": "211室",
     "room_en": "Room 211",
     "indoor_location_note_zh": "管理學院大樓 2F 211室",
-    "indoor_location_note_en": "College of Management Building · 2F · Room 211",
+    "indoor_location_note_en": "College of Management Building · 2nd Floor · Room 211",
     "function_desc_zh": "管理學院院辦辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "College of Management Office office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1314,10 +1287,11 @@ export const departments: Department[] = [
     "latitude": 23.56060697202456,
     "longitude": 120.47638643431472,
     "source_url": "",
-    "needs_manual_review": true,
+    "needs_manual_review": false,
     "is_college_office": true,
-    "entrance_image": "/images/departments/college_management_office/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_management_office/floor_plan.jpg"
+    "entrance_image": "/images/departments/college_management/college_management_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/college_management_office/floor_plan.jpg",
+    "building_entrance_image": "/images/departments/college_management/college_management_office/building_entrance.jpg"
   },
   {
     "id": "ee",
@@ -1332,7 +1306,7 @@ export const departments: Department[] = [
     "room_zh": "332辦公室",
     "room_en": "Room 332",
     "indoor_location_note_zh": "工學院一館 3F 332辦公室",
-    "indoor_location_note_en": "College of Engineering I · 3F · Room 332",
+    "indoor_location_note_en": "College of Engineering I · 3rd Floor · Room 332",
     "function_desc_zh": "電機工程學系暨研究所辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Department of Electrical Engineering office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1347,8 +1321,10 @@ export const departments: Department[] = [
     "latitude": 23.5632,
     "longitude": 120.4762,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/ee/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/ee/floor_plan.jpg"
   },
   {
     "id": "telecom_research",
@@ -1363,7 +1339,7 @@ export const departments: Department[] = [
     "room_zh": "414辦公室",
     "room_en": "Room 414",
     "indoor_location_note_zh": "創新大樓 4F 414辦公室",
-    "indoor_location_note_en": "Innovation Building · 4F · Room 414",
+    "indoor_location_note_en": "Innovation Building · 4th Floor · Room 414",
     "function_desc_zh": "電信研究中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Center for Telecommunication Research office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1375,11 +1351,13 @@ export const departments: Department[] = [
     ],
     "official_url": "",
     "google_maps_query": "國立中正大學創新大樓",
-    "latitude": 23.5628,
-    "longitude": 120.4752,
+    "latitude": 23.562021222913106,
+    "longitude": 120.47933791012258,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/telecom_research/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/telecom_research/floor_plan.jpg"
   },
   {
     "id": "csie_digital_learning",
@@ -1394,7 +1372,7 @@ export const departments: Department[] = [
     "room_zh": "321辦公室",
     "room_en": "Room 321",
     "indoor_location_note_zh": "創新大樓 3F 321辦公室",
-    "indoor_location_note_en": "Innovation Building · 3F · Room 321",
+    "indoor_location_note_en": "Innovation Building · 3rd Floor · Room 321",
     "function_desc_zh": "資訊工程學系數位學習科技研究中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "CSIE Digital Learning Technology Research Center office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1406,11 +1384,13 @@ export const departments: Department[] = [
     ],
     "official_url": "",
     "google_maps_query": "國立中正大學創新大樓",
-    "latitude": 23.5628,
-    "longitude": 120.4752,
+    "latitude": 23.562013847150183,
+    "longitude": 120.4792198929258,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/csie_digital_learning/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/csie_digital_learning/floor_plan.jpg"
   },
   {
     "id": "csie_sponsored_research",
@@ -1425,7 +1405,7 @@ export const departments: Department[] = [
     "room_zh": "320辦公室",
     "room_en": "Room 320",
     "indoor_location_note_zh": "創新大樓 3F 320辦公室",
-    "indoor_location_note_en": "Innovation Building · 3F · Room 320",
+    "indoor_location_note_en": "Innovation Building · 3rd Floor · Room 320",
     "function_desc_zh": "資訊工程學系建教合作中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "CSIE Center for Sponsored Research Projects office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1437,11 +1417,13 @@ export const departments: Department[] = [
     ],
     "official_url": "",
     "google_maps_query": "國立中正大學創新大樓",
-    "latitude": 23.5628,
-    "longitude": 120.4752,
+    "latitude": 23.561819578208585,
+    "longitude": 120.4791716576772,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/csie_sponsored_research/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/csie_sponsored_research/floor_plan.jpg"
   },
   {
     "id": "csie",
@@ -1456,7 +1438,7 @@ export const departments: Department[] = [
     "room_zh": "107辦公室",
     "room_en": "Room 107",
     "indoor_location_note_zh": "工學院一館 1F 107辦公室",
-    "indoor_location_note_en": "College of Engineering I · 1F · Room 107",
+    "indoor_location_note_en": "College of Engineering I · 1st Floor · Room 107",
     "function_desc_zh": "資訊工程學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Department of Computer Science and Information Engineering office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1471,8 +1453,10 @@ export const departments: Department[] = [
     "latitude": 23.5632,
     "longitude": 120.4762,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/csie/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/csie/floor_plan.jpg"
   },
   {
     "id": "comm_eng",
@@ -1487,7 +1471,7 @@ export const departments: Department[] = [
     "room_zh": "429辦公室",
     "room_en": "Room 429",
     "indoor_location_note_zh": "創新大樓 4F 429辦公室",
-    "indoor_location_note_en": "Innovation Building · 4F · Room 429",
+    "indoor_location_note_en": "Innovation Building · 4th Floor · Room 429",
     "function_desc_zh": "通訊工程學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Department of Communications Engineering office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1499,11 +1483,13 @@ export const departments: Department[] = [
     ],
     "official_url": "",
     "google_maps_query": "國立中正大學通訊工程學系",
-    "latitude": 23.5628,
-    "longitude": 120.4752,
+    "latitude": 23.562028558306825,
+    "longitude": 120.47920384418542,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/comm_eng/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/comm_eng/floor_plan.jpg"
   },
   {
     "id": "aimhi",
@@ -1518,7 +1504,7 @@ export const departments: Department[] = [
     "room_zh": "209~210辦公室",
     "room_en": "Room 209~210",
     "indoor_location_note_zh": "創新大樓 2F 209~210辦公室",
-    "indoor_location_note_en": "Innovation Building · 2F · Room 209~210",
+    "indoor_location_note_en": "Innovation Building · 2nd Floor · Room 209~210",
     "function_desc_zh": "前瞻製造系統頂尖研究中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Advanced Institute of Manufacturing with High-Tech Innovations office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1530,11 +1516,13 @@ export const departments: Department[] = [
     ],
     "official_url": "",
     "google_maps_query": "國立中正大學創新大樓",
-    "latitude": 23.5628,
-    "longitude": 120.4752,
+    "latitude": 23.561986762313772,
+    "longitude": 120.47917702209521,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/aimhi/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/aimhi/floor_plan.jpg"
   },
   {
     "id": "ome",
@@ -1549,7 +1537,7 @@ export const departments: Department[] = [
     "room_zh": "234辦公室",
     "room_en": "Room 234",
     "indoor_location_note_zh": "創新大樓 2F 234辦公室",
-    "indoor_location_note_en": "Innovation Building · 2F · Room 234",
+    "indoor_location_note_en": "Innovation Building · 2nd Floor · Room 234",
     "function_desc_zh": "光機電整合工程研究所辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Institute of Opto-Mechatronics Engineering office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1561,11 +1549,13 @@ export const departments: Department[] = [
     ],
     "official_url": "",
     "google_maps_query": "國立中正大學創新大樓",
-    "latitude": 23.5628,
-    "longitude": 120.4752,
+    "latitude": 23.561652393890682,
+    "longitude": 120.4792521239477,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/ome/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/ome/floor_plan.jpg"
   },
   {
     "id": "chemical_engineering",
@@ -1580,7 +1570,7 @@ export const departments: Department[] = [
     "room_zh": "322辦公室",
     "room_en": "Room 322",
     "indoor_location_note_zh": "工學院二館 3F 322辦公室",
-    "indoor_location_note_en": "College of Engineering II · 3F · Room 322",
+    "indoor_location_note_en": "College of Engineering II · 3rd Floor · Room 322",
     "function_desc_zh": "化學工程學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Department of Chemical Engineering office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1595,8 +1585,10 @@ export const departments: Department[] = [
     "latitude": 23.5624,
     "longitude": 120.4764,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/chemical_engineering/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/chemical_engineering/floor_plan.jpg"
   },
   {
     "id": "mechanical_engineering",
@@ -1611,7 +1603,7 @@ export const departments: Department[] = [
     "room_zh": "314辦公室",
     "room_en": "Room 314",
     "indoor_location_note_zh": "工學院二館 3F 314辦公室",
-    "indoor_location_note_en": "College of Engineering II · 3F · Room 314",
+    "indoor_location_note_en": "College of Engineering II · 3rd Floor · Room 314",
     "function_desc_zh": "機械工程學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Department of Mechanical Engineering office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1626,8 +1618,10 @@ export const departments: Department[] = [
     "latitude": 23.5624,
     "longitude": 120.4764,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/mechanical_engineering/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/mechanical_engineering/floor_plan.jpg"
   },
   {
     "id": "athletic_sports",
@@ -1642,7 +1636,7 @@ export const departments: Department[] = [
     "room_zh": "108辦公室",
     "room_en": "Room 108",
     "indoor_location_note_zh": "田徑場 1F 108辦公室",
-    "indoor_location_note_en": "Track and Field · 1F · Room 108",
+    "indoor_location_note_en": "Track and Field · 1st Floor · Room 108",
     "function_desc_zh": "運動競技學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Department of Athletic Sports office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1657,8 +1651,10 @@ export const departments: Department[] = [
     "latitude": 23.5586,
     "longitude": 120.4763,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_education/athletic_sports/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_education/athletic_sports/floor_plan.jpg"
   },
   {
     "id": "graduate_education",
@@ -1673,7 +1669,7 @@ export const departments: Department[] = [
     "room_zh": "409~410辦公室",
     "room_en": "Room 409~410",
     "indoor_location_note_zh": "教育學院 4F 409~410辦公室",
-    "indoor_location_note_en": "College of Education Building · 4F · Room 409~410",
+    "indoor_location_note_en": "College of Education Building · 4th Floor · Room 409~410",
     "function_desc_zh": "教育學研究所辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Graduate Institute of Education office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1688,8 +1684,10 @@ export const departments: Department[] = [
     "latitude": 23.563065536234426,
     "longitude": 120.47686540424797,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_education/graduate_education/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_education/graduate_education/floor_plan.jpg"
   },
   {
     "id": "educational_gerontology",
@@ -1704,7 +1702,7 @@ export const departments: Department[] = [
     "room_zh": "202辦公室",
     "room_en": "Room 202",
     "indoor_location_note_zh": "教育學院 2F 202辦公室",
-    "indoor_location_note_en": "College of Education Building · 2F · Room 202",
+    "indoor_location_note_en": "College of Education Building · 2nd Floor · Room 202",
     "function_desc_zh": "高齡教育研究中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Institute of Educational Gerontology office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1719,12 +1717,14 @@ export const departments: Department[] = [
     "latitude": 23.563333058775378,
     "longitude": 120.47681117931316,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_education/educational_gerontology/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_education/educational_gerontology/floor_plan.jpg"
   },
   {
     "id": "teacher_education",
-    "name_zh": "師資培育中心教育學研究所",
+    "name_zh": "師資培育中心",
     "name_en": "Center for Teacher Education / Graduate Institute of Education",
     "category": "department",
     "college_zh": "教育學院",
@@ -1735,8 +1735,8 @@ export const departments: Department[] = [
     "room_zh": "112辦公室",
     "room_en": "Room 112",
     "indoor_location_note_zh": "教育學院 1F 112辦公室",
-    "indoor_location_note_en": "College of Education Building · 1F · Room 112",
-    "function_desc_zh": "師資培育中心教育學研究所辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "indoor_location_note_en": "College of Education Building · 1st Floor · Room 112",
+    "function_desc_zh": "師資培育中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Center for Teacher Education / Graduate Institute of Education office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
     "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
@@ -1750,8 +1750,10 @@ export const departments: Department[] = [
     "latitude": 23.56328627891681,
     "longitude": 120.47683510207852,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_education/teacher_education/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_education/teacher_education/floor_plan.jpg"
   },
   {
     "id": "adult_continuing_education",
@@ -1766,7 +1768,7 @@ export const departments: Department[] = [
     "room_zh": "308辦公室",
     "room_en": "Room 308",
     "indoor_location_note_zh": "教育學院 3F 308辦公室",
-    "indoor_location_note_en": "College of Education Building · 3F · Room 308",
+    "indoor_location_note_en": "College of Education Building · 3rd Floor · Room 308",
     "function_desc_zh": "成人及繼續教育學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Department of Adult and Continuing Education office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1781,8 +1783,10 @@ export const departments: Department[] = [
     "latitude": 23.562982209430057,
     "longitude": 120.47696906956452,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_education/adult_continuing_education/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_education/adult_continuing_education/floor_plan.jpg"
   },
   {
     "id": "criminology",
@@ -1797,7 +1801,7 @@ export const departments: Department[] = [
     "room_zh": "609辦公室",
     "room_en": "Room 609",
     "indoor_location_note_zh": "教育學院 6F 609辦公室",
-    "indoor_location_note_en": "College of Education Building · 6F · Room 609",
+    "indoor_location_note_en": "College of Education Building · 6th Floor · Room 609",
     "function_desc_zh": "犯罪防治學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Department of Criminology office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1812,8 +1816,10 @@ export const departments: Department[] = [
     "latitude": 23.563618885097508,
     "longitude": 120.47629018602217,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_education/criminology/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_education/criminology/floor_plan.jpg"
   },
   {
     "id": "taiwan_lit",
@@ -1828,7 +1834,7 @@ export const departments: Department[] = [
     "room_zh": "107-1辦公室",
     "room_en": "Room 107-1",
     "indoor_location_note_zh": "文學院大樓 1F 107-1辦公室",
-    "indoor_location_note_en": "College of Humanities Building · 1F · Room 107-1",
+    "indoor_location_note_en": "College of Humanities Building · 1st Floor · Room 107-1",
     "function_desc_zh": "台灣文學與創意應用研究所辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Graduate Institute of Taiwan Literature and Innovation office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1843,8 +1849,10 @@ export const departments: Department[] = [
     "latitude": 23.56137285015513,
     "longitude": 120.47375920015418,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_humanities/taiwan_lit/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/taiwan_lit/floor_plan.jpg"
   },
   {
     "id": "chinese_lit",
@@ -1859,7 +1867,7 @@ export const departments: Department[] = [
     "room_zh": "205辦公室",
     "room_en": "Room 205",
     "indoor_location_note_zh": "文學院大樓 2F 205辦公室",
-    "indoor_location_note_en": "College of Humanities Building · 2F · Room 205",
+    "indoor_location_note_en": "College of Humanities Building · 2nd Floor · Room 205",
     "function_desc_zh": "中國文學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Department of Chinese Literature office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1874,8 +1882,10 @@ export const departments: Department[] = [
     "latitude": 23.561153000753983,
     "longitude": 120.47345181584159,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_humanities/chinese_lit/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/chinese_lit/floor_plan.jpg"
   },
   {
     "id": "foreign_languages",
@@ -1906,7 +1916,9 @@ export const departments: Department[] = [
     "longitude": 120.47,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_humanities/foreign_languages/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/foreign_languages/floor_plan.jpg"
   },
   {
     "id": "history",
@@ -1937,7 +1949,9 @@ export const departments: Department[] = [
     "longitude": 120.47,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_humanities/history/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/history/floor_plan.jpg"
   },
   {
     "id": "east_asian_classics",
@@ -1952,7 +1966,7 @@ export const departments: Department[] = [
     "room_zh": "203辦公室",
     "room_en": "Room 203",
     "indoor_location_note_zh": "文學院大樓 2F 203辦公室",
-    "indoor_location_note_en": "College of Humanities Building · 2F · Room 203",
+    "indoor_location_note_en": "College of Humanities Building · 2nd Floor · Room 203",
     "function_desc_zh": "東亞漢籍與儒學研究中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "East Asian Center for Classical Chinese Texts and Confucian Studies office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -1967,8 +1981,10 @@ export const departments: Department[] = [
     "latitude": 23.561042363535513,
     "longitude": 120.47338476061616,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_humanities/east_asian_classics/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/east_asian_classics/floor_plan.jpg"
   },
   {
     "id": "philosophy",
@@ -1999,7 +2015,9 @@ export const departments: Department[] = [
     "longitude": 120.47,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_humanities/philosophy/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/philosophy/floor_plan.jpg"
   },
   {
     "id": "linguistics",
@@ -2014,7 +2032,7 @@ export const departments: Department[] = [
     "room_zh": "410辦公室",
     "room_en": "Room 410",
     "indoor_location_note_zh": "文學院大樓 4F 410辦公室",
-    "indoor_location_note_en": "College of Humanities Building · 4F · Room 410",
+    "indoor_location_note_en": "College of Humanities Building · 4th Floor · Room 410",
     "function_desc_zh": "語言學研究所辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Graduate Institute of Linguistics office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -2029,8 +2047,10 @@ export const departments: Department[] = [
     "latitude": 23.561301450417588,
     "longitude": 120.4736666448795,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_humanities/linguistics/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/linguistics/floor_plan.jpg"
   },
   {
     "id": "law",
@@ -2061,7 +2081,9 @@ export const departments: Department[] = [
     "longitude": 120.4702,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_law/law/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_law/law/floor_plan.jpg"
   },
   {
     "id": "financial_economic_law",
@@ -2092,7 +2114,9 @@ export const departments: Department[] = [
     "longitude": 120.4702,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_law/financial_economic_law/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_law/financial_economic_law/floor_plan.jpg"
   },
   {
     "id": "economics",
@@ -2123,7 +2147,9 @@ export const departments: Department[] = [
     "longitude": 120.4695,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/economics/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/economics/floor_plan.jpg"
   },
   {
     "id": "finance",
@@ -2154,7 +2180,9 @@ export const departments: Department[] = [
     "longitude": 120.4695,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/finance/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/finance/floor_plan.jpg"
   },
   {
     "id": "business_administration",
@@ -2185,7 +2213,9 @@ export const departments: Department[] = [
     "longitude": 120.4695,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/business_administration/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/business_administration/floor_plan.jpg"
   },
   {
     "id": "ait",
@@ -2216,7 +2246,9 @@ export const departments: Department[] = [
     "longitude": 120.4752,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/ait/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/ait/floor_plan.jpg"
   },
   {
     "id": "ait_excellence",
@@ -2247,7 +2279,9 @@ export const departments: Department[] = [
     "longitude": 120.4752,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/ait_excellence/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/ait_excellence/floor_plan.jpg"
   },
   {
     "id": "information_management",
@@ -2262,7 +2296,7 @@ export const departments: Department[] = [
     "room_zh": "219辦公室",
     "room_en": "Room 219",
     "indoor_location_note_zh": "管理學院大樓 2F 219辦公室",
-    "indoor_location_note_en": "College of Management Building · 2F · Room 219",
+    "indoor_location_note_en": "College of Management Building · 2nd Floor · Room 219",
     "function_desc_zh": "資訊管理學系辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Department of Information Management office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -2277,8 +2311,10 @@ export const departments: Department[] = [
     "latitude": 23.560367767930487,
     "longitude": 120.47626657838507,
     "source_url": "",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/information_management/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/information_management/floor_plan.jpg"
   },
   {
     "id": "aging_innovation",
@@ -2309,7 +2345,9 @@ export const departments: Department[] = [
     "longitude": 120.4752,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/aging_innovation/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/aging_innovation/floor_plan.jpg"
   },
   {
     "id": "fintech_master",
@@ -2324,7 +2362,7 @@ export const departments: Department[] = [
     "room_zh": "110辦公室",
     "room_en": "Room 110",
     "indoor_location_note_zh": "管理學院大樓 1F 110辦公室",
-    "indoor_location_note_en": "College of Management Building · 1F · Room 110",
+    "indoor_location_note_en": "College of Management Building · 1st Floor · Room 110",
     "function_desc_zh": "金融科技碩士學位學程辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Master Program in Financial Technology office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -2339,7 +2377,7 @@ export const departments: Department[] = [
     "latitude": 23.560524089020632,
     "longitude": 120.47631849317845,
     "source_url": "",
-    "needs_manual_review": true,
+    "needs_manual_review": false,
     "is_college_office": false
   },
   {
@@ -2355,7 +2393,7 @@ export const departments: Department[] = [
     "room_zh": "110辦公室",
     "room_en": "Room 110",
     "indoor_location_note_zh": "管理學院大樓 1F 110辦公室",
-    "indoor_location_note_en": "College of Management Building · 1F · Room 110",
+    "indoor_location_note_en": "College of Management Building · 1st Floor · Room 110",
     "function_desc_zh": "國際財務金融管理碩士學位學程辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "International Master Program in Global Finance (IMF) office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -2370,7 +2408,7 @@ export const departments: Department[] = [
     "latitude": 23.560555308369434,
     "longitude": 120.47634898591488,
     "source_url": "",
-    "needs_manual_review": true,
+    "needs_manual_review": false,
     "is_college_office": false
   },
   {
@@ -2402,7 +2440,9 @@ export const departments: Department[] = [
     "longitude": 120.4752,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/manufacturing_integration/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/manufacturing_integration/floor_plan.jpg"
   },
   {
     "id": "math",
@@ -2433,7 +2473,9 @@ export const departments: Department[] = [
     "longitude": 120.4687,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_science/math/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_science/math/floor_plan.jpg"
   },
   {
     "id": "physics",
@@ -2464,7 +2506,9 @@ export const departments: Department[] = [
     "longitude": 120.4687,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_science/physics/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_science/physics/floor_plan.jpg"
   },
   {
     "id": "chem_biochem",
@@ -2495,7 +2539,8 @@ export const departments: Department[] = [
     "longitude": 120.4679,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_science/college_science_office/entrance.jpg"
   },
   {
     "id": "earth_environment",
@@ -2526,7 +2571,9 @@ export const departments: Department[] = [
     "longitude": 120.4687,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_science/earth_environment/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_science/earth_environment/floor_plan.jpg"
   },
   {
     "id": "biomedical_sciences",
@@ -2557,7 +2604,9 @@ export const departments: Department[] = [
     "longitude": 120.4679,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_science/biomedical_sciences/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_science/biomedical_sciences/floor_plan.jpg"
   },
   {
     "id": "interdisciplinary_studies",
@@ -2615,7 +2664,9 @@ export const departments: Department[] = [
     "longitude": 120.4692,
     "source_url": "https://dsw.ccu.edu.tw/",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_social_sciences/social_welfare/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/social_welfare/floor_plan.jpg"
   },
   {
     "id": "psychology",
@@ -2642,7 +2693,9 @@ export const departments: Department[] = [
     "longitude": 120.4692,
     "source_url": "https://psy.ccu.edu.tw/",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_social_sciences/psychology/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/psychology/floor_plan.jpg"
   },
   {
     "id": "political_science",
@@ -2669,7 +2722,9 @@ export const departments: Department[] = [
     "longitude": 120.4692,
     "source_url": "https://polsci.ccu.edu.tw/",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_social_sciences/political_science/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/political_science/floor_plan.jpg"
   },
   {
     "id": "communication",
@@ -2696,7 +2751,9 @@ export const departments: Department[] = [
     "longitude": 120.4692,
     "source_url": "https://telecom.ccu.edu.tw/",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_social_sciences/communication/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/communication/floor_plan.jpg"
   },
   {
     "id": "labor_relations",
@@ -2723,7 +2780,9 @@ export const departments: Department[] = [
     "longitude": 120.4692,
     "source_url": "https://labor.ccu.edu.tw/",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_social_sciences/labor_relations/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/labor_relations/floor_plan.jpg"
   },
   {
     "id": "isia",
@@ -2734,11 +2793,11 @@ export const departments: Department[] = [
     "college_en": "College of Social Sciences",
     "building_name_zh": "社會科學院大樓",
     "building_name_en": "College of Social Sciences Building",
-    "floor": "",
+    "floor": "6F",
     "room_zh": "",
     "room_en": "",
-    "indoor_location_note_zh": "社會科學院大樓",
-    "indoor_location_note_en": "College of Social Sciences Building",
+    "indoor_location_note_zh": "法學院大樓 6F",
+    "indoor_location_note_en": "College of Law Building · 6th Floor",
     "function_desc_zh": "戰略暨國際事務研究所辦公室，提供研究所行政、課程與學生諮詢服務。",
     "function_desc_en": "Graduate Institute of Strategic and International Affairs office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -2749,8 +2808,10 @@ export const departments: Department[] = [
     "latitude": 23.56419828108415,
     "longitude": 120.47697052841933,
     "source_url": "https://isia.ccu.edu.tw/",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_social_sciences/isia/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/isia/floor_plan.jpg"
   },
   {
     "id": "cogsci",
@@ -2761,11 +2822,11 @@ export const departments: Department[] = [
     "college_en": "College of Social Sciences",
     "building_name_zh": "社會科學院大樓",
     "building_name_en": "College of Social Sciences Building",
-    "floor": "",
-    "room_zh": "",
-    "room_en": "",
-    "indoor_location_note_zh": "社會科學院大樓",
-    "indoor_location_note_en": "College of Social Sciences Building",
+    "floor": "5F",
+    "room_zh": "510辦公室",
+    "room_en": "Room 510",
+    "indoor_location_note_zh": "社會科學院大樓西棟 5F 510辦公室",
+    "indoor_location_note_en": "West Wing, College of Social Sciences Building · 5th Floor · Room 510",
     "function_desc_zh": "認知科學博士學位學程辦公室，提供跨領域博士課程行政服務。",
     "function_desc_en": "Doctoral Program in Cognitive Science office. Provides interdisciplinary doctoral program administrative services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
@@ -2776,8 +2837,10 @@ export const departments: Department[] = [
     "latitude": 23.560721193031082,
     "longitude": 120.47410889679124,
     "source_url": "https://cogsci.ccu.edu.tw/",
-    "needs_manual_review": true,
-    "is_college_office": false
+    "needs_manual_review": false,
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_social_sciences/cogsci/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/cogsci/floor_plan.jpg"
   },
   {
     "id": "stemphd",
@@ -2803,34 +2866,7 @@ export const departments: Department[] = [
     "latitude": 23.564187619936725,
     "longitude": 120.47594290811958,
     "source_url": "https://stemphd.ccu.edu.tw",
-    "needs_manual_review": true,
-    "is_college_office": false
-  },
-  {
-    "id": "ccitelearning",
-    "name_zh": "雲端計算與物聯網數位學習碩士在職專班",
-    "name_en": "Master's Program in Cloud Computing and IoT (e-Learning, In-Service)",
-    "category": "department",
-    "college_zh": "工學院",
-    "college_en": "College of Engineering",
-    "building_name_zh": "工學院大樓",
-    "building_name_en": "College of Engineering Building",
-    "floor": "",
-    "room_zh": "",
-    "room_en": "",
-    "indoor_location_note_zh": "工學院大樓",
-    "indoor_location_note_en": "College of Engineering Building",
-    "function_desc_zh": "雲端計算與物聯網數位學習碩士在職專班辦公室，提供在職進修碩士課程行政服務。",
-    "function_desc_en": "Master's Program in Cloud Computing and IoT (In-Service) office. Provides in-service master's program administrative services.",
-    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
-    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
-    "service_categories": ["department_offices", "academic_affairs", "course_issues"],
-    "official_url": "https://ccitelearning.ccu.edu.tw/",
-    "google_maps_query": "國立中正大學工學院",
-    "latitude": 23.5632,
-    "longitude": 120.4762,
-    "source_url": "https://ccitelearning.ccu.edu.tw/",
-    "needs_manual_review": true,
+    "needs_manual_review": false,
     "is_college_office": false
   },
   {
@@ -2858,33 +2894,6 @@ export const departments: Department[] = [
     "longitude": 120.4738,
     "source_url": "https://ibpme.ccu.edu.tw/",
     "needs_manual_review": false,
-    "is_college_office": false
-  },
-  {
-    "id": "emba",
-    "name_zh": "高階主管管理碩士在職專班",
-    "name_en": "Executive Master of Business Administration (EMBA)",
-    "category": "department",
-    "college_zh": "管理學院",
-    "college_en": "College of Management",
-    "building_name_zh": "管理學院大樓",
-    "building_name_en": "College of Management Building",
-    "floor": "",
-    "room_zh": "",
-    "room_en": "",
-    "indoor_location_note_zh": "管理學院大樓",
-    "indoor_location_note_en": "College of Management Building",
-    "function_desc_zh": "高階主管管理碩士在職專班辦公室，提供在職進修 EMBA 課程行政服務。",
-    "function_desc_en": "EMBA office. Provides in-service executive MBA program administrative services.",
-    "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
-    "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
-    "service_categories": ["department_offices", "academic_affairs", "course_issues"],
-    "official_url": "https://emba.ccu.edu.tw/",
-    "google_maps_query": "國立中正大學管理學院",
-    "latitude": 23.560682669630367,
-    "longitude": 120.4759107974078,
-    "source_url": "https://emba.ccu.edu.tw/",
-    "needs_manual_review": true,
     "is_college_office": false
   }
 
@@ -3616,101 +3625,11 @@ export const tasks: Task[] = [
     ]
   },
   {
-    "id": "professor_communication",
-    "task_name_zh": "與教授溝通",
-    "task_name_en": "Communicating with Professors",
-    "scenario_zh": "你在課業、專題或未來規劃上需要請教教授。",
-    "scenario_en": "You need to consult a professor about coursework, research, or academic planning.",
-    "target_unit_type": "department",
-    "target_unit_id": "college_management_office",
-    "category_id": "course_issues",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "email_professor",
-    "task_name_zh": "我要如何寫電子郵件給教授",
-    "task_name_en": "How to Write an Email to a Professor",
-    "scenario_zh": "你需要用正式且禮貌的方式寫信給教授。",
-    "scenario_en": "You need to write a formal and polite email to a professor.",
-    "target_unit_type": "department",
-    "target_unit_id": "college_management_office",
-    "category_id": "course_issues",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
     "id": "course_override",
     "task_name_zh": "必修課滿了怎麼辦（加簽）",
     "task_name_en": "What to Do If a Required Course Is Full (Course Override)",
     "scenario_zh": "必修課人數已滿，或沒有成功選到想要的課。",
     "scenario_en": "A required course is full or you could not enroll in the desired course.",
-    "target_unit_type": "office",
-    "target_unit_id": "oaa",
-    "category_id": "course_issues",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "professor_not_accept_international",
-    "task_name_zh": "已選上課程，但教授不收國際生",
-    "task_name_en": "Enrolled in a Course, but the Professor Does Not Accept International Students",
-    "scenario_zh": "你已選上課程，但教授表示不收國際生。",
-    "scenario_en": "You enrolled in a course, but the professor does not accept international students.",
     "target_unit_type": "office",
     "target_unit_id": "oaa",
     "category_id": "course_issues",
@@ -3976,66 +3895,6 @@ export const tasks: Task[] = [
     ]
   },
   {
-    "id": "washing_machine",
-    "task_name_zh": "洗衣機故障",
-    "task_name_en": "Washing Machine Malfunction",
-    "scenario_zh": "宿舍洗衣機或烘衣機故障。",
-    "scenario_en": "A dormitory washing machine or dryer is malfunctioning.",
-    "target_unit_type": "office",
-    "target_unit_id": "dorm_service",
-    "category_id": "dormitory",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "mattress",
-    "task_name_zh": "床墊可在哪裡取得",
-    "task_name_en": "Where to Get a Mattress",
-    "scenario_zh": "你需要購買宿舍床墊或寢具。",
-    "scenario_en": "You need to buy a dormitory mattress or bedding.",
-    "target_unit_type": "office",
-    "target_unit_id": "dorm_service",
-    "category_id": "dormitory",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
     "id": "dorm_checkin",
     "task_name_zh": "住宿報到程序",
     "task_name_en": "Dormitory Check-In Procedure",
@@ -4104,156 +3963,6 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "dorm_service",
     "category_id": "dormitory",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "youbike",
-    "task_name_zh": "如何使用 YouBike",
-    "task_name_en": "How to Use YouBike",
-    "scenario_zh": "你想在校園附近使用 YouBike。",
-    "scenario_en": "You want to use YouBike around campus.",
-    "target_unit_type": "office",
-    "target_unit_id": "vehicle_control",
-    "category_id": "transportation",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "bus_schedule",
-    "task_name_zh": "如何查詢公車時刻表",
-    "task_name_en": "How to Check Bus Schedules",
-    "scenario_zh": "你需要查詢公車班次、路線與票價。",
-    "scenario_en": "You need to check bus schedules, routes, and fares.",
-    "target_unit_type": "office",
-    "target_unit_id": "vehicle_control",
-    "category_id": "transportation",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "go_to_minxiong",
-    "task_name_zh": "如何前往民雄",
-    "task_name_en": "How to Get to Minxiong",
-    "scenario_zh": "你想從中正大學前往民雄。",
-    "scenario_en": "You want to get from CCU to Minxiong.",
-    "target_unit_type": "office",
-    "target_unit_id": "vehicle_control",
-    "category_id": "transportation",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "taxi_info",
-    "task_name_zh": "計程車服務資訊",
-    "task_name_en": "Taxi Service Information",
-    "scenario_zh": "你想知道高鐵或機場到中正大學的計程車資訊。",
-    "scenario_en": "You want taxi information from HSR or the airport to CCU.",
-    "target_unit_type": "office",
-    "target_unit_id": "oia",
-    "category_id": "transportation",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "airport_taxi_language",
-    "task_name_zh": "從機場來到中正時，計程車司機不懂英文",
-    "task_name_en": "The Taxi Driver Does Not Understand English When Traveling from the Airport to CCU",
-    "scenario_zh": "你從機場搭車到中正，擔心司機不懂英文。",
-    "scenario_en": "You are traveling from the airport to CCU and worry the driver may not understand English.",
-    "target_unit_type": "office",
-    "target_unit_id": "oia",
-    "category_id": "transportation",
     "required_documents_zh": [],
     "required_documents_en": [],
     "steps": [
@@ -4493,66 +4202,6 @@ export const tasks: Task[] = [
     "scenario_en": "You want to know the opening hours of sports facilities.",
     "target_unit_type": "office",
     "target_unit_id": "osa_extracurricular",
-    "category_id": "student_affairs",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "holiday_closure",
-    "task_name_zh": "哪些地方會因國定假日而閉館或暫停服務",
-    "task_name_en": "Places Closed or Suspended on National Holidays",
-    "scenario_zh": "你想知道國定假日期間哪些設施會暫停服務。",
-    "scenario_en": "You want to know which campus facilities close on national holidays.",
-    "target_unit_type": "office",
-    "target_unit_id": "osa_life",
-    "category_id": "student_affairs",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "typhoon_day",
-    "task_name_zh": "如何知道是否有放颱風假",
-    "task_name_en": "How to Find Out About Typhoon Days Off",
-    "scenario_zh": "颱風來了，你想確認學校是否停課。",
-    "scenario_en": "A typhoon is approaching and you want to know whether classes are cancelled.",
-    "target_unit_type": "office",
-    "target_unit_id": "osa_safety",
     "category_id": "student_affairs",
     "required_documents_zh": [],
     "required_documents_en": [],
@@ -4924,4 +4573,22 @@ export function getTaskById(id: string) {
 
 export function getServiceCategoryById(id: string) {
   return serviceCategories.find(category => category.id === id);
+}
+
+export function filterByCategory(categoryId: string) {
+  return {
+    offices: offices.filter(o => o.service_categories.includes(categoryId)),
+    departments: departments.filter(d => d.service_categories.includes(categoryId)),
+    tasks: tasks.filter(t => t.category_id === categoryId),
+  };
+}
+
+export function getColleges() {
+  const seen = new Map<string, { zh: string; en: string }>();
+  departments.forEach(d => {
+    if (!seen.has(d.college_en)) {
+      seen.set(d.college_en, { zh: d.college_zh, en: d.college_en });
+    }
+  });
+  return Array.from(seen.values());
 }

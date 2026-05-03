@@ -78,6 +78,7 @@ export interface Department {
   is_college_office?: boolean;
   floor_plan_image?: string;
   entrance_image?: string;
+  building_entrance_image?: string;
 }
 
 export interface TaskStep {
@@ -1089,8 +1090,8 @@ export const departments: Department[] = [
     "source_url": "",
     "needs_manual_review": false,
     "is_college_office": true,
-    "entrance_image": "/images/departments/college_engineering_office/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_engineering_office/floor_plan.jpg"
+    "entrance_image": "/images/departments/college_engineering/college_engineering_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/college_engineering_office/floor_plan.jpg"
   },
   {
     "id": "college_humanities_office",
@@ -1122,8 +1123,8 @@ export const departments: Department[] = [
     "source_url": "",
     "needs_manual_review": false,
     "is_college_office": true,
-    "entrance_image": "/images/departments/college_humanities_office/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_humanities_office/floor_plan.jpg"
+    "entrance_image": "/images/departments/college_humanities/college_humanities_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/college_humanities_office/floor_plan.jpg"
   },
   {
     "id": "college_law_office",
@@ -1154,7 +1155,10 @@ export const departments: Department[] = [
     "longitude": 120.4702,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": true
+    "is_college_office": true,
+    "entrance_image": "/images/departments/college_law/college_law_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_law/college_law_office/floor_plan.jpg",
+    "building_entrance_image": "/images/departments/college_law/college_law_office/building_entrance.jpg"
   },
   {
     "id": "college_social_sciences_office",
@@ -1186,8 +1190,8 @@ export const departments: Department[] = [
     "source_url": "",
     "needs_manual_review": false,
     "is_college_office": true,
-    "entrance_image": "/images/departments/college_social_sciences_office/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_social_sciences_office/floor_plan.jpg"
+    "entrance_image": "/images/departments/college_social_sciences/college_social_sciences_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/college_social_sciences_office/floor_plan.jpg"
   },
   {
     "id": "college_education_office",
@@ -1219,8 +1223,8 @@ export const departments: Department[] = [
     "source_url": "",
     "needs_manual_review": false,
     "is_college_office": true,
-    "entrance_image": "/images/departments/college_education_office/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_education_office/floor_plan.jpg"
+    "entrance_image": "/images/departments/college_education/college_education_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_education/college_education_office/floor_plan.jpg"
   },
   {
     "id": "college_science_office",
@@ -1252,8 +1256,8 @@ export const departments: Department[] = [
     "source_url": "",
     "needs_manual_review": false,
     "is_college_office": true,
-    "entrance_image": "/images/departments/college_science_office/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_science_office/floor_plan.jpg"
+    "entrance_image": "/images/departments/college_science/college_science_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_science/college_science_office/floor_plan.jpg"
   },
   {
     "id": "college_management_office",
@@ -1285,8 +1289,9 @@ export const departments: Department[] = [
     "source_url": "",
     "needs_manual_review": false,
     "is_college_office": true,
-    "entrance_image": "/images/departments/college_management_office/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_management_office/floor_plan.jpg"
+    "entrance_image": "/images/departments/college_management/college_management_office/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/college_management_office/floor_plan.jpg",
+    "building_entrance_image": "/images/departments/college_management/college_management_office/building_entrance.jpg"
   },
   {
     "id": "ee",
@@ -1317,7 +1322,9 @@ export const departments: Department[] = [
     "longitude": 120.4762,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/ee/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/ee/floor_plan.jpg"
   },
   {
     "id": "telecom_research",
@@ -1344,11 +1351,13 @@ export const departments: Department[] = [
     ],
     "official_url": "",
     "google_maps_query": "國立中正大學創新大樓",
-    "latitude": 23.5628,
-    "longitude": 120.4752,
+    "latitude": 23.562021222913106,
+    "longitude": 120.47933791012258,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/telecom_research/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/telecom_research/floor_plan.jpg"
   },
   {
     "id": "csie_digital_learning",
@@ -1375,11 +1384,13 @@ export const departments: Department[] = [
     ],
     "official_url": "",
     "google_maps_query": "國立中正大學創新大樓",
-    "latitude": 23.5628,
-    "longitude": 120.4752,
+    "latitude": 23.562013847150183,
+    "longitude": 120.4792198929258,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/csie_digital_learning/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/csie_digital_learning/floor_plan.jpg"
   },
   {
     "id": "csie_sponsored_research",
@@ -1406,11 +1417,13 @@ export const departments: Department[] = [
     ],
     "official_url": "",
     "google_maps_query": "國立中正大學創新大樓",
-    "latitude": 23.5628,
-    "longitude": 120.4752,
+    "latitude": 23.561819578208585,
+    "longitude": 120.4791716576772,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/csie_sponsored_research/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/csie_sponsored_research/floor_plan.jpg"
   },
   {
     "id": "csie",
@@ -1441,7 +1454,9 @@ export const departments: Department[] = [
     "longitude": 120.4762,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/csie/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/csie/floor_plan.jpg"
   },
   {
     "id": "comm_eng",
@@ -1468,11 +1483,13 @@ export const departments: Department[] = [
     ],
     "official_url": "",
     "google_maps_query": "國立中正大學通訊工程學系",
-    "latitude": 23.5628,
-    "longitude": 120.4752,
+    "latitude": 23.562028558306825,
+    "longitude": 120.47920384418542,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/comm_eng/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/comm_eng/floor_plan.jpg"
   },
   {
     "id": "aimhi",
@@ -1499,11 +1516,13 @@ export const departments: Department[] = [
     ],
     "official_url": "",
     "google_maps_query": "國立中正大學創新大樓",
-    "latitude": 23.5628,
-    "longitude": 120.4752,
+    "latitude": 23.561986762313772,
+    "longitude": 120.47917702209521,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/aimhi/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/aimhi/floor_plan.jpg"
   },
   {
     "id": "ome",
@@ -1530,11 +1549,13 @@ export const departments: Department[] = [
     ],
     "official_url": "",
     "google_maps_query": "國立中正大學創新大樓",
-    "latitude": 23.5628,
-    "longitude": 120.4752,
+    "latitude": 23.561652393890682,
+    "longitude": 120.4792521239477,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/ome/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/ome/floor_plan.jpg"
   },
   {
     "id": "chemical_engineering",
@@ -1565,7 +1586,9 @@ export const departments: Department[] = [
     "longitude": 120.4764,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/chemical_engineering/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/chemical_engineering/floor_plan.jpg"
   },
   {
     "id": "mechanical_engineering",
@@ -1596,7 +1619,9 @@ export const departments: Department[] = [
     "longitude": 120.4764,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_engineering/mechanical_engineering/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_engineering/mechanical_engineering/floor_plan.jpg"
   },
   {
     "id": "athletic_sports",
@@ -1627,7 +1652,9 @@ export const departments: Department[] = [
     "longitude": 120.4763,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_education/athletic_sports/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_education/athletic_sports/floor_plan.jpg"
   },
   {
     "id": "graduate_education",
@@ -1658,7 +1685,9 @@ export const departments: Department[] = [
     "longitude": 120.47686540424797,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_education/graduate_education/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_education/graduate_education/floor_plan.jpg"
   },
   {
     "id": "educational_gerontology",
@@ -1689,11 +1718,13 @@ export const departments: Department[] = [
     "longitude": 120.47681117931316,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_education/educational_gerontology/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_education/educational_gerontology/floor_plan.jpg"
   },
   {
     "id": "teacher_education",
-    "name_zh": "師資培育中心教育學研究所",
+    "name_zh": "師資培育中心",
     "name_en": "Center for Teacher Education / Graduate Institute of Education",
     "category": "department",
     "college_zh": "教育學院",
@@ -1705,7 +1736,7 @@ export const departments: Department[] = [
     "room_en": "Room 112",
     "indoor_location_note_zh": "教育學院 1F 112辦公室",
     "indoor_location_note_en": "College of Education Building · 1st Floor · Room 112",
-    "function_desc_zh": "師資培育中心教育學研究所辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
+    "function_desc_zh": "師資培育中心辦公室，提供系所或學院相關行政、課程與學生諮詢服務。",
     "function_desc_en": "Center for Teacher Education / Graduate Institute of Education office. Provides administrative, curriculum, and student inquiry services.",
     "service_scope_zh": "系所/學院行政、課程諮詢、修業規定、簽章與學生事務協助。",
     "service_scope_en": "Department/college administration, curriculum inquiries, program regulations, signatures, and student affairs support.",
@@ -1720,7 +1751,9 @@ export const departments: Department[] = [
     "longitude": 120.47683510207852,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_education/teacher_education/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_education/teacher_education/floor_plan.jpg"
   },
   {
     "id": "adult_continuing_education",
@@ -1751,7 +1784,9 @@ export const departments: Department[] = [
     "longitude": 120.47696906956452,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_education/adult_continuing_education/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_education/adult_continuing_education/floor_plan.jpg"
   },
   {
     "id": "criminology",
@@ -1782,7 +1817,9 @@ export const departments: Department[] = [
     "longitude": 120.47629018602217,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_education/criminology/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_education/criminology/floor_plan.jpg"
   },
   {
     "id": "taiwan_lit",
@@ -1813,7 +1850,9 @@ export const departments: Department[] = [
     "longitude": 120.47375920015418,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_humanities/taiwan_lit/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/taiwan_lit/floor_plan.jpg"
   },
   {
     "id": "chinese_lit",
@@ -1844,7 +1883,9 @@ export const departments: Department[] = [
     "longitude": 120.47345181584159,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_humanities/chinese_lit/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/chinese_lit/floor_plan.jpg"
   },
   {
     "id": "foreign_languages",
@@ -1875,7 +1916,9 @@ export const departments: Department[] = [
     "longitude": 120.47,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_humanities/foreign_languages/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/foreign_languages/floor_plan.jpg"
   },
   {
     "id": "history",
@@ -1906,7 +1949,9 @@ export const departments: Department[] = [
     "longitude": 120.47,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_humanities/history/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/history/floor_plan.jpg"
   },
   {
     "id": "east_asian_classics",
@@ -1937,7 +1982,9 @@ export const departments: Department[] = [
     "longitude": 120.47338476061616,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_humanities/east_asian_classics/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/east_asian_classics/floor_plan.jpg"
   },
   {
     "id": "philosophy",
@@ -1968,7 +2015,9 @@ export const departments: Department[] = [
     "longitude": 120.47,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_humanities/philosophy/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/philosophy/floor_plan.jpg"
   },
   {
     "id": "linguistics",
@@ -1999,7 +2048,9 @@ export const departments: Department[] = [
     "longitude": 120.4736666448795,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_humanities/linguistics/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_humanities/linguistics/floor_plan.jpg"
   },
   {
     "id": "law",
@@ -2030,7 +2081,9 @@ export const departments: Department[] = [
     "longitude": 120.4702,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_law/law/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_law/law/floor_plan.jpg"
   },
   {
     "id": "financial_economic_law",
@@ -2061,7 +2114,9 @@ export const departments: Department[] = [
     "longitude": 120.4702,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_law/financial_economic_law/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_law/financial_economic_law/floor_plan.jpg"
   },
   {
     "id": "economics",
@@ -2092,7 +2147,9 @@ export const departments: Department[] = [
     "longitude": 120.4695,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/economics/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/economics/floor_plan.jpg"
   },
   {
     "id": "finance",
@@ -2123,7 +2180,9 @@ export const departments: Department[] = [
     "longitude": 120.4695,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/finance/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/finance/floor_plan.jpg"
   },
   {
     "id": "business_administration",
@@ -2154,7 +2213,9 @@ export const departments: Department[] = [
     "longitude": 120.4695,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/business_administration/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/business_administration/floor_plan.jpg"
   },
   {
     "id": "ait",
@@ -2185,7 +2246,9 @@ export const departments: Department[] = [
     "longitude": 120.4752,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/ait/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/ait/floor_plan.jpg"
   },
   {
     "id": "ait_excellence",
@@ -2216,7 +2279,9 @@ export const departments: Department[] = [
     "longitude": 120.4752,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/ait_excellence/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/ait_excellence/floor_plan.jpg"
   },
   {
     "id": "information_management",
@@ -2247,7 +2312,9 @@ export const departments: Department[] = [
     "longitude": 120.47626657838507,
     "source_url": "",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/information_management/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/information_management/floor_plan.jpg"
   },
   {
     "id": "aging_innovation",
@@ -2278,7 +2345,9 @@ export const departments: Department[] = [
     "longitude": 120.4752,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/aging_innovation/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/aging_innovation/floor_plan.jpg"
   },
   {
     "id": "fintech_master",
@@ -2371,7 +2440,9 @@ export const departments: Department[] = [
     "longitude": 120.4752,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_management/manufacturing_integration/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/manufacturing_integration/floor_plan.jpg"
   },
   {
     "id": "math",
@@ -2402,7 +2473,9 @@ export const departments: Department[] = [
     "longitude": 120.4687,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_science/math/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_science/math/floor_plan.jpg"
   },
   {
     "id": "physics",
@@ -2433,7 +2506,9 @@ export const departments: Department[] = [
     "longitude": 120.4687,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_science/physics/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_science/physics/floor_plan.jpg"
   },
   {
     "id": "chem_biochem",
@@ -2464,7 +2539,8 @@ export const departments: Department[] = [
     "longitude": 120.4679,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_science/college_science_office/entrance.jpg"
   },
   {
     "id": "earth_environment",
@@ -2495,7 +2571,9 @@ export const departments: Department[] = [
     "longitude": 120.4687,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_science/earth_environment/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_science/earth_environment/floor_plan.jpg"
   },
   {
     "id": "biomedical_sciences",
@@ -2526,7 +2604,9 @@ export const departments: Department[] = [
     "longitude": 120.4679,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_science/biomedical_sciences/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_science/biomedical_sciences/floor_plan.jpg"
   },
   {
     "id": "interdisciplinary_studies",
@@ -2584,7 +2664,9 @@ export const departments: Department[] = [
     "longitude": 120.4692,
     "source_url": "https://dsw.ccu.edu.tw/",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_social_sciences/social_welfare/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/social_welfare/floor_plan.jpg"
   },
   {
     "id": "psychology",
@@ -2611,7 +2693,9 @@ export const departments: Department[] = [
     "longitude": 120.4692,
     "source_url": "https://psy.ccu.edu.tw/",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_social_sciences/psychology/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/psychology/floor_plan.jpg"
   },
   {
     "id": "political_science",
@@ -2638,7 +2722,9 @@ export const departments: Department[] = [
     "longitude": 120.4692,
     "source_url": "https://polsci.ccu.edu.tw/",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_social_sciences/political_science/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/political_science/floor_plan.jpg"
   },
   {
     "id": "communication",
@@ -2665,7 +2751,9 @@ export const departments: Department[] = [
     "longitude": 120.4692,
     "source_url": "https://telecom.ccu.edu.tw/",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_social_sciences/communication/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/communication/floor_plan.jpg"
   },
   {
     "id": "labor_relations",
@@ -2692,7 +2780,9 @@ export const departments: Department[] = [
     "longitude": 120.4692,
     "source_url": "https://labor.ccu.edu.tw/",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_social_sciences/labor_relations/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/labor_relations/floor_plan.jpg"
   },
   {
     "id": "isia",
@@ -2719,7 +2809,9 @@ export const departments: Department[] = [
     "longitude": 120.47697052841933,
     "source_url": "https://isia.ccu.edu.tw/",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_social_sciences/isia/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/isia/floor_plan.jpg"
   },
   {
     "id": "cogsci",
@@ -2746,7 +2838,9 @@ export const departments: Department[] = [
     "longitude": 120.47410889679124,
     "source_url": "https://cogsci.ccu.edu.tw/",
     "needs_manual_review": false,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/college_social_sciences/cogsci/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/cogsci/floor_plan.jpg"
   },
   {
     "id": "stemphd",
