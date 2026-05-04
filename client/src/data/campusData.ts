@@ -373,25 +373,6 @@ export const serviceCategories: ServiceCategory[] = [
       "心理",
       "壓力"
     ],
-  },
-  {
-    "id": "transportation",
-    "name_en": "Transportation",
-    "name_zh": "交通",
-    "icon": "Bus",
-    "description_en": "YouBike, buses, taxis, and airport transportation",
-    "description_zh": "YouBike、公車、計程車與機場交通",
-    "keywords": [
-      "bus",
-      "taxi",
-      "YouBike",
-      "airport",
-      "交通",
-      "公車",
-      "計程車",
-      "機場",
-      "民雄"
-    ]
   }
 ];
 
@@ -3470,36 +3451,6 @@ export const tasks: Task[] = [
     ]
   },
   {
-    "id": "postal_account",
-    "task_name_zh": "辦理郵局帳戶",
-    "task_name_en": "Apply for a Postal Account",
-    "scenario_zh": "你需要郵局帳戶以領取獎學金、存錢、提款或繳費。",
-    "scenario_en": "You need a postal account to receive scholarships, save money, withdraw cash, or pay fees.",
-    "target_unit_type": "office",
-    "target_unit_id": "oia",
-    "category_id": "international_support",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
     "id": "suspension",
     "task_name_zh": "申請休學",
     "task_name_en": "Apply for Suspension",
@@ -4130,36 +4081,6 @@ export const tasks: Task[] = [
     ]
   },
   {
-    "id": "printing",
-    "task_name_zh": "哪裡可以列印東西",
-    "task_name_en": "Where to Print Documents",
-    "scenario_zh": "你需要在校內或附近找地方列印文件。",
-    "scenario_en": "You need to find places on or near campus to print documents.",
-    "target_unit_type": "office",
-    "target_unit_id": "it_center",
-    "category_id": "it_support",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
     "id": "graduation_gown",
     "task_name_zh": "借用畢業學位服",
     "task_name_en": "Borrowing Graduation Gown",
@@ -4167,36 +4088,6 @@ export const tasks: Task[] = [
     "scenario_en": "You are about to graduate and need to borrow a gown for the ceremony.",
     "target_unit_type": "office",
     "target_unit_id": "property_management",
-    "category_id": "student_affairs",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "join_club",
-    "task_name_zh": "加入社團或參加校園活動",
-    "task_name_en": "Joining Clubs or Participating in Campus Activities",
-    "scenario_zh": "你想找到有興趣的社團或參加校內活動。",
-    "scenario_en": "You want to find clubs or participate in campus activities.",
-    "target_unit_type": "office",
-    "target_unit_id": "osa_extracurricular",
     "category_id": "student_affairs",
     "required_documents_zh": [],
     "required_documents_en": [],
@@ -4228,66 +4119,6 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "language_center",
     "category_id": "academic_affairs",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "sports_facility",
-    "task_name_zh": "預約體育設施的場地",
-    "task_name_en": "Reserving Sports Facilities",
-    "scenario_zh": "你想使用或預約校內體育設施。",
-    "scenario_en": "You want to use or reserve sports facilities on campus.",
-    "target_unit_type": "office",
-    "target_unit_id": "osa_extracurricular",
-    "category_id": "student_affairs",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "sports_hours",
-    "task_name_zh": "健身房和體育館的開放時間",
-    "task_name_en": "Gym and Sports Center Opening Hours",
-    "scenario_zh": "你想知道校內體育設施的開放時間。",
-    "scenario_en": "You want to know the opening hours of sports facilities.",
-    "target_unit_type": "office",
-    "target_unit_id": "osa_extracurricular",
-    "category_id": "student_affairs",
     "required_documents_zh": [],
     "required_documents_en": [],
     "steps": [
@@ -4576,6 +4407,880 @@ export const tasks: Task[] = [
       {
         "zh": "完成後再次確認結果。",
         "en": "Check the result after completion."
+      }
+    ]
+  },
+  {
+    "id": "apply_work_permit",
+    "task_name_zh": "申請外籍學生工作許可證",
+    "task_name_en": "Apply for a Work Permit",
+    "scenario_zh": "國際學生想在臺灣合法打工、校內兼職或進行實習前，需要確認是否須申請工作許可證。",
+    "scenario_en": "For international students who plan to work part-time, work on campus, or take an internship in Taiwan and need to confirm work permit requirements.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "international_support",
+    "required_documents_zh": [
+      "護照或 ARC 相關資料",
+      "學生身分或在學相關證明",
+      "工作許可申請系統或國際事務處要求之文件"
+    ],
+    "required_documents_en": [
+      "Passport or ARC-related information",
+      "Student status or enrollment-related proof",
+      "Documents required by the work permit application system or OIA"
+    ],
+    "steps": [
+      {
+        "zh": "先閱讀國際事務處 Work Permit 頁面與工作證申請流程。",
+        "en": "Read the OIA Work Permit page and work permit application procedure first."
+      },
+      {
+        "zh": "確認自己是否符合申請資格與工作時數規定。",
+        "en": "Confirm whether you meet the eligibility and working-hour requirements."
+      },
+      {
+        "zh": "依申請流程準備所需資料，並依系統或國際事務處指示送出申請。",
+        "en": "Prepare the required information and submit the application according to the system or OIA instructions."
+      },
+      {
+        "zh": "取得工作許可後，再開始進行校內外工作或實習。",
+        "en": "Start working or interning only after receiving the work permit."
+      }
+    ]
+  },
+  {
+    "id": "replace_student_id",
+    "task_name_zh": "補辦或換發學生證",
+    "task_name_en": "Replace or Reissue Student ID Card",
+    "scenario_zh": "學生證遺失、毀損、姓名變更，或畢業 / 退學離校期間需要處理學生證問題。",
+    "scenario_en": "For students whose student ID card is lost, damaged, requires a name change, or needs to be handled during graduation or withdrawal procedures.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "student_id",
+    "required_documents_zh": [
+      "學生證補、換發申請表",
+      "工本費新臺幣 300 元",
+      "依個案需要檢附之身分或證明文件"
+    ],
+    "required_documents_en": [
+      "Application form for student ID replacement or reissue",
+      "NTD 300 processing fee",
+      "Identity or supporting documents required for the case"
+    ],
+    "steps": [
+      {
+        "zh": "至教務處網頁下載申請表，或至教務處教學組填寫申請表。",
+        "en": "Download the application form from the Office of Academic Affairs website or fill it out at the Curriculum and Instruction Section."
+      },
+      {
+        "zh": "至總務處出納組繳交工本費新臺幣 300 元。",
+        "en": "Pay the NTD 300 processing fee at the Cashier Division."
+      },
+      {
+        "zh": "將申請表與繳費證明送交教務處辦理。",
+        "en": "Submit the application form and payment proof to the Office of Academic Affairs."
+      },
+      {
+        "zh": "依教務處通知領取補發或換發後的學生證。",
+        "en": "Collect the replacement or reissued student ID card according to OAA instructions."
+      }
+    ]
+  },
+  {
+    "id": "apply_reinstatement",
+    "task_name_zh": "辦理復學或提前復學",
+    "task_name_en": "Apply for Reinstatement of Study",
+    "scenario_zh": "休學生需要復學，或希望提前復學並取得復學同意函時。",
+    "scenario_en": "For students returning from leave of absence or applying for early reinstatement and needing a reinstatement approval.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "academic_affairs",
+    "required_documents_zh": [
+      "復學申請書",
+      "個人身分證明文件",
+      "原休學同意函或保留入學資格同意函",
+      "委託書（非本人辦理時）"
+    ],
+    "required_documents_en": [
+      "Application Form for Reinstatement of Study",
+      "Personal identification document",
+      "Original leave approval or admission reservation approval",
+      "Authorization letter if handled by a representative"
+    ],
+    "steps": [
+      {
+        "zh": "填寫復學申請書，並備妥身分證明及原休學或保留入學資格同意函。",
+        "en": "Complete the reinstatement application form and prepare your ID and original leave or admission reservation approval."
+      },
+      {
+        "zh": "送交相關單位審核。",
+        "en": "Submit the application to the relevant units for review."
+      },
+      {
+        "zh": "由教務處教學組核發復學同意函。",
+        "en": "The Curriculum and Instruction Section will issue the approval for reinstatement."
+      },
+      {
+        "zh": "若為提前復學，應於欲復學學期開始前兩週完成申請。",
+        "en": "For early reinstatement, complete the application no later than two weeks before the intended semester begins."
+      }
+    ]
+  },
+  {
+    "id": "apply_credit_transfer",
+    "task_name_zh": "辦理學分抵免",
+    "task_name_en": "Apply for Credit Transfer",
+    "scenario_zh": "新生、轉學生或具先前修課紀錄者，需要將已修課程申請抵免中正大學學分。",
+    "scenario_en": "For new students, transfer students, or students with previous coursework who need to apply for credit transfer at CCU.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "academic_affairs",
+    "required_documents_zh": [
+      "學分抵免申請單",
+      "原校歷年成績單正本",
+      "相關課程資料（如系所要求）"
+    ],
+    "required_documents_en": [
+      "Credit transfer application form",
+      "Original official transcript from the previous institution",
+      "Relevant course materials if required by the department"
+    ],
+    "steps": [
+      {
+        "zh": "至教務系統的學分抵免申請系統登錄資料。",
+        "en": "Enter your information in the credit transfer application system."
+      },
+      {
+        "zh": "列印抵免申請單，並檢附原校歷年成績單正本。",
+        "en": "Print the credit transfer application form and attach the original transcript from the previous institution."
+      },
+      {
+        "zh": "依課程類型送交語言中心、通識中心、所屬系所或開課系所審核。",
+        "en": "Submit the application to the Language Center, General Education Center, your department, or the course-offering department depending on the course type."
+      },
+      {
+        "zh": "完成相關單位審核後，送至教務處教學組辦理。",
+        "en": "After review by the relevant units, submit the documents to the Curriculum and Instruction Section."
+      }
+    ]
+  },
+  {
+    "id": "apply_intercollegiate_course",
+    "task_name_zh": "申請校際選課",
+    "task_name_en": "Apply for Intercollegiate Course Enrollment",
+    "scenario_zh": "本校學生想修讀他校課程，或他校學生想修讀中正大學課程時。",
+    "scenario_en": "For CCU students who want to take courses at another university, or students from other universities who want to take CCU courses.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "course_issues",
+    "required_documents_zh": [
+      "校際選課申請單",
+      "原校或修課學校要求之表單",
+      "繳費證明或完成選課證明（依學校規定）"
+    ],
+    "required_documents_en": [
+      "Intercollegiate course application form",
+      "Forms required by the home or host university",
+      "Payment proof or course enrollment proof if required"
+    ],
+    "steps": [
+      {
+        "zh": "依公告期間進入校際選課系統申請。",
+        "en": "Apply through the intercollegiate course system within the announced application period."
+      },
+      {
+        "zh": "完成課程加選後，列印校際選課申請單。",
+        "en": "After adding the course, print the intercollegiate course application form."
+      },
+      {
+        "zh": "依規定取得原校、所屬系所、任課教師、修課學校或教務處簽章。",
+        "en": "Obtain the required approvals from the home university, department, course instructor, host university, or academic affairs office."
+      },
+      {
+        "zh": "依修課學校規定完成繳費，並於截止日前將完成簽章的申請單送回教務處教學組。",
+        "en": "Complete payment according to the host university’s rules and submit the signed application form to the Curriculum and Instruction Section before the deadline."
+      }
+    ]
+  },
+  {
+    "id": "withdraw_course",
+    "task_name_zh": "申請課程棄選",
+    "task_name_en": "Apply for Course Withdrawal",
+    "scenario_zh": "學生選上課程後，因特殊情況無法繼續修讀，需要在期限內辦理棄選。",
+    "scenario_en": "For students who cannot continue taking an enrolled course and need to apply for course withdrawal before the deadline.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "course_issues",
+    "required_documents_zh": [
+      "選課系統申請資料",
+      "特殊情況說明或其他文件（如公告要求）"
+    ],
+    "required_documents_en": [
+      "Course selection system application record",
+      "Explanation or additional documents if required by the announcement"
+    ],
+    "steps": [
+      {
+        "zh": "在公告申請期間內進入選課系統。",
+        "en": "Enter the course selection system during the announced application period."
+      },
+      {
+        "zh": "於主選單點選「申請棄選」，選擇欲棄選的課程。",
+        "en": "Select “Apply for Course Withdrawal” from the main menu and choose the course to withdraw."
+      },
+      {
+        "zh": "確認棄選資料無誤後送出申請。",
+        "en": "Confirm the withdrawal information and submit the application."
+      },
+      {
+        "zh": "回到「我的棄選單」確認已出現棄選課程名稱。",
+        "en": "Check “My Withdrawal List” to confirm that the withdrawn course appears."
+      }
+    ]
+  },
+  {
+    "id": "complete_school_leaving",
+    "task_name_zh": "辦理畢業、休學或退學離校手續",
+    "task_name_en": "Complete School-Leaving Procedures",
+    "scenario_zh": "學生因畢業、休學或退學需要完成離校程序，並確認圖書、器材、學位服或欠款是否已結清。",
+    "scenario_en": "For students who need to complete school-leaving procedures due to graduation, leave of absence, or withdrawal, and confirm that books, equipment, gowns, or unpaid fees are cleared.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "academic_affairs",
+    "required_documents_zh": [
+      "網路離校系統申請資料",
+      "學生證或身分證明",
+      "各單位要求之歸還或繳清證明"
+    ],
+    "required_documents_en": [
+      "Online school-leaving system record",
+      "Student ID or identity document",
+      "Clearance proof required by relevant units"
+    ],
+    "steps": [
+      {
+        "zh": "進入網路離校系統提出離校申請。",
+        "en": "Submit the school-leaving application through the online school-leaving system."
+      },
+      {
+        "zh": "確認是否有圖書、器材、學位服、宿舍費、學雜費或其他欠款未歸還或未繳清。",
+        "en": "Check whether there are unreturned books, equipment, gowns, dormitory fees, tuition, or other unpaid items."
+      },
+      {
+        "zh": "依各單位要求完成歸還、繳費或審核。",
+        "en": "Complete returns, payments, or reviews required by each unit."
+      },
+      {
+        "zh": "完成各單位審核後，依教務處規定領取相關證明或學位證書。",
+        "en": "After all units approve the clearance, collect relevant certificates or the diploma according to OAA rules."
+      }
+    ]
+  },
+  {
+    "id": "apply_tuition_reduction",
+    "task_name_zh": "申請學雜費減免",
+    "task_name_en": "Apply for Tuition and Fee Reduction",
+    "scenario_zh": "符合減免資格的學生，需要在每學期規定期限內申請學雜費減免。",
+    "scenario_en": "For students eligible for tuition and fee reduction who need to apply within the announced period each semester.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_life",
+    "category_id": "tuition",
+    "required_documents_zh": [
+      "學雜費減免申請表",
+      "資格證明文件",
+      "其他生活事務組公告要求之文件"
+    ],
+    "required_documents_en": [
+      "Tuition and fee reduction application form",
+      "Eligibility proof",
+      "Other documents required by the Student Life Division announcement"
+    ],
+    "steps": [
+      {
+        "zh": "登入學校單一入口系統。",
+        "en": "Log in to the university single sign-on portal."
+      },
+      {
+        "zh": "點選「學雜費減免」並完成線上申請。",
+        "en": "Select “Tuition and Fee Reduction” and complete the online application."
+      },
+      {
+        "zh": "列印申請表，並準備相關資格證明文件。",
+        "en": "Print the application form and prepare the required eligibility documents."
+      },
+      {
+        "zh": "依期限將申請表與證明文件送交生活事務組。",
+        "en": "Submit the application form and supporting documents to the Student Life Division before the deadline."
+      }
+    ]
+  },
+  {
+    "id": "apply_student_loan",
+    "task_name_zh": "申請就學貸款",
+    "task_name_en": "Apply for Student Loan",
+    "scenario_zh": "學生需要辦理就學貸款，或同時具有學雜費減免、補助身分而需要確認申貸金額。",
+    "scenario_en": "For students who need to apply for a student loan or confirm the loan amount when also receiving tuition reduction or subsidies.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_life",
+    "category_id": "tuition",
+    "required_documents_zh": [
+      "註冊繳費單",
+      "就學貸款申請資料",
+      "身分或資格證明文件",
+      "銀行或生活事務組要求之文件"
+    ],
+    "required_documents_en": [
+      "Tuition and fees payment slip",
+      "Student loan application information",
+      "Identity or eligibility documents",
+      "Documents required by the bank or Student Life Division"
+    ],
+    "steps": [
+      {
+        "zh": "確認當學期註冊繳費單與就學貸款申請時程。",
+        "en": "Check the semester tuition payment slip and student loan application schedule."
+      },
+      {
+        "zh": "若具有學雜費減免或補助身分，先確認應扣除的補助金額。",
+        "en": "If you receive tuition reduction or subsidies, confirm the amount to be deducted first."
+      },
+      {
+        "zh": "依銀行與生活事務組規定完成就學貸款申請。",
+        "en": "Complete the student loan application according to the bank and Student Life Division requirements."
+      },
+      {
+        "zh": "依公告期限繳交或補交相關資料。",
+        "en": "Submit or supplement the required documents before the announced deadline."
+      }
+    ]
+  },
+  {
+    "id": "apply_disadvantaged_student_aid",
+    "task_name_zh": "申請弱勢學生助學金",
+    "task_name_en": "Apply for Disadvantaged Student Aid",
+    "scenario_zh": "學生符合弱勢助學資格，需要申請弱勢學生助學金或相關助學補助。",
+    "scenario_en": "For students eligible for disadvantaged student aid who need to apply for financial assistance or related subsidies.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_life",
+    "category_id": "tuition",
+    "required_documents_zh": [
+      "弱勢助學申請表",
+      "家庭或所得相關證明",
+      "生活事務組公告要求之文件"
+    ],
+    "required_documents_en": [
+      "Disadvantaged student aid application form",
+      "Household or income-related proof",
+      "Documents required by the Student Life Division announcement"
+    ],
+    "steps": [
+      {
+        "zh": "登入單一入口，進入弱勢助學申請系統。",
+        "en": "Log in to the single sign-on portal and enter the disadvantaged student aid application system."
+      },
+      {
+        "zh": "填寫申請資料並列印申請表。",
+        "en": "Complete the application information and print the application form."
+      },
+      {
+        "zh": "準備家庭、所得或其他資格證明文件。",
+        "en": "Prepare household, income, or other eligibility documents."
+      },
+      {
+        "zh": "依公告期限將資料送交生活事務組。",
+        "en": "Submit the documents to the Student Life Division before the announced deadline."
+      }
+    ]
+  },
+  {
+    "id": "apply_student_group_insurance_claim",
+    "task_name_zh": "申請學生團體保險理賠",
+    "task_name_en": "Apply for Student Group Insurance Claim",
+    "scenario_zh": "學生因疾病住院、意外事故、受傷或其他符合學生團保範圍的情況，需要申請保險理賠。",
+    "scenario_en": "For students who need to file a student group insurance claim due to hospitalization, accident, injury, or other covered situations.",
+    "target_unit_type": "office",
+    "target_unit_id": "health_center",
+    "category_id": "health",
+    "required_documents_zh": [
+      "理賠申請書",
+      "診斷證明書正本",
+      "醫療費用收據正本或加蓋醫院章之影本",
+      "存摺封面影本",
+      "ARC 影本（外籍生）",
+      "X 光光碟（骨折時）"
+    ],
+    "required_documents_en": [
+      "Claim application form",
+      "Original diagnosis certificate",
+      "Original medical receipt or copy stamped by the hospital",
+      "Photocopy of bank or post office passbook cover",
+      "Photocopy of ARC for international students",
+      "CD copy of X-ray images if a bone fracture is diagnosed"
+    ],
+    "steps": [
+      {
+        "zh": "就醫後向醫療院所索取診斷證明書與醫療費用收據。",
+        "en": "After medical treatment, obtain the diagnosis certificate and medical receipt from the medical institution."
+      },
+      {
+        "zh": "準備理賠申請書、收據、診斷證明、存摺封面與相關附件。",
+        "en": "Prepare the claim form, receipt, diagnosis certificate, passbook cover, and related attachments."
+      },
+      {
+        "zh": "將文件親送或郵寄至衛生保健組。",
+        "en": "Submit the documents to the Health Center in person or by post."
+      },
+      {
+        "zh": "由衛生保健組協助送交保險公司審核。",
+        "en": "The Health Center will forward the application to the insurance company for review."
+      }
+    ]
+  },
+  {
+    "id": "borrow_graduation_gown",
+    "task_name_zh": "借用或歸還畢業學位服",
+    "task_name_en": "Borrow or Return Graduation Gown",
+    "scenario_zh": "畢業生需要借用、歸還學位服，或辦理離校前確認學位服是否已歸還。",
+    "scenario_en": "For graduating students who need to borrow or return a graduation gown, or confirm gown return before completing school-leaving procedures.",
+    "target_unit_type": "office",
+    "target_unit_id": "property_management",
+    "category_id": "student_affairs",
+    "required_documents_zh": [
+      "學生證或身分證明",
+      "學位服借用相關資料",
+      "保管組公告要求之文件或費用"
+    ],
+    "required_documents_en": [
+      "Student ID or identity document",
+      "Graduation gown borrowing information",
+      "Documents or fees required by the Property Management Division announcement"
+    ],
+    "steps": [
+      {
+        "zh": "確認保管組公告的學位服借用與歸還時間。",
+        "en": "Check the Property Management Division announcement for the gown borrowing and return schedule."
+      },
+      {
+        "zh": "依公告準備學生證、借用資料與可能需要的費用。",
+        "en": "Prepare your student ID, borrowing information, and any required fees according to the announcement."
+      },
+      {
+        "zh": "至總務處保管組辦理借用。",
+        "en": "Go to the Property Management Division to borrow the gown."
+      },
+      {
+        "zh": "使用完畢後依期限歸還，以免影響離校程序。",
+        "en": "Return the gown by the deadline to avoid delays in school-leaving procedures."
+      }
+    ]
+  },
+  {
+    "id": "get_campus_licensed_software",
+    "task_name_zh": "下載或使用校園授權軟體",
+    "task_name_en": "Access Campus Licensed Software",
+    "scenario_zh": "學生需要下載 Office、統計軟體、MATLAB、程式開發工具或其他校園授權軟體。",
+    "scenario_en": "For students who need to download or use Office, statistical software, MATLAB, programming tools, or other campus licensed software.",
+    "target_unit_type": "office",
+    "target_unit_id": "it_center",
+    "category_id": "it_support",
+    "required_documents_zh": [
+      "中正大學帳號",
+      "校內網路或 VPN 使用條件",
+      "資訊處公告要求之授權或安裝資訊"
+    ],
+    "required_documents_en": [
+      "CCU account",
+      "Campus network or VPN access if required",
+      "License or installation information required by the IT Center announcement"
+    ],
+    "steps": [
+      {
+        "zh": "先確認要使用的軟體是否列於資訊處校園授權軟體服務中。",
+        "en": "First confirm whether the software is listed under the IT Center campus licensed software service."
+      },
+      {
+        "zh": "依資訊處說明使用校內網路或指定方式進入下載頁面。",
+        "en": "Access the download page through the campus network or designated method according to IT Center instructions."
+      },
+      {
+        "zh": "使用中正大學帳號登入或完成授權驗證。",
+        "en": "Log in with your CCU account or complete license verification."
+      },
+      {
+        "zh": "依安裝說明下載、安裝並啟用軟體。",
+        "en": "Download, install, and activate the software according to the installation instructions."
+      }
+    ]
+  },
+  {
+    "id": "ask_it_support",
+    "task_name_zh": "詢問 SSO、校園信箱、Wi-Fi 或 eCourse2 問題",
+    "task_name_en": "Ask for Help with SSO, Campus Email, Wi-Fi, or eCourse2",
+    "scenario_zh": "學生無法登入單一入口、校園信箱、Wi-Fi、eCourse2，或遇到校園資訊系統問題。",
+    "scenario_en": "For students who cannot access SSO, campus email, Wi-Fi, eCourse2, or encounter campus IT system issues.",
+    "target_unit_type": "office",
+    "target_unit_id": "it_center",
+    "category_id": "it_support",
+    "required_documents_zh": [
+      "學生證號或學號",
+      "問題截圖",
+      "錯誤訊息",
+      "使用的裝置與瀏覽器資訊"
+    ],
+    "required_documents_en": [
+      "Student ID number",
+      "Screenshot of the issue",
+      "Error message",
+      "Device and browser information"
+    ],
+    "steps": [
+      {
+        "zh": "先確認問題發生在哪個系統，例如 SSO、WebMail、Wi-Fi 或 eCourse2。",
+        "en": "First identify which system has the issue, such as SSO, WebMail, Wi-Fi, or eCourse2."
+      },
+      {
+        "zh": "截圖保存錯誤訊息，並記錄發生時間與使用裝置。",
+        "en": "Take a screenshot of the error message and record the time and device used."
+      },
+      {
+        "zh": "透過資訊處服務台電話、Email 或諮詢服務管道聯繫資訊處。",
+        "en": "Contact the IT Center through the service desk phone, email, or consultation channel."
+      },
+      {
+        "zh": "依資訊處回覆提供補充資訊或完成後續設定。",
+        "en": "Provide additional information or complete follow-up settings according to IT Center instructions."
+      }
+    ]
+  },
+  {
+    "id": "apply_academic_documents",
+    "task_name_zh": "申請成績單、在學證明或學籍成績證明文件",
+    "task_name_en": "Apply for Transcript, Enrollment Certificate, or Academic Records",
+    "scenario_zh": "學生需要申請在學證明、中文或英文成績單、名次證明、學位證明書、修業證明書或其他學籍成績相關證明文件。",
+    "scenario_en": "For students who need to apply for an enrollment certificate, Chinese or English transcript, ranking certificate, degree certificate, study certificate, or other academic record documents.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "academic_affairs",
+    "required_documents_zh": [
+      "學生證或身分證明文件",
+      "學籍成績證明文件申請書",
+      "申請費用",
+      "委託書與身分證件影本（委託他人代辦時）",
+      "護照姓名資料（申請英文文件時建議確認）"
+    ],
+    "required_documents_en": [
+      "Student ID card or identity document",
+      "Academic record document application form",
+      "Application fee",
+      "Authorization letter and photocopy of ID if handled by a representative",
+      "Passport-name information when applying for English documents"
+    ],
+    "steps": [
+      {
+        "zh": "先確認要申請的文件類型，例如在學證明、中文成績單、英文歷年成績單、學位證明書或修業證明書。",
+        "en": "First confirm the type of document needed, such as enrollment certificate, Chinese transcript, English transcript, degree certificate, or study certificate."
+      },
+      {
+        "zh": "可依文件類型使用教務系統線上申請，或至教務處教學組櫃台辦理。",
+        "en": "Depending on the document type, apply through the academic affairs system online or at the Curriculum and Instruction Section counter."
+      },
+      {
+        "zh": "準備學生證或身分證明文件；若委託他人辦理，需另備委託書與本人身分證件影本。",
+        "en": "Prepare your student ID or identity document. If another person handles the application, prepare an authorization letter and a photocopy of your ID."
+      },
+      {
+        "zh": "依教務處規定繳交費用，並依核發時間領取或下載文件。",
+        "en": "Pay the required fee and collect or download the document according to the processing time set by the Office of Academic Affairs."
+      }
+    ]
+  },
+  {
+    "id": "apply_withdrawal",
+    "task_name_zh": "辦理退學申請",
+    "task_name_en": "Apply for Withdrawal from School",
+    "scenario_zh": "學生因個人、學業或其他原因決定退學，需要完成網路離校與退學申請流程。",
+    "scenario_en": "For students who decide to withdraw from school for personal, academic, or other reasons and need to complete online school-leaving and withdrawal procedures.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "academic_affairs",
+    "required_documents_zh": [
+      "退學申請書",
+      "學生證",
+      "網路離校系統審核結果",
+      "家長簽章（學士班學生依規定需要時）",
+      "委託書（非本人辦理時）"
+    ],
+    "required_documents_en": [
+      "Withdrawal application form",
+      "Student ID card",
+      "Online school-leaving system clearance result",
+      "Parent or guardian signature if required for undergraduate students",
+      "Authorization letter if handled by a representative"
+    ],
+    "steps": [
+      {
+        "zh": "先至網路離校系統提出離校申請，並確認相關單位均已線上審核通過。",
+        "en": "First submit the school-leaving application through the online school-leaving system and confirm that all relevant units have approved it."
+      },
+      {
+        "zh": "至教務處網頁下載退學申請書。",
+        "en": "Download the withdrawal application form from the Office of Academic Affairs website."
+      },
+      {
+        "zh": "填寫退學申請書；學士班學生依規定需要家長簽章時，應完成簽章。",
+        "en": "Complete the withdrawal application form. Undergraduate students should obtain the required parent or guardian signature when applicable."
+      },
+      {
+        "zh": "攜帶學生證與申請書，依表單所列單位完成核章後送交教務處教學組辦理。",
+        "en": "Bring your student ID and the application form, obtain required approvals from the units listed on the form, and submit it to the Curriculum and Instruction Section."
+      }
+    ]
+  },
+  {
+    "id": "apply_transfer_study_certificate",
+    "task_name_zh": "申請轉學修業證明書",
+    "task_name_en": "Apply for Transfer Study Certificate",
+    "scenario_zh": "退學生已在校修業一學期以上並有成績紀錄，需要申請修業證明書作為轉學或其他用途。",
+    "scenario_en": "For withdrawn students who have studied for at least one semester with academic records and need a study certificate for transfer or other purposes.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "academic_affairs",
+    "required_documents_zh": [
+      "學生證或身分證明文件",
+      "離校手續單或網路離校審核結果",
+      "修業證明書申請資料",
+      "委託書（非本人辦理時）"
+    ],
+    "required_documents_en": [
+      "Student ID card or identity document",
+      "School-leaving checklist or online clearance result",
+      "Study certificate application information",
+      "Authorization letter if handled by a representative"
+    ],
+    "steps": [
+      {
+        "zh": "確認自己是否符合條件：退學生在校一學期以上且具有成績，其學籍經核准者可申請修業證明書。",
+        "en": "Confirm eligibility: withdrawn students who studied for at least one semester and have academic records may apply after the student status is approved."
+      },
+      {
+        "zh": "若為自願退學，可於辦理退學時一併向教務處教學組提出申請，或於退學後攜帶身分證明文件辦理。",
+        "en": "For voluntary withdrawal, apply at the Curriculum and Instruction Section when processing withdrawal, or bring an identity document after withdrawal to apply."
+      },
+      {
+        "zh": "若為非自願退學，先完成網路離校系統；若無法登入，下載離校手續單並完成相關單位核章。",
+        "en": "For involuntary withdrawal, complete the online school-leaving system first. If you cannot log in, download the school-leaving checklist and obtain approvals from relevant units."
+      },
+      {
+        "zh": "攜帶學生證、離校手續單或相關證明至教務處教學組辦理。",
+        "en": "Bring your student ID, school-leaving checklist, or related proof to the Curriculum and Instruction Section."
+      }
+    ]
+  },
+  {
+    "id": "apply_minor_or_double_major",
+    "task_name_zh": "申請輔系或雙主修",
+    "task_name_en": "Apply for Minor or Double Major",
+    "scenario_zh": "學生想加修其他學系、研究所或學位學程作為輔系或雙主修，需要依公告期間提出申請。",
+    "scenario_en": "For students who want to add another department, graduate institute, or degree program as a minor or double major and need to apply during the announced period.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "academic_affairs",
+    "required_documents_zh": [
+      "輔系或雙主修申請表",
+      "成績單或學業成績相關資料",
+      "欲申請學系、所或學位學程規定之審查資料",
+      "主修系所主管簽章",
+      "加修系所或學位學程要求之文件"
+    ],
+    "required_documents_en": [
+      "Minor or double major application form",
+      "Transcript or academic performance documents",
+      "Review materials required by the intended department, institute, or degree program",
+      "Approval signature from the home department or institute",
+      "Documents required by the intended department or degree program"
+    ],
+    "steps": [
+      {
+        "zh": "先查看教務處公告的當學年度輔系或雙主修受理期間與申請資格。",
+        "en": "Check the Office of Academic Affairs announcement for the application period and eligibility for the academic year."
+      },
+      {
+        "zh": "確認欲申請系所或學位學程公告的申請標準、名額與應修科目學分表。",
+        "en": "Confirm the application standards, quota, and required course credits announced by the intended department or degree program."
+      },
+      {
+        "zh": "填寫輔系或雙主修申請表，並備妥成績單及審查資料。",
+        "en": "Complete the minor or double major application form and prepare the transcript and review materials."
+      },
+      {
+        "zh": "依規定送主修系所主管簽章，並於截止日前送達欲申請之系所或教務處指定單位。",
+        "en": "Obtain the required approval from your home department or institute and submit the application to the intended unit or designated OAA unit before the deadline."
+      }
+    ]
+  },
+  {
+    "id": "abandon_minor_or_double_major",
+    "task_name_zh": "放棄修讀輔系或雙主修",
+    "task_name_en": "Abandon Minor or Double Major",
+    "scenario_zh": "學生已核准修讀輔系或雙主修，但因修課規劃、畢業進度或其他原因需要放棄修讀。",
+    "scenario_en": "For students who have been approved for a minor or double major but need to abandon it due to course planning, graduation progress, or other reasons.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "academic_affairs",
+    "required_documents_zh": [
+      "放棄修讀雙主修、輔系申請書",
+      "學生證",
+      "相關證明文件（特殊情況時）",
+      "委託書與身分證件影本（委託他人辦理時）"
+    ],
+    "required_documents_en": [
+      "Application form for abandoning double major or minor",
+      "Student ID card",
+      "Supporting documents for special cases",
+      "Authorization letter and photocopy of ID if handled by a representative"
+    ],
+    "steps": [
+      {
+        "zh": "確認當學期放棄修讀輔系或雙主修的申請期限。",
+        "en": "Confirm the application deadline for abandoning the minor or double major for the semester."
+      },
+      {
+        "zh": "至教務處表單下載區下載「放棄修讀雙主修、輔系申請書」。",
+        "en": "Download the application form for abandoning double major or minor from the OAA forms section."
+      },
+      {
+        "zh": "填妥基本資料與放棄理由，並依規定送主修系所及雙主修或輔系單位主管簽章。",
+        "en": "Complete the basic information and reason for abandonment, then obtain required approvals from the home department and the double-major or minor unit."
+      },
+      {
+        "zh": "攜帶學生證，於期限內親送教務處教學組辦理；若委託他人辦理，需另備委託文件。",
+        "en": "Bring your student ID and submit the form to the Curriculum and Instruction Section before the deadline. If another person handles it, prepare authorization documents."
+      }
+    ]
+  },
+  {
+    "id": "apply_degree_exam_or_advisor_registration",
+    "task_name_zh": "申請學位考試或登錄指導教授",
+    "task_name_en": "Apply for Degree Examination or Register Thesis Advisor",
+    "scenario_zh": "碩博士生需要登錄指導教授、申請學位考試，或處理論文口試相關行政流程。",
+    "scenario_en": "For graduate students who need to register a thesis advisor, apply for a degree examination, or complete thesis oral defense-related administrative procedures.",
+    "target_unit_type": "office",
+    "target_unit_id": "oaa",
+    "category_id": "academic_affairs",
+    "required_documents_zh": [
+      "教務系統申請資料",
+      "指導教授相關資料",
+      "學位考試申請資料",
+      "系所或學位學程要求之審查文件",
+      "論文或口試相關資料（依系所規定）"
+    ],
+    "required_documents_en": [
+      "Academic affairs system application record",
+      "Thesis advisor information",
+      "Degree examination application information",
+      "Review documents required by the department or degree program",
+      "Thesis or oral defense-related materials if required by the department"
+    ],
+    "steps": [
+      {
+        "zh": "先確認所屬系所或學位學程對指導教授登錄、學位考試與論文口試的規定與時程。",
+        "en": "First confirm your department or degree program’s rules and schedule for advisor registration, degree examination, and thesis oral defense."
+      },
+      {
+        "zh": "登入教務系統，進入「申請學位考試及登錄指導教授」功能。",
+        "en": "Log in to the academic affairs system and enter the “Apply for Degree Examination and Register Thesis Advisor” function."
+      },
+      {
+        "zh": "依系統要求填寫指導教授、學位考試或口試相關資料。",
+        "en": "Enter thesis advisor, degree examination, or oral defense-related information as required by the system."
+      },
+      {
+        "zh": "依系所規定繳交紙本或電子附件，並追蹤系所與教務處審核結果。",
+        "en": "Submit paper or electronic attachments according to department rules and follow up on the department and OAA review status."
+      }
+    ]
+  },
+  {
+    "id": "opt_out_student_group_insurance",
+    "task_name_zh": "申請不參加學生團體保險或退保",
+    "task_name_en": "Opt Out of Student Group Insurance",
+    "scenario_zh": "學生選擇不參加學生團體保險，或需在期限內辦理退保切結。",
+    "scenario_en": "For students who choose not to participate in student group insurance or need to submit an opt-out declaration before the deadline.",
+    "target_unit_type": "office",
+    "target_unit_id": "health_center",
+    "category_id": "health",
+    "required_documents_zh": [
+      "不參加學生團體保險切結書",
+      "學生本人簽章",
+      "法定代理人或家屬簽章（依年齡或身分規定）",
+      "系所主管簽章",
+      "學生證或身分證明文件"
+    ],
+    "required_documents_en": [
+      "Student group insurance opt-out declaration form",
+      "Student signature or seal",
+      "Legal representative or family member signature if required by age or status",
+      "Department or institute chair signature",
+      "Student ID card or identity document"
+    ],
+    "steps": [
+      {
+        "zh": "先至衛生保健組學生團體保險頁面下載當學期「不參加學生團體保險切結書」。",
+        "en": "Download the current semester student group insurance opt-out declaration form from the Health Center website."
+      },
+      {
+        "zh": "填寫切結書，並依規定完成本人、家屬或法定代理人、系所主管簽章。",
+        "en": "Complete the declaration form and obtain the required signatures from yourself, family member or legal representative, and department chair."
+      },
+      {
+        "zh": "於衛保組公告期限內，將切結書繳交至活動中心二樓衛生保健組。",
+        "en": "Submit the declaration form to the Health Center on the 2nd floor of the Activity Center before the announced deadline."
+      },
+      {
+        "zh": "逾期未辦理者，依衛保組規定通常視同參加學生團體保險。",
+        "en": "If the form is not submitted before the deadline, the student is generally treated as enrolled in the student group insurance according to Health Center rules."
+      }
+    ]
+  },
+  {
+    "id": "apply_emergency_financial_aid",
+    "task_name_zh": "申請校內外急難救助",
+    "task_name_en": "Apply for Emergency Financial Aid",
+    "scenario_zh": "學生因家庭、經濟、意外、重大變故或其他急難情況，需要申請校內外急難慰問金或急難救助金。",
+    "scenario_en": "For students who need to apply for emergency financial aid due to family, financial, accident-related, major incident, or other urgent hardship situations.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_life",
+    "category_id": "tuition",
+    "required_documents_zh": [
+      "急難救助申請表",
+      "學生證或身分證明文件",
+      "急難事由相關證明文件",
+      "家庭或經濟狀況相關資料（依補助類型要求）",
+      "生活事務組或公告要求之其他文件"
+    ],
+    "required_documents_en": [
+      "Emergency financial aid application form",
+      "Student ID card or identity document",
+      "Supporting documents for the emergency situation",
+      "Household or financial documents if required by the aid type",
+      "Other documents required by the Student Life Division or announcement"
+    ],
+    "steps": [
+      {
+        "zh": "先至生活事務組校內急難救助頁面確認可申請的急難慰問金或救助金類型。",
+        "en": "Check the Student Life Division emergency aid page to confirm which type of emergency grant or aid may apply."
+      },
+      {
+        "zh": "下載對應的實施要點與申請表，確認資格、申請期限與應備文件。",
+        "en": "Download the relevant guidelines and application form, then confirm eligibility, deadline, and required documents."
+      },
+      {
+        "zh": "備妥急難事由證明、身分資料與其他補助類型要求的文件。",
+        "en": "Prepare proof of the emergency situation, identity documents, and other documents required for the aid type."
+      },
+      {
+        "zh": "依公告方式將申請資料送交學務處生活事務組，並依通知補件或等待審核結果。",
+        "en": "Submit the application materials to the Student Life Division according to the announcement, then provide supplements or wait for the review result as instructed."
       }
     ]
   }
