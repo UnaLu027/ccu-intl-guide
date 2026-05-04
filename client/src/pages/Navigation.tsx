@@ -9,7 +9,7 @@ import { MapView } from "@/components/Map";
 import { Link, useParams } from "wouter";
 import { useMemo, useCallback } from "react";
 import {
-  ArrowLeft, DoorOpen, MapPin, Clock, Phone, Mail, ExternalLink,
+  ArrowLeft, ArrowRight, DoorOpen, MapPin, Clock, Phone, Mail, ExternalLink,
   Navigation as NavIcon, AlertTriangle, CheckCircle2, ClipboardList
 } from "lucide-react";
 
@@ -190,6 +190,15 @@ export default function Navigation() {
                           </div>
                         ))}
                       </div>
+                      {task.target_unit_id && (
+                        <Link
+                          href={`/navigate/${task.target_unit_type === "office" ? "office" : "dept"}/${task.target_unit_id}`}
+                          className="mt-2 inline-flex items-center gap-1.5 text-xs text-sage font-semibold hover:underline"
+                        >
+                          <ArrowRight className="w-3 h-3" />
+                          {t("View office info", "查看單位資訊")}
+                        </Link>
+                      )}
                     </div>
                   ))}
                 </div>
