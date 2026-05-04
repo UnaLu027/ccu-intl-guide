@@ -5282,39 +5282,265 @@ const collectUnitText = (unit: Office | Department) => [
   "college_en" in unit ? unit.college_en : "",
 ].join(" ");
 
+const SEARCH_SYNONYMS: Record<string, string[]> = {
+  "居留證": ["arc", "外僑居留證", "residence permit", "alien resident certificate"],
+  "arc": ["居留證", "外僑居留證", "residence permit", "alien resident certificate"],
+  "簽證": ["visa", "居留簽證", "停留簽證", "resident visa", "visitor visa"],
+  "visa": ["簽證", "居留簽證", "停留簽證", "resident visa", "visitor visa"],
+
+  "工作證": ["工作許可", "work permit", "打工", "part-time work"],
+  "工作許可": ["工作證", "work permit", "打工", "part-time work"],
+  "work permit": ["工作證", "工作許可", "打工"],
+
+  "加簽": ["加選", "課程加簽", "override", "course override", "必修課滿了"],
+  "加選": ["加簽", "override", "course override"],
+  "override": ["加簽", "加選", "course override"],
+
+  "退選": ["棄選", "withdraw", "course withdrawal", "drop course"],
+  "棄選": ["退選", "withdraw", "course withdrawal", "drop course"],
+  "withdraw": ["退選", "棄選", "course withdrawal"],
+
+  "學費": ["學雜費", "繳費", "tuition", "fee", "payment"],
+  "學雜費": ["學費", "繳費", "tuition", "fee", "payment"],
+  "宿舍費": ["住宿費", "宿舍繳費", "dormitory fee", "dorm fee"],
+  "繳費": ["學費", "學雜費", "宿舍費", "payment", "cashier"],
+
+  "信箱": ["email", "webmail", "ccu email", "校園信箱"],
+  "email": ["信箱", "webmail", "ccu email", "校園信箱"],
+  "密碼": ["password", "sso", "單一入口", "登入"],
+  "password": ["密碼", "sso", "單一入口", "登入"],
+
+  "健保": ["nhi", "health insurance", "健康保險"],
+  "nhi": ["健保", "health insurance", "健康保險"],
+  "保險": ["團保", "學生團體保險", "insurance", "claim", "理賠"],
+  "理賠": ["保險", "團保", "student insurance claim"],
+
+  "休學": ["suspension", "leave of absence", "暫時停學"],
+  "復學": ["reinstatement", "return to study"],
+  "退學": ["withdrawal", "withdraw from school"],
+
+  "成績單": ["transcript", "academic records", "學籍成績證明"],
+  "在學證明": ["enrollment certificate", "certificate of enrollment"],
+  "課程大綱": ["syllabus", "course syllabus", "課綱"],
+
+  "教授": ["professor", "instructor", "老師"],
+  "老師": ["professor", "instructor", "教授"],
+  "教授不收國際生": ["drop course", "加退選", "教授", "international students"],
+
+  "畢業": ["graduation", "畢業資格", "離校", "學位服"],
+  "學位服": ["畢業服", "graduation gown", "gown"],
+
+  "急難": ["急難救助", "emergency aid", "financial aid"],
+  "獎學金": ["scholarship", "financial aid"],
+
+  "註冊繳費": ["學雜費", "繳費", "tuition", "semester registration"],
+  "報到": ["入學報到", "registration", "check in"],
+  "交換生": ["exchange student", "visiting student", "校際生"],
+  "eCourse": ["ecourse2", "線上學習平台", "課程平台"],
+  "單一入口": ["sso", "portal", "登入", "密碼"],
+  "請假": ["leave", "absence", "請假系統"],
+  "課綱": ["課程大綱", "syllabus", "course syllabus"],
+  "國際處": ["oia", "office of international affairs"],
+  "教務處": ["oaa", "office of academic affairs"],
+  "資訊處": ["it center", "information technology office"],
+};
+
+function normalizeText(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[，。！？、；：,.!?;:()[\]{}"'“”‘’]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function expandQuery(query: string): string[] {
+  const normalized = normalizeText(query);
+  const tokens = normalized.split(" ").filter(Boolean);
+  const expanded = new Set<string>();
+
+  if (normalized) expanded.add(normalized);
+
+  for (const token of tokens) {
+    expanded.add(token);
+    const synonyms = SEARCH_SYNONYMS[token];
+    if (synonyms) {
+      synonyms.forEach((s) => expanded.add(normalizeText(s)));
+    }
+  }
+
+  for (const [key, synonyms] of Object.entries(SEARCH_SYNONYMS)) {
+    if (normalized.includes(key)) {
+      expanded.add(normalizeText(key));
+      synonyms.forEach((s) => expanded.add(normalizeText(s)));
+    }
+  }
+
+  return Array.from(expanded).filter(Boolean);
+}
+
+function countMatches(text: string, queryTerms: string[]): number {
+  const normalized = normalizeText(text);
+  if (!normalized) return 0;
+
+  let score = 0;
+
+  for (const term of queryTerms) {
+    if (!term) continue;
+
+    if (normalized === term) {
+      score += 20;
+    } else if (normalized.includes(term)) {
+      score += 8;
+    } else {
+      const words = term.split(" ").filter(Boolean);
+      for (const word of words) {
+        if (word.length >= 2 && normalized.includes(word)) {
+          score += 2;
+        }
+      }
+    }
+  }
+
+  return score;
+}
+
+function joinFields(fields: Array<string | string[] | undefined>): string {
+  return fields
+    .flatMap((field) => {
+      if (!field) return [];
+      return Array.isArray(field) ? field : [field];
+    })
+    .join(" ");
+}
+
 export function searchByNeed(query: string, _language: "en" | "zh" = "en"): { offices: Office[]; departments: Department[]; tasks: Task[] } {
-  const q = normalize(query);
-  if (!q) return { offices: [], departments: [], tasks: [] };
+  const queryTerms = expandQuery(query);
 
-  const keywordHints = serviceCategories
-    .filter(category => includesAny(q, [category.name_en, category.name_zh, ...category.keywords]))
-    .map(category => category.id);
+  if (queryTerms.length === 0) {
+    return {
+      tasks: [],
+      offices: [],
+      departments: [],
+    };
+  }
 
-  const officeResults = offices.filter(office => {
-    const text = collectUnitText(office);
-    return normalize(text).includes(q) || office.service_categories.some(id => keywordHints.includes(id));
-  });
+  const scoredTasks = tasks
+    .map((task) => {
+      const stepText = task.steps
+        .map((step) => `${step.zh} ${step.en}`)
+        .join(" ");
 
-  const departmentResults = departments.filter(department => {
-    const text = collectUnitText(department);
-    return normalize(text).includes(q) || department.service_categories.some(id => keywordHints.includes(id));
-  });
+      const searchableText = joinFields([
+        task.id,
+        task.task_name_zh,
+        task.task_name_en,
+        task.scenario_zh,
+        task.scenario_en,
+        task.category_id,
+        task.target_unit_id,
+        task.required_documents_zh,
+        task.required_documents_en,
+        stepText,
+      ]);
 
-  const taskResults = tasks.filter(task => {
-    const text = [
-      task.task_name_zh,
-      task.task_name_en,
-      task.scenario_zh,
-      task.scenario_en,
-      task.category_id,
-      ...task.required_documents_zh,
-      ...task.required_documents_en,
-      ...task.steps.flatMap(step => [step.zh, step.en]),
-    ].join(" ");
-    return normalize(text).includes(q) || keywordHints.includes(task.category_id);
-  });
+      let score = countMatches(searchableText, queryTerms);
 
-  return { offices: officeResults, departments: departmentResults, tasks: taskResults };
+      score += countMatches(task.task_name_zh, queryTerms) * 3;
+      score += countMatches(task.task_name_en, queryTerms) * 3;
+      score += countMatches(task.scenario_zh, queryTerms) * 2;
+      score += countMatches(task.scenario_en, queryTerms) * 2;
+
+      return { item: task, score };
+    })
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  const matchedTaskUnitIds = new Set(
+    scoredTasks
+      .slice(0, 8)
+      .map(({ item }) => item.target_unit_id)
+      .filter(Boolean)
+  );
+
+  const scoredOffices = offices
+    .map((office) => {
+      const searchableText = joinFields([
+        office.id,
+        office.name_zh,
+        office.name_en,
+        office.function_desc_zh,
+        office.function_desc_en,
+        office.service_scope_zh,
+        office.service_scope_en,
+        office.common_scenarios_zh,
+        office.common_scenarios_en,
+        office.building_name_zh,
+        office.building_name_en,
+        office.floor,
+        office.room_zh,
+        office.room_en,
+        office.email,
+        office.phone,
+        office.service_categories,
+      ]);
+
+      let score = countMatches(searchableText, queryTerms);
+
+      score += countMatches(office.name_zh, queryTerms) * 3;
+      score += countMatches(office.name_en, queryTerms) * 3;
+      score += countMatches(office.service_scope_zh, queryTerms) * 2;
+      score += countMatches(office.service_scope_en, queryTerms) * 2;
+
+      if (matchedTaskUnitIds.has(office.id)) {
+        score += 15;
+      }
+
+      return { item: office, score };
+    })
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  const scoredDepartments = departments
+    .map((dept) => {
+      const searchableText = joinFields([
+        dept.id,
+        dept.name_zh,
+        dept.name_en,
+        dept.college_zh,
+        dept.college_en,
+        dept.function_desc_zh,
+        dept.function_desc_en,
+        dept.service_scope_zh,
+        dept.service_scope_en,
+        dept.building_name_zh,
+        dept.building_name_en,
+        dept.floor,
+        dept.room_zh,
+        dept.room_en,
+        dept.service_categories,
+      ]);
+
+      let score = countMatches(searchableText, queryTerms);
+
+      score += countMatches(dept.name_zh, queryTerms) * 3;
+      score += countMatches(dept.name_en, queryTerms) * 3;
+      score += countMatches(dept.college_zh, queryTerms) * 2;
+      score += countMatches(dept.college_en, queryTerms) * 2;
+
+      if (matchedTaskUnitIds.has(dept.id)) {
+        score += 15;
+      }
+
+      return { item: dept, score };
+    })
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  return {
+    tasks: scoredTasks.slice(0, 12).map(({ item }) => item),
+    offices: scoredOffices.slice(0, 8).map(({ item }) => item),
+    departments: scoredDepartments.slice(0, 8).map(({ item }) => item),
+  };
 }
 
 export function getOfficeById(id: string) {
