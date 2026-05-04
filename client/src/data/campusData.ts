@@ -459,11 +459,12 @@ export const offices: Office[] = [
     "email": "academic@ccu.edu.tw",
     "official_url": "https://oaa.ccu.edu.tw/",
     "google_maps_query": "國立中正大學行政大樓",
-    "latitude": 23.564,
-    "longitude": 120.4714,
+    "latitude": 23.56169816951211,
+    "longitude": 120.47576902965515,
     "source_url": "",
     "needs_manual_review": false,
-    "entrance_image": "/images/offices/oaa/entrance.jpg"
+    "entrance_image": "/images/offices/oaa/entrance.jpg",
+    "use_manual_coordinates": true
   },
   {
     "id": "oaa_admissions",
@@ -492,11 +493,12 @@ export const offices: Office[] = [
     "email": "admchsr@ccu.edu.tw",
     "official_url": "https://oaa.ccu.edu.tw/",
     "google_maps_query": "國立中正大學行政大樓",
-    "latitude": 23.564,
-    "longitude": 120.4714,
+    "latitude": 23.561560751920133,
+    "longitude": 120.47570204591216,
     "source_url": "",
     "needs_manual_review": true,
-    "entrance_image": "/images/offices/oaa_admissions/entrance.jpg"
+    "entrance_image": "/images/offices/oaa_admissions/entrance.jpg",
+    "use_manual_coordinates": true
   },
   {
     "id": "oaa_generalaffairs",
@@ -522,11 +524,12 @@ export const offices: Office[] = [
     "email": "academic@ccu.edu.tw",
     "official_url": "https://oaa.ccu.edu.tw/",
     "google_maps_query": "國立中正大學行政大樓",
-    "latitude": 23.5628,
-    "longitude": 120.4724,
+    "latitude": 23.561664546072027,
+    "longitude": 120.47582963399408,
     "source_url": "https://oaa.ccu.edu.tw/",
     "needs_manual_review": true,
-    "entrance_image": "/images/offices/oaa_generalaffairs/entrance.jpg"
+    "entrance_image": "/images/offices/oaa_generalaffairs/entrance.jpg",
+    "use_manual_coordinates": true
   },
   {
     "id": "ctld",
@@ -586,11 +589,12 @@ export const offices: Office[] = [
     "email": "admosa@ccu.edu.tw",
     "official_url": "https://studaffairs.ccu.edu.tw/p/412-1005-349.php?Lang=zh-tw",
     "google_maps_query": "國立中正大學行政大樓",
-    "latitude": 23.564,
-    "longitude": 120.4714,
+    "latitude": 23.5620475606864,
+    "longitude": 120.47530971253194,
     "source_url": "",
     "needs_manual_review": true,
-    "entrance_image": "/images/offices/osa/entrance.jpg"
+    "entrance_image": "/images/offices/osa/entrance.jpg",
+    "use_manual_coordinates": true
   },
   {
     "id": "osa_life",
@@ -621,11 +625,12 @@ export const offices: Office[] = [
     "email": "admdas@ccu.edu.tw",
     "official_url": "https://studentlife.ccu.edu.tw/",
     "google_maps_query": "國立中正大學行政大樓",
-    "latitude": 23.564,
-    "longitude": 120.4714,
+    "latitude": 23.562106036127748,
+    "longitude": 120.47519488312196,
     "source_url": "",
     "needs_manual_review": true,
-    "entrance_image": "/images/offices/osa_life/entrance.jpg"
+    "entrance_image": "/images/offices/osa_life/entrance.jpg",
+    "use_manual_coordinates": true
   },
   {
     "id": "osa_extracurricular",
@@ -688,11 +693,12 @@ export const offices: Office[] = [
     "email": "",
     "official_url": "https://security.ccu.edu.tw/?Lang=zh-tw",
     "google_maps_query": "國立中正大學行政大樓",
-    "latitude": 23.564,
-    "longitude": 120.4714,
+    "latitude": 23.561888214976612,
+    "longitude": 120.47538945517779,
     "source_url": "",
     "needs_manual_review": true,
-    "entrance_image": "/images/offices/osa_safety/entrance.jpg"
+    "entrance_image": "/images/offices/osa_safety/entrance.jpg",
+    "use_manual_coordinates": true
   },
   {
     "id": "health_center",
@@ -792,11 +798,12 @@ export const offices: Office[] = [
     "email": "general@ccu.edu.tw",
     "official_url": "https://oga.ccu.edu.tw/",
     "google_maps_query": "國立中正大學行政大樓",
-    "latitude": 23.564,
-    "longitude": 120.4714,
+    "latitude": 23.56206802709383,
+    "longitude": 120.47527143606194,
     "source_url": "https://oga.ccu.edu.tw/",
     "needs_manual_review": true,
-    "entrance_image": "/images/offices/oga_services/entrance.jpg"
+    "entrance_image": "/images/offices/oga_services/entrance.jpg",
+    "use_manual_coordinates": true
   },
   {
     "id": "cashier",
@@ -825,11 +832,12 @@ export const offices: Office[] = [
     "email": "general@ccu.edu.tw",
     "official_url": "https://oga.ccu.edu.tw/",
     "google_maps_query": "國立中正大學行政大樓",
-    "latitude": 23.564,
-    "longitude": 120.4714,
+    "latitude": 23.562070950866058,
+    "longitude": 120.47518531400446,
     "source_url": "https://oga.ccu.edu.tw/",
     "needs_manual_review": true,
-    "entrance_image": "/images/offices/cashier/entrance.jpg"
+    "entrance_image": "/images/offices/cashier/entrance.jpg",
+    "use_manual_coordinates": true
   },
   {
     "id": "property_management",
@@ -857,11 +865,12 @@ export const offices: Office[] = [
     "email": "general@ccu.edu.tw",
     "official_url": "https://oga.ccu.edu.tw/",
     "google_maps_query": "國立中正大學行政大樓",
-    "latitude": 23.564,
-    "longitude": 120.4714,
+    "latitude": 23.56183704888203,
+    "longitude": 120.4751597963578,
     "source_url": "https://oga.ccu.edu.tw/",
     "needs_manual_review": true,
-    "entrance_image": "/images/offices/property_management/entrance.jpg"
+    "entrance_image": "/images/offices/property_management/entrance.jpg",
+    "use_manual_coordinates": true
   },
   {
     "id": "personnel",
@@ -889,11 +898,12 @@ export const offices: Office[] = [
     "email": "",
     "official_url": "https://person.ccu.edu.tw/",
     "google_maps_query": "國立中正大學行政大樓",
-    "latitude": 23.564,
-    "longitude": 120.4714,
+    "latitude": 23.562054870117983,
+    "longitude": 120.47533044561985,
     "source_url": "",
     "needs_manual_review": true,
-    "entrance_image": "/images/offices/personnel/entrance.jpg"
+    "entrance_image": "/images/offices/personnel/entrance.jpg",
+    "use_manual_coordinates": true
   },
   {
     "id": "vehicle_control",
@@ -956,11 +966,12 @@ export const offices: Office[] = [
     "email": "secretar@ccu.edu.tw",
     "official_url": "https://secretar.ccu.edu.tw/",
     "google_maps_query": "國立中正大學行政大樓",
-    "latitude": 23.564,
-    "longitude": 120.4714,
+    "latitude": 23.561870672317863,
+    "longitude": 120.4750146647424,
     "source_url": "https://secretar.ccu.edu.tw/",
     "needs_manual_review": true,
-    "entrance_image": "/images/offices/secretariat/entrance.jpg"
+    "entrance_image": "/images/offices/secretariat/entrance.jpg",
+    "use_manual_coordinates": true
   },
   {
     "id": "career_center",
@@ -988,11 +999,12 @@ export const offices: Office[] = [
     "email": "aftergrd@ccu.edu.tw",
     "official_url": "https://career.ccu.edu.tw/",
     "google_maps_query": "國立中正大學共同教室大樓",
-    "latitude": 23.5628,
-    "longitude": 120.4738,
+    "latitude": 23.563123909647985,
+    "longitude": 120.47609636718511,
     "source_url": "https://career.ccu.edu.tw/",
     "needs_manual_review": true,
-    "entrance_image": "/images/offices/career_center/entrance.jpg"
+    "entrance_image": "/images/offices/career_center/entrance.jpg",
+    "use_manual_coordinates": true
   },
   {
     "id": "it_center",
