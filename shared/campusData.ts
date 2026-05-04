@@ -2728,7 +2728,9 @@ export const departments: Department[] = [
     "longitude": 120.4738,
     "source_url": "",
     "needs_manual_review": true,
-    "is_college_office": false
+    "is_college_office": false,
+    "entrance_image": "/images/departments/other/interdisciplinary_studies/entrance.jpg",
+    "floor_plan_image": "/images/departments/other/interdisciplinary_studies/floor_plan.jpg"
   },
   {
     "id": "social_welfare",
@@ -2961,6 +2963,8 @@ export const departments: Department[] = [
     "source_url": "https://stemphd.ccu.edu.tw",
     "needs_manual_review": false,
     "is_college_office": false,
+    "entrance_image": "/images/departments/college_social_sciences/stemphd/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_social_sciences/stemphd/floor_plan.jpg",
     "use_manual_coordinates": true
   }
 ];
