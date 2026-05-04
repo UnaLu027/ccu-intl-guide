@@ -5251,6 +5251,606 @@ export const tasks: Task[] = [
         "en": "Submit the application materials to the Student Life Division according to the announcement, then provide supplements or wait for the review result as instructed."
       }
     ]
+  },
+  
+  // MCP-only life support task entries.
+  // Paste these entries into shared/campusData.ts only, inside export const tasks: Task[] = [ ... ].
+  // Do NOT paste them into client/src/data/campusData.ts unless you want them to appear on the public website.
+  // Images are intentionally not included.
+
+  {
+    "id": "mcp_print_documents",
+    "task_name_zh": "哪裡可以列印東西",
+    "task_name_en": "Where to Print Documents",
+    "scenario_zh": "你需要在校內或附近找地方列印文件。",
+    "scenario_en": "You need to find a place on or near campus to print documents.",
+    "target_unit_type": "office",
+    "target_unit_id": "it_center",
+    "category_id": "library",
+    "required_documents_zh": [
+      "需要列印的檔案",
+      "現金、悠遊卡或便利商店付款工具",
+      "圖書館影印卡借用時可能需要押證件"
+    ],
+    "required_documents_en": [
+      "Files to be printed",
+      "Cash, EasyCard, or a payment method accepted by convenience stores",
+      "ID may be needed when borrowing a library copy card"
+    ],
+    "steps": [
+      {
+        "zh": "可前往校內影印部：中正大學影印店，位於活動中心與碩博班宿舍中間。",
+        "en": "You may go to the on-campus CCU Copy Shop, located between the Activity Center and the graduate dormitories."
+      },
+      {
+        "zh": "可至圖書館櫃檯押證件借影印卡，印出文件後歸還影印卡，可用現金或悠遊卡付費。",
+        "en": "At the Library, leave your ID at the counter to borrow a copy card, print your documents, return the card, and pay with cash or EasyCard."
+      },
+      {
+        "zh": "可至電算中心列印，位置在圖書館大門左手邊、最靠近櫃檯的教室。",
+        "en": "You may print at the Office of Information Technology, in the classroom closest to the counter on the left side of the Library main entrance."
+      },
+      {
+        "zh": "資源教室大門旁設有臨時影印機，也可視需求使用。",
+        "en": "A temporary printer is available near the main entrance of the Resource Classroom."
+      },
+      {
+        "zh": "也可使用全家、7-Eleven 或校外影印店，如鴻昇數位輸出影印中心、明發影印行。",
+        "en": "You may also use FamilyMart, 7-Eleven, or off-campus print shops such as Hongsheng Digital Print Center and Mingfa Copy Shop."
+      }
+    ]
+  },
+  {
+    "id": "mcp_join_clubs_or_campus_activities",
+    "task_name_zh": "加入社團或參加校園活動",
+    "task_name_en": "Join Clubs or Participate in Campus Activities",
+    "scenario_zh": "你想找到有興趣的社團，或參加校內活動。",
+    "scenario_en": "You want to find clubs that interest you or take part in campus events.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_extracurricular",
+    "category_id": "student_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "社團通常在每學期初，尤其是上學期，舉辦社團博覽會招生。",
+        "en": "Clubs typically hold a Club Expo at the beginning of each semester, especially in the first semester, to recruit new members."
+      },
+      {
+        "zh": "平日可在社團辦公室附近，也就是活動中心，或教學大樓公佈欄尋找海報或傳單。",
+        "en": "You can look for posters and flyers near the club offices in the Activity Center or on bulletin boards in academic buildings."
+      },
+      {
+        "zh": "可追蹤「國立中正大學課外活動組」Facebook 專頁，獲取第一手招生資訊。",
+        "en": "Follow the CCU Extracurricular Activities Division Facebook page for the latest recruitment announcements."
+      }
+    ]
+  },
+  {
+    "id": "mcp_chinese_language_learning_support",
+    "task_name_zh": "取得語言學習與中文課程支援",
+    "task_name_en": "Chinese Language Learning and Course Support",
+    "scenario_zh": "你想報名中文語言課程或了解語言學習資源。",
+    "scenario_en": "You want to enroll in Chinese language courses or find language learning resources.",
+    "target_unit_type": "office",
+    "target_unit_id": "language_center",
+    "category_id": "international_support",
+    "required_documents_zh": [
+      "入學申請表 1 份",
+      "兩吋半身照片 1 張",
+      "學歷證件或成績單（課程紀錄或學分證明等）影本 1 份",
+      "護照個人基本資料影本 1 份（含照片、姓名、出生年月日、護照號碼）",
+      "最近三個月內約美金 2,000 元之財力證明 1 份"
+    ],
+    "required_documents_en": [
+      "1 completed application form",
+      "1 two-inch passport photo (half-body)",
+      "1 copy of academic credentials or transcripts, such as course records or credit certificates",
+      "1 copy of passport personal information page, including photo, name, date of birth, and passport number",
+      "1 proof of financial capacity of approximately USD 2,000 within the past 3 months"
+    ],
+    "steps": [
+      {
+        "zh": "前往 https://chineselanguagecenter.ccu.edu.tw/p/41212503526.php 查看開班資訊。",
+        "en": "Visit https://chineselanguagecenter.ccu.edu.tw/p/41212503526.php to check available class schedules."
+      },
+      {
+        "zh": "下載並填寫報名表：https://chineselanguagecenter.ccu.edu.tw/p/41212503380.php。",
+        "en": "Download and fill in the application form: https://chineselanguagecenter.ccu.edu.tw/p/41212503380.php."
+      },
+      {
+        "zh": "附上入學申請表、兩吋半身照片、學歷證件或成績單影本、護照資料影本與財力證明。",
+        "en": "Attach the application form, photo, academic credential or transcript copy, passport information copy, and proof of financial capacity."
+      },
+      {
+        "zh": "寄 Email 至 chilang@ccu.edu.tw 完成報名。",
+        "en": "Send an email to chilang@ccu.edu.tw to complete your registration."
+      }
+    ]
+  },
+  {
+    "id": "mcp_reserve_sports_facilities",
+    "task_name_zh": "預約體育設施的場地",
+    "task_name_en": "Reserve Sports Facilities",
+    "scenario_zh": "你想使用或預約校內體育設施的場地。",
+    "scenario_en": "You want to use or reserve sports facilities on campus.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa",
+    "category_id": "student_affairs",
+    "required_documents_zh": [
+      "活動申請書（團體使用或辦活動時）",
+      "活動企劃書（非校內教學、校隊訓練、社團活動及夜間投燈申請等情況時）"
+    ],
+    "required_documents_en": [
+      "Application form for group use or events",
+      "Event proposal when required, except for on-campus classes, varsity team training, club activities, and nighttime lighting requests"
+    ],
+    "steps": [
+      {
+        "zh": "個人使用時，羽球場下午 1 點後可至白板寫名借用；其他設施非上課時間均可直接使用。",
+        "en": "For personal use, badminton courts are available from 1:00 PM onwards by writing your name on the whiteboard; other facilities may be used directly outside class hours."
+      },
+      {
+        "zh": "網球場、排球場、籃球場夜間燈光不足時可投幣打燈；高爾夫球場可租借高爾夫球桿和球。",
+        "en": "For tennis, volleyball, and basketball courts, coin-operated lighting is available when courts are dark at night; golf clubs and balls are available for rental at the golf driving range."
+      },
+      {
+        "zh": "團體使用或辦活動時，先確認租借費用：https://sport.ccu.edu.tw/p/404101221882.php。",
+        "en": "For group use or events, first check rental fees at https://sport.ccu.edu.tw/p/404101221882.php."
+      },
+      {
+        "zh": "室外籃、排、網球場夜間投燈（18:00 後）之場地申請，請申請於二週內之場地。",
+        "en": "Applications for nighttime lighting after 18:00 at outdoor basketball, volleyball, and tennis courts must be submitted for dates within two weeks."
+      },
+      {
+        "zh": "申請需於一週前將申請書及活動企劃書送至體育中心營運開發組。",
+        "en": "Applications must be submitted at least one week in advance, along with the application form and event proposal, to the Sports Center Operations and Development Division."
+      },
+      {
+        "zh": "前往體育中心場地借用系統 https://sportplacerent.ccu.edu.tw/apply_v2.php，依注意事項和要求填入資訊並送出。",
+        "en": "Go to the Sports Center Facility Reservation System at https://sportplacerent.ccu.edu.tw/apply_v2.php, fill in the required information according to the guidelines, and submit."
+      }
+    ]
+  },
+  {
+    "id": "mcp_sports_center_opening_hours",
+    "task_name_zh": "健身房和體育館的開放時間",
+    "task_name_en": "Gym and Sports Center Opening Hours",
+    "scenario_zh": "你想知道校內體育設施的開放時間，並確認國定假日是否開放。",
+    "scenario_en": "You want to know the opening hours of campus sports facilities and whether they are open on national holidays.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa",
+    "category_id": "student_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "體育館包含壁球室、桌球室、舞蹈室、技擊室、健身房、羽球場與室內綜合球場，平日開放 08:00–21:00，週六、日 09:00–21:00。",
+        "en": "The Sports Center, including squash, table tennis, dance, martial arts, fitness room, badminton court, and indoor multi-purpose court, is open weekdays 08:00–21:00 and weekends 09:00–21:00."
+      },
+      {
+        "zh": "游泳池每年 4/15–10/15 開放，平日 18:00–21:00，週六、日 14:00–17:00 與 18:00–21:00。",
+        "en": "The swimming pool is open annually from April 15 to October 15: weekdays 18:00–21:00, weekends 14:00–17:00 and 18:00–21:00."
+      },
+      {
+        "zh": "高爾夫練習場平日 06:00–10:00（每週一上午定期維護暫停，國定假日除外）與 17:00–21:00；週六、日 06:00–10:00 與 14:00–21:00。",
+        "en": "The golf driving range is open weekdays 06:00–10:00, except Monday mornings for maintenance unless it is a national holiday, and 17:00–21:00; weekends 06:00–10:00 and 14:00–21:00."
+      },
+      {
+        "zh": "健身房時刻表採滾動式更新，可前往 https://sport.ccu.edu.tw/ 搜尋「weight training room」查看。",
+        "en": "The fitness room schedule is updated regularly. Go to https://sport.ccu.edu.tw/ and search for “weight training room” to view the schedule."
+      },
+      {
+        "zh": "詳細資訊可參考 https://sport.ccu.edu.tw/p/404101221872.php；國定假日不對外開放。",
+        "en": "For full details, refer to https://sport.ccu.edu.tw/p/404101221872.php. Facilities are closed to the public on national holidays."
+      }
+    ]
+  },
+  {
+    "id": "mcp_holiday_service_closures",
+    "task_name_zh": "哪些地方會因國定假日而閉館或暫停服務",
+    "task_name_en": "Places Closed or Suspended on National Holidays",
+    "scenario_zh": "你想知道國定假日期間哪些校內設施或服務會暫停。",
+    "scenario_en": "You want to know which campus facilities or services are suspended on national holidays.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa",
+    "category_id": "student_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "國定假日期間，圖書館、體育館、資訊處與行政單位可能閉館或暫停服務。",
+        "en": "On national holidays, the Library, Sports Center, Office of Information Technology, and administrative offices may be closed or suspended."
+      },
+      {
+        "zh": "活動中心生活服務店家也可能暫停服務，包括 1F 美妝小舖、郵局，以及 3F 影印部。",
+        "en": "Activity Center service shops may also be suspended, including the 1F Beauty Shop, Post Office, and 3F Copy Center."
+      },
+      {
+        "zh": "詳細資訊可參考 https://www.ccu.edu.tw/p/404100025665.php?Lang=zhtw。",
+        "en": "For full details, refer to https://www.ccu.edu.tw/p/404100025665.php?Lang=zhtw."
+      }
+    ]
+  },
+  {
+    "id": "mcp_typhoon_day_off",
+    "task_name_zh": "如何知道是否有放颱風假",
+    "task_name_en": "How to Find Out About Typhoon Days Off",
+    "scenario_zh": "颱風來了，你想確認學校是否停課。",
+    "scenario_en": "A typhoon is approaching and you want to confirm whether school is cancelled.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_safety",
+    "category_id": "student_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "關注嘉義縣政府公告：https://www.facebook.com/onlychiayi/?locale=zh_TW。",
+        "en": "Follow Chiayi County Government announcements: https://www.facebook.com/onlychiayi/?locale=zh_TW."
+      },
+      {
+        "zh": "關注停班停課最新通知｜防災即時通【Taiwan Alerts】：https://www.facebook.com/tw.alerts/。",
+        "en": "Follow the latest work and school suspension notices via Taiwan Alerts: https://www.facebook.com/tw.alerts/."
+      }
+    ]
+  },
+  {
+    "id": "mcp_dorm_parcel_service",
+    "task_name_zh": "宿舍包裹服務",
+    "task_name_en": "Dormitory Parcel Service",
+    "scenario_zh": "你住宿舍，想知道包裹或信件要如何寄送、代收或領取。",
+    "scenario_en": "You live in the dormitory and want to know how parcels or mail can be delivered, received, or collected.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_life",
+    "category_id": "dormitory",
+    "required_documents_zh": [
+      "學生證"
+    ],
+    "required_documents_en": [
+      "Student ID"
+    ],
+    "steps": [
+      {
+        "zh": "學士班宿舍信件地址為嘉義縣民雄鄉三興村 161/162/163/164/165 號，161–165 分別為學士 A/B/C/D/E 棟；格式為學士班宿舍（房號）室（姓名）收。",
+        "en": "For undergraduate dormitory mail, use No.161–165, Sanxing Village, Minxiong Township, Chiayi County. No.161/162/163/164/165 correspond to Undergraduate Dorm A/B/C/D/E. Format: Undergraduate Dormitory, Room No., Name."
+      },
+      {
+        "zh": "研究生宿舍信件地址為嘉義縣民雄鄉大學路 168 號；格式為研究生宿舍碩士／博士（房號）室（姓名）收。",
+        "en": "For graduate dormitory mail, use No.168, University Rd., Minxiong Township, Chiayi County. Format: Graduate Dormitory Master/PhD, Room No., Name."
+      },
+      {
+        "zh": "若學生因故無法收包裹，需先至宿舍服務中心填寫「代收委託單」。",
+        "en": "If students are unable to receive parcels in person, they must go to the Dormitory Service Center in advance to fill out a Proxy Collection Form."
+      },
+      {
+        "zh": "學士班宿舍至 C 棟一樓櫃台，研究生宿舍至 B 棟宿舍服務中心辦理。",
+        "en": "Undergraduate students should go to the Dorm C counter; graduate students should go to the Graduate Dorm B Service Center."
+      },
+      {
+        "zh": "宿舍服務中心不代收冷凍、冷藏及須付費物品；體積較大、高價或有時效性物品，由送貨人員聯絡學生自行收件。",
+        "en": "The Dormitory Service Center does not accept frozen, refrigerated, or cash-on-delivery items. Large, high-value, or time-sensitive items must be received directly by the student when delivery personnel contact them."
+      },
+      {
+        "zh": "信件無需填寫委託單，僅須在信件註明正確收件地址與資訊。",
+        "en": "Regular mail does not require the proxy form; only correct address and recipient information are needed."
+      }
+    ]
+  },
+  {
+    "id": "mcp_washing_machine_malfunction",
+    "task_name_zh": "洗衣機故障",
+    "task_name_en": "Washing Machine Malfunction",
+    "scenario_zh": "你在宿舍使用洗衣機或烘衣機時遇到故障，需要報修。",
+    "scenario_en": "You encounter a malfunction while using a dormitory washer or dryer and need to report it.",
+    "target_unit_type": "office",
+    "target_unit_id": "oga_services",
+    "category_id": "dormitory",
+    "required_documents_zh": [
+      "單位資料",
+      "故障情形說明"
+    ],
+    "required_documents_en": [
+      "Unit information",
+      "Description of the malfunction"
+    ],
+    "steps": [
+      {
+        "zh": "至 Online Service Desk 線上報修：https://www.route.com.tw/maintain.php。",
+        "en": "Submit a repair request through the Online Service Desk: https://www.route.com.tw/maintain.php."
+      },
+      {
+        "zh": "也可撥打廠商免付費 24 小時客服專線 0800-211-648 或 0800-211-987；下班時段請聆聽完語音後即可轉接真人客服。",
+        "en": "Alternatively, contact the vendor’s 24-hour toll-free hotline at 0800-211-648 or 0800-211-987. After office hours, follow the voice instructions to be connected to a live agent."
+      },
+      {
+        "zh": "上班時間也可聯繫本校總務處民生服務委員會。",
+        "en": "During office hours, students may also contact the university’s General Affairs unit in charge of daily services."
+      },
+      {
+        "zh": "報修時提供所在單位或位置與故障情形，等待維修處理。",
+        "en": "Provide the unit or location information and a description of the malfunction, then wait for maintenance handling."
+      },
+      {
+        "zh": "洗衣設備位置包含研究生宿舍 A3 大樓 1 樓、員生社超市後面下方樓層、大學部宿舍 A 棟、大學部宿舍 C 棟、學部宿舍 D/E 棟中間與學人宿舍。",
+        "en": "Laundry facilities are located at Graduate Dormitory A3 Building 1F, below the CCU Co-op store, Undergraduate Dormitory A, Undergraduate Dormitory C, between Undergraduate Dormitory D and E, and Faculty Dormitory."
+      }
+    ]
+  },
+  {
+    "id": "mcp_mattress_purchase",
+    "task_name_zh": "床墊可在哪裡取得",
+    "task_name_en": "Where to Get a Mattress",
+    "scenario_zh": "你住宿舍，但宿舍只提供床架，需要自行購買床墊或其他寢具。",
+    "scenario_en": "You live in the dormitory, but only the bed frame is provided, so you need to purchase a mattress or other bedding items.",
+    "target_unit_type": "office",
+    "target_unit_id": "osa_life",
+    "category_id": "dormitory",
+    "required_documents_zh": [
+      "現金"
+    ],
+    "required_documents_en": [
+      "Cash"
+    ],
+    "steps": [
+      {
+        "zh": "確認宿舍床墊尺寸：學士班宿舍為 90cm × 186cm，研究生宿舍為 90cm × 200cm。",
+        "en": "Confirm the dormitory mattress size: undergraduate dormitory is 90cm × 186cm, and graduate dormitory is 90cm × 200cm."
+      },
+      {
+        "zh": "可至員生社購買床墊與其他寢具，床墊金額約新臺幣 1,800 元。",
+        "en": "You can purchase a mattress and other bedding items at the CCU Consumer Cooperative store. The mattress price is approximately NTD 1,800."
+      },
+      {
+        "zh": "也可以自行前往 IKEA、光南大批發或其他賣場購買。",
+        "en": "You may also purchase them from IKEA, Kuang Nan Wholesale Store, or other retail stores."
+      },
+      {
+        "zh": "員生社電話為 05-2720411 轉 49106。",
+        "en": "The CCU Consumer Cooperative store phone number is 05-2720411 ext. 49106."
+      }
+    ]
+  },
+  {
+    "id": "mcp_dormitory_check_in",
+    "task_name_zh": "住宿報到程序",
+    "task_name_en": "Dormitory Check-In Procedure",
+    "scenario_zh": "你是交換生或國際學生，需要依公告時間到宿舍完成住宿報到。",
+    "scenario_en": "You are an exchange or international student and need to complete dormitory check-in according to the announced schedule.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "dormitory",
+    "required_documents_zh": [
+      "寢號資料",
+      "身分相關證件"
+    ],
+    "required_documents_en": [
+      "Room number information",
+      "Valid identification documents"
+    ],
+    "steps": [
+      {
+        "zh": "國際處會為所有交換生預訂校內宿舍。",
+        "en": "The Office of International Affairs will book on-campus dormitory rooms for all exchange students."
+      },
+      {
+        "zh": "依照公告資訊的日期與時間，前往宿舍服務中心辦理。",
+        "en": "Go to the Dormitory Service Center according to the announced date and time."
+      },
+      {
+        "zh": "到達後向宿舍服務中心報上寢號，並出示身分相關證件。",
+        "en": "Upon arrival, provide your room number and present valid identification documents."
+      },
+      {
+        "zh": "學士班宿舍至 C 棟一樓櫃台；研究生宿舍至 B 棟宿舍服務中心。",
+        "en": "Undergraduate students should go to Dorm C 1F counter; graduate students should go to the Graduate Dorm B Service Center."
+      },
+      {
+        "zh": "學士宿舍服務中心電話為 05-2721422 轉 73399；研究生宿舍服務中心電話為 05-2721422 轉 82121。",
+        "en": "Undergraduate Dormitory Service Center: 05-2721422 ext. 73399; Graduate Dormitory Service Center: 05-2721422 ext. 82121."
+      }
+    ]
+  },
+  {
+    "id": "mcp_find_dormitory",
+    "task_name_zh": "找不到宿舍",
+    "task_name_en": "Unable to Find the Dormitory",
+    "scenario_zh": "你剛到學校，不知道要怎麼找到學士班或研究生宿舍服務中心。",
+    "scenario_en": "You just arrived at CCU and do not know how to find the undergraduate or graduate dormitory service center.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "dormitory",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "可先詢問學伴協助帶路。",
+        "en": "You may first ask your buddy for assistance."
+      },
+      {
+        "zh": "可在 Google Maps 搜尋「學士班宿舍服務中心學士班 C 棟」。",
+        "en": "You may search for “Undergraduate Dormitory Service Center, Undergraduate Dorm C” on Google Maps."
+      },
+      {
+        "zh": "可在 Google Maps 搜尋「研究生宿舍服務中心研究生碩博士 B 棟」或「國立中正大學研究生宿舍 B 棟」。",
+        "en": "You may search for “Graduate Dormitory Service Center, Graduate Dorm B” or “National Chung Cheng University Graduate Dormitory B” on Google Maps."
+      },
+      {
+        "zh": "如仍無法找到，可聯繫國際處或宿舍服務中心。",
+        "en": "If you still cannot find it, contact OIA or the Dormitory Service Center."
+      }
+    ]
+  },
+  {
+    "id": "mcp_next_year_room_selection",
+    "task_name_zh": "如何選下學年的寢室",
+    "task_name_en": "How to Select a Dormitory Room for the Next Academic Year",
+    "scenario_zh": "你想知道下學年住宿是否有保障名額，以及如何進行線上選寢。",
+    "scenario_en": "You want to know whether you have a guaranteed dormitory quota for the next academic year and how to complete online room selection.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "dormitory",
+    "required_documents_zh": [
+      "能上網的裝置"
+    ],
+    "required_documents_en": [
+      "A device with internet access"
+    ],
+    "steps": [
+      {
+        "zh": "國際學生有保障名額，需在官方公告期限內向國際處申請；僑生則向研究生宿舍管理中心申請。",
+        "en": "International students have guaranteed dormitory quota and need to apply to OIA within the official announcement period. Overseas Chinese students should apply through the Graduate Dormitory Service Center."
+      },
+      {
+        "zh": "舊戶可優先續住原寢室，也可自行選擇其他寢室；若未自行選擇，則由管理員安排。",
+        "en": "Current residents may have priority to continue staying in their original rooms. They may also choose another room by themselves; otherwise, dormitory staff will arrange the room assignment."
+      },
+      {
+        "zh": "學士宿舍公告與申請事項可至 https://www026186.ccu.edu.tw/dormapply/ 查詢。",
+        "en": "Undergraduate dormitory announcements and applications can be checked at https://www026186.ccu.edu.tw/dormapply/."
+      },
+      {
+        "zh": "研究生宿舍公告與申請事項可至 https://www026186.ccu.edu.tw/graddorm/ 查詢。",
+        "en": "Graduate dormitory announcements and applications can be checked at https://www026186.ccu.edu.tw/graddorm/."
+      },
+      {
+        "zh": "依公告期限申請後，準備所需資料並完成線上選寢，最後等待宿舍人員安排或確認寢室。",
+        "en": "After applying within the announced deadline, prepare the required information, complete online room selection, and wait for dormitory staff to arrange or confirm the room assignment."
+      }
+    ]
+  },
+  {
+    "id": "mcp_check_bus_schedules",
+    "task_name_zh": "如何查詢公車時刻表",
+    "task_name_en": "How to Check Bus Schedules",
+    "scenario_zh": "你想查詢從學校到目的地的公車路線、班次、時刻與金額。",
+    "scenario_en": "You want to check bus routes, schedules, departure times, and fares from CCU to your destination.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "student_affairs",
+    "required_documents_zh": [
+      "行動裝置",
+      "也可至公車站查看車次時刻跑馬燈"
+    ],
+    "required_documents_en": [
+      "Mobile device",
+      "Alternatively, check the electronic timetable display at the bus stop"
+    ],
+    "steps": [
+      {
+        "zh": "可使用嘉義縣公車資訊 iBus 查詢：https://chiayiibus.cyhg.gov.tw/DynamicBusQuery。",
+        "en": "Use the Chiayi County iBus website to check bus schedules: https://chiayiibus.cyhg.gov.tw/DynamicBusQuery."
+      },
+      {
+        "zh": "也可使用 Google Maps，搜尋目的地後點選地圖，再點選大眾運輸圖示，查看公車班次、時刻與金額。",
+        "en": "You may also use Google Maps by searching for your destination, selecting the map result, tapping the public transportation icon, and checking bus routes, schedules, and fares."
+      },
+      {
+        "zh": "若公車站有車次時刻跑馬燈，也可直接在站牌查看到站資訊。",
+        "en": "If the bus stop has an electronic timetable display, you can check arrival information directly at the stop."
+      }
+    ]
+  },
+  {
+    "id": "mcp_get_to_minxiong",
+    "task_name_zh": "如何前往民雄",
+    "task_name_en": "How to Get to Minxiong",
+    "scenario_zh": "你想從中正大學前往民雄市區、民雄火車站或附近地點。",
+    "scenario_en": "You want to travel from CCU to downtown Minxiong, Minxiong Train Station, or nearby locations.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "student_affairs",
+    "required_documents_zh": [
+      "行動裝置",
+      "電子票證",
+      "現金"
+    ],
+    "required_documents_en": [
+      "Mobile device",
+      "Electronic card",
+      "Cash"
+    ],
+    "steps": [
+      {
+        "zh": "可搭乘公車，並依公車時刻表查詢方式確認班次。",
+        "en": "You can take a bus and check routes and schedules using the bus schedule methods."
+      },
+      {
+        "zh": "搭公車時可使用 EasyCard 等電子票證，上車刷卡。",
+        "en": "When taking the bus, use an electronic card such as EasyCard and tap when boarding."
+      },
+      {
+        "zh": "聽到公車廣播「下一站」時，請提前按下車鈴；若到站才按，可能需要下一站才能下車。",
+        "en": "When the bus announcement says “Next stop,” press the stop button in advance. If you press only after arriving, you may need to get off at the next stop."
+      },
+      {
+        "zh": "也可使用 Uber 或 LINE App 裡的 LINE GO 預約計程車。",
+        "en": "You may also use Uber or LINE GO through the LINE app to book a taxi."
+      },
+      {
+        "zh": "若時間與體力足夠，也可騎腳踏車或步行。",
+        "en": "If you have enough time and physical strength, you may also ride a bike or walk."
+      }
+    ]
+  },
+  {
+    "id": "mcp_taxi_service_information",
+    "task_name_zh": "計程車服務資訊",
+    "task_name_en": "Taxi Service Information",
+    "scenario_zh": "你想知道從高鐵嘉義站或桃園機場到中正大學的計程車或接送資訊。",
+    "scenario_en": "You want to know taxi or pick-up service information from Chiayi HSR Station or Taoyuan International Airport to CCU.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "student_affairs",
+    "required_documents_zh": [],
+    "required_documents_en": [],
+    "steps": [
+      {
+        "zh": "高鐵嘉義站到中正大學的計程車費用約新臺幣 700 元。",
+        "en": "The taxi fare from Chiayi HSR Station to CCU is around NTD 700."
+      },
+      {
+        "zh": "桃園機場到中正大學可參考 Transportation_from_TPE_Airport_to_CCU.pdf 接送資訊。",
+        "en": "For transportation from Taoyuan International Airport to CCU, refer to the Transportation_from_TPE_Airport_to_CCU.pdf pick-up information."
+      },
+      {
+        "zh": "桃園機場到中正大學接送車約新臺幣 5,000 元，一台車最多 2 位學生。",
+        "en": "The pick-up service from Taoyuan International Airport to CCU costs around NTD 5,000. One car can take up to 2 students."
+      },
+      {
+        "zh": "可自行搭乘高鐵嘉義站至中正大學的計程車，或事先安排桃園機場到中正大學的接送服務。",
+        "en": "Students may take a taxi from Chiayi HSR Station to CCU, or arrange a pick-up service from Taoyuan International Airport to CCU in advance."
+      }
+    ]
+  },
+  {
+    "id": "mcp_taxi_driver_no_english",
+    "task_name_zh": "從機場來到中正時，計程車司機不懂英文",
+    "task_name_en": "Taxi Driver Does Not Understand English When Traveling from the Airport to CCU",
+    "scenario_zh": "你從機場搭車到中正大學，但擔心計程車司機不懂英文。",
+    "scenario_en": "You are traveling from the airport to CCU and are worried that the taxi driver may not understand English.",
+    "target_unit_type": "office",
+    "target_unit_id": "oia",
+    "category_id": "student_affairs",
+    "required_documents_zh": [
+      "行動裝置"
+    ],
+    "required_documents_en": [
+      "Mobile device"
+    ],
+    "steps": [
+      {
+        "zh": "預約計程車或接送服務時，請清楚提供上車時間、上車地點、下車時間與目的地。",
+        "en": "When booking the taxi or pick-up service, clearly provide the pick-up time, pick-up location, drop-off time, and destination in advance."
+      },
+      {
+        "zh": "若需要與司機溝通，可使用翻譯軟體協助。",
+        "en": "If needed, use a translation app to communicate with the driver."
+      },
+      {
+        "zh": "出發前可先準備好中文地址或目的地文字，方便直接出示給司機。",
+        "en": "Before departure, prepare the Chinese address or destination text so you can show it directly to the driver."
+      }
+    ]
   }
 ];
 
