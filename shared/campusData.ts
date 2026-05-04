@@ -3369,96 +3369,6 @@ export const tasks: Task[] = [
     ]
   },
   {
-    "id": "nhi_card",
-    "task_name_zh": "申請健保卡",
-    "task_name_en": "Apply for National Health Insurance (NHI) Card",
-    "scenario_zh": "你需在台灣居住超過6個月才有資格申請健保卡。",
-    "scenario_en": "You must stay in Taiwan for more than six months to apply for an NHI card.",
-    "target_unit_type": "office",
-    "target_unit_id": "health_center",
-    "category_id": "health",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "medical_with_nhi",
-    "task_name_zh": "校外就醫看病（有健保卡）",
-    "task_name_en": "Off-Campus Medical Treatment (with NHI Card)",
-    "scenario_zh": "你身體不舒服，需要就醫且已有健保卡。",
-    "scenario_en": "You feel unwell and need to see a doctor with an NHI card.",
-    "target_unit_type": "office",
-    "target_unit_id": "health_center",
-    "category_id": "health",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "medical_without_nhi",
-    "task_name_zh": "校外就醫看病（無健保卡）",
-    "task_name_en": "Off-Campus Medical Treatment (without NHI Card)",
-    "scenario_zh": "你身體不舒服，需要就醫但沒有健保卡。",
-    "scenario_en": "You feel unwell and need to see a doctor without an NHI card.",
-    "target_unit_type": "office",
-    "target_unit_id": "health_center",
-    "category_id": "health",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
     "id": "campus_basic_medical",
     "task_name_zh": "校內簡易醫療服務",
     "task_name_en": "On-Campus Basic Medical Services",
@@ -4165,66 +4075,6 @@ export const tasks: Task[] = [
     ]
   },
   {
-    "id": "dorm_checkin",
-    "task_name_zh": "住宿報到程序",
-    "task_name_en": "Dormitory Check-In Procedure",
-    "scenario_zh": "你需要完成宿舍入住報到。",
-    "scenario_en": "You need to complete dormitory check-in.",
-    "target_unit_type": "office",
-    "target_unit_id": "dorm_service",
-    "category_id": "dormitory",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "find_dorm",
-    "task_name_zh": "找不到宿舍",
-    "task_name_en": "Unable to Find the Dormitory",
-    "scenario_zh": "你剛到學校但找不到宿舍位置。",
-    "scenario_en": "You just arrived and cannot find your dormitory.",
-    "target_unit_type": "office",
-    "target_unit_id": "dorm_service",
-    "category_id": "dormitory",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
     "id": "next_year_room",
     "task_name_zh": "如何選下學年的寢室",
     "task_name_en": "How to Select a Dormitory Room for the Next Academic Year",
@@ -4359,36 +4209,6 @@ export const tasks: Task[] = [
       {
         "zh": "保管組位置：行政大樓西側地下一樓",
         "en": "Storage Office location: Basement level 1 (B1), west side of the Administration Building"
-      }
-    ]
-  },
-  {
-    "id": "language_learning",
-    "task_name_zh": "取得語言學習與中文課程支援",
-    "task_name_en": "Chinese Language Learning and Course Support",
-    "scenario_zh": "你想報名中文課程或了解語言學習資源。",
-    "scenario_en": "You want to enroll in Chinese courses or find language learning resources.",
-    "target_unit_type": "office",
-    "target_unit_id": "language_center",
-    "category_id": "academic_affairs",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
       }
     ]
   },
