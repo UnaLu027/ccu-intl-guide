@@ -5,7 +5,7 @@
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "wouter";
-import { MapPin, Navigation, ExternalLink, Clock, Phone, Mail, AlertTriangle, DoorOpen, ArrowRight } from "lucide-react";
+import { MapPin, ClipboardList, ExternalLink, Clock, Phone, Mail, AlertTriangle, DoorOpen, ArrowRight } from "lucide-react";
 import type { Office, Department } from "@/data/campusData";
 
 interface PhotoCardProps {
@@ -177,8 +177,8 @@ export function OfficeCard({ office, reason }: OfficeCardProps) {
             href={`/navigate/office/${o.id}`}
             className="inline-flex items-center gap-1.5 px-3 py-2 bg-navy text-white text-xs font-semibold rounded-md hover:bg-navy-light transition-colors"
           >
-            <Navigation className="w-3.5 h-3.5" />
-            {t("Navigate", "導航")}
+            <ClipboardList className="w-3.5 h-3.5" />
+            {t("Details", "查看詳情")}
           </Link>
           <a
             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(o.google_maps_query)}`}
@@ -279,8 +279,8 @@ export function DeptCard({ dept }: DeptCardProps) {
             href={`/navigate/dept/${d.id}`}
             className="inline-flex items-center gap-1.5 px-3 py-2 bg-navy text-white text-xs font-semibold rounded-md hover:bg-navy-light transition-colors"
           >
-            <Navigation className="w-3.5 h-3.5" />
-            {t("Navigate", "導航")}
+            <ClipboardList className="w-3.5 h-3.5" />
+            {t("Details", "查看詳情")}
           </Link>
           <a
             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.google_maps_query)}`}
