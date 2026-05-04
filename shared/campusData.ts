@@ -2963,8 +2963,6 @@ export const departments: Department[] = [
     "source_url": "https://stemphd.ccu.edu.tw",
     "needs_manual_review": false,
     "is_college_office": false,
-    "entrance_image": "/images/departments/college_social_sciences/stemphd/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_social_sciences/stemphd/floor_plan.jpg",
     "use_manual_coordinates": true
   }
 ];
@@ -2979,28 +2977,40 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oia",
     "category_id": "international_support",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "2吋大頭照",
+      "護照",
+      "居留簽證",
+      "居住證明(OIA提供)",
+      "在學或入學許可證明"
+    ],
+    "required_documents_en": [
+      "two-inch photo",
+      "passport",
+      "resident visa",
+      "proof of accommodation(from OIA)",
+      "admission permit or certificate"
+    ],
     "steps": [
       {
-        "zh": "使用線上申辦系統。",
-        "en": "Use the Students Online Application System."
+        "zh": "使用線上申辦系統：https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=zh",
+        "en": "Using Students Online Application System: https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=en"
       },
       {
-        "zh": "註冊並啟用帳號。",
-        "en": "Create and activate an account."
+        "zh": "進入網站註冊帳號",
+        "en": "Create and activate an account"
       },
       {
-        "zh": "填寫資料並上傳大頭照、護照、居留簽證、居住證明與入學/在學證明。",
-        "en": "Fill out the form and upload photo, passport, resident visa, proof of accommodation, and admission/enrollment proof."
+        "zh": "填寫資料並上傳檔案：2吋大頭照、護照、居留簽證、居住證明(OIA提供)、在學或入學許可證明",
+        "en": "Fill out the application form and upload required documents: two-inch photo, passport, resident visa, proof of accommodation(from OIA), admission permit or certificate"
       },
       {
-        "zh": "資料核准後繳費 NT$1,000/年。",
-        "en": "Pay NT$1,000 per year after approval."
+        "zh": "資料核准後進行繳費：NT$1,000/年",
+        "en": "Pay after approval: NT$1,000/year"
       },
       {
-        "zh": "攜帶繳費收據至移民署領取居留證。",
-        "en": "Bring your payment receipt and collect your ARC at the NIA service center."
+        "zh": "攜帶繳費收據至移民署領取居留證",
+        "en": "Bring your payment receipt and collect your ARC at NIA service centers"
       }
     ]
   },
@@ -3013,24 +3023,42 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oia",
     "category_id": "international_support",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "2吋大頭照",
+      "護照",
+      "停留簽證",
+      "居住證明(OIA提供)",
+      "在學或入學許可證明",
+      "健康檢查合格證明"
+    ],
+    "required_documents_en": [
+      "two-inch photo",
+      "passport",
+      "visitor visa",
+      "proof of accommodation(from OIA)",
+      "admission permit or certificate",
+      "health certificate"
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "使用線上申辦系統：https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=zh",
+        "en": "Using Students Online Application System: https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=en"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "進入網站註冊帳號",
+        "en": "Create and activate an account"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "填寫資料並上傳檔案：2吋大頭照、護照、停留簽證、居住證明(OIA提供)、在學或入學許可證明、健康檢查合格證明",
+        "en": "Fill out the application form and upload required documents: two-inch photo, passport, visitor visa, proof of accommodation(from OIA), admission permit or certificate, health certificate"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "資料核准後進行繳費：NT$1,000/年 + NT$2,200",
+        "en": "Pay after approval: NT$1,000/year and additional fee of NT$2,200"
+      },
+      {
+        "zh": "攜帶繳費收據至移民署領取居留證",
+        "en": "Bring your payment receipt and collect your ARC at NIA service centers"
       }
     ]
   },
@@ -3038,29 +3066,39 @@ export const tasks: Task[] = [
     "id": "arc_extension",
     "task_name_zh": "申請延期居留證",
     "task_name_en": "Extending an ARC",
-    "scenario_zh": "你需要延長在台灣的居留期限。",
-    "scenario_en": "You need to extend your residency in Taiwan.",
+    "scenario_zh": "你需要延長在台灣的居留期限（在居留期限到期前3個月內）",
+    "scenario_en": "You need to extend your residency in Taiwan(within 3 months before the expiration of residency).",
     "target_unit_type": "office",
     "target_unit_id": "oia",
     "category_id": "international_support",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "2吋大頭照",
+      "護照",
+      "居留證",
+      "在學或註冊證明"
+    ],
+    "required_documents_en": [
+      "two-inch photo",
+      "passport",
+      "ARC",
+      "proof of enrollment"
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "使用線上申辦系統：https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=zh",
+        "en": "Using Students Online Application System: https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=en"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "填寫資料並上傳檔案：2吋大頭照、護照、居留證、在學或註冊證明",
+        "en": "Fill out the application form and upload required documents: two-inch photo, passport, ARC,proof of enrollment"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "資料核准後進行繳費：NT$1,000/年",
+        "en": "Pay after approval: NT$1,000/year"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "攜帶繳費收據與舊證至移民署領取新的居留證",
+        "en": "Bring your payment receipt and old ARC to collect your new ARC at NIA service centers"
       }
     ]
   },
@@ -3077,20 +3115,24 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "離學校最近的移民署為嘉義市移民署服務站：https://servicestation.immigration.gov.tw/5880/#",
+        "en": "The nearest NIA is the NIA Chiayi City Service Center: https://servicestation.immigration.gov.tw/5880/#"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "根據Google地圖指示前往目的地：https://reurl.cc/M2M8GW",
+        "en": "Follow the directions on Google Maps to reach your destination: https://reurl.cc/M2M8GW"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "服務時間：星期一至星期五 08:00 - 17:00",
+        "en": "Office hours: Mon to Fri 08:00 - 17:00"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "電話號碼：(05) 216 - 6100",
+        "en": "TEL: (05) 216 - 6100"
+      },
+      {
+        "zh": "地址：嘉義市東區吳鳳北路184號2樓",
+        "en": "Adress: No. 184, Wufeng North Road, East District, Chiayi City, 2nd Floor"
       }
     ]
   },
@@ -3103,24 +3145,40 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oia",
     "category_id": "international_support",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "申請表",
+      "2吋大頭照x2",
+      "護照",
+      "健康檢查合格證明",
+      "入學許可或通知",
+      "最高學歷畢業證書與歷年成績單",
+      "財力證明"
+    ],
+    "required_documents_en": [
+      "application form",
+      "two-inch photo x2",
+      "passport",
+      "health certificate",
+      "admission permit",
+      "highest education diploma and transcripts",
+      "proof of financial support"
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "線上填寫申請表並列印簽名：https://www.boca.gov.tw/fp-9-185-35222-1.html",
+        "en": "Fill out the application form online, then print and sign it: https://www.boca.gov.tw/cp-166-283-c4da3-2.html"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "準備文件（含正影本）：申請表、2吋大頭照x2、護照、健康檢查合格證明、入學許可或通知、最高學歷畢業證書與歷年成績單、財力證明",
+        "en": "Prepare the required documents(original and photocopy): application form, two-inch photo x2, passport, health certificate, admission permit, highest education diploma and transcripts, proof of financial support"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "費用： https://www.boca.gov.tw/cp-396-32-4a369-1.html",
+        "en": "application fees: https://www.boca.gov.tw/cp-396-32-4a369-1.html"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "提交上述文件至中華民國駐外館處申請",
+        "en": "Submit the above documents to Taiwan overseas missions to apply"
       }
     ]
   },
@@ -3133,24 +3191,40 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oia",
     "category_id": "international_support",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "申請表",
+      "2吋大頭照x2",
+      "護照",
+      "健康檢查合格證明",
+      "大專校院核准函",
+      "就讀學校入學許可/通知",
+      "國外就讀學校之在學證明"
+    ],
+    "required_documents_en": [
+      "application form",
+      "two-inch photo x2",
+      "passport",
+      "health certificate",
+      "letter of approval issued by university",
+      "admission permit",
+      "overseas school’s record of enrollment"
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "線上填寫申請表並列印簽名：https://www.boca.gov.tw/cp-402-186-c060a-1.html",
+        "en": "Fill out the application form online, then print and sign it: https://www.boca.gov.tw/cp-166-284-6f5f7-2.html"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "準備文件（含正影本）：申請表、2吋大頭照x2、護照、健康檢查合格證明、大專校院核准函、就讀學校入學許可/通知、國外就讀學校之在學證明",
+        "en": "Prepare the required documents(original and photocopy): application form, two-inch photo x2, passport, health certificate, letter of approval issued by university, admission permit, overseas school’s record of enrollment"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "費用： https://www.boca.gov.tw/cp-396-32-4a369-1.html",
+        "en": "application fees: https://www.boca.gov.tw/cp-396-32-4a369-1.html"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "提交上述文件至中華民國駐外館處申請",
+        "en": "Submit the above documents to Taiwan overseas missions to apply"
       }
     ]
   },
@@ -3163,24 +3237,38 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oia",
     "category_id": "international_support",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "申請表",
+      "2吋大頭照x2",
+      "護照",
+      "大專校院核准函",
+      "就讀學校入學許可/通知",
+      "國外就讀學校之在學證明"
+    ],
+    "required_documents_en": [
+      "application form",
+      "two-inch photo x2",
+      "passport",
+      "letter of approval issued by university",
+      "admission permit",
+      "overseas school’s record of enrollment"
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "線上填寫申請表並列印簽名：https://www.boca.gov.tw/cp-400-4336-94cdb-1.html",
+        "en": "Fill out the application form online, then print and sign it: https://www.boca.gov.tw/cp-158-4342-a78b4-2.html"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "準備文件（含正影本）：申請表、2吋大頭照x2、護照、大專校院核准函、就讀學校入學許可/通知、國外就讀學校之在學證明",
+        "en": "Prepare the required documents(original and photocopy): application form, two-inch photo x2, passport, letter of approval issued by university, admission permit, overseas school’s record of enrollment"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "費用： https://www.boca.gov.tw/cp-396-32-4a369-1.html",
+        "en": "application fees: https://www.boca.gov.tw/cp-158-4342-a78b4-2.html"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "提交上述文件至中華民國駐外館處申請",
+        "en": "Submit the above documents to Taiwan overseas missions to apply"
       }
     ]
   },
@@ -3197,20 +3285,20 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "前往碩博士宿舍旁標有國際處的建築（位於斜坡最底下）",
+        "en": "Go to the building labeled \"Office of International Affairs\" next to the Graduate Dormitories (Located at the bottom of the slope)"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "進入建築後，右轉上二樓，即是國際處",
+        "en": "Enter the building, turn right, and go up to the 2nd floor, where you will find the OIA"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "依循辦公室門牌尋找對應的辦理窗口",
+        "en": "Follow the room signs to find the specific office you need"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "向櫃台工作人員說明你的需求",
+        "en": "Present your inquiry to the staff at the counter"
       }
     ]
   },
@@ -3223,24 +3311,34 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "health_center",
     "category_id": "health",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "護照",
+      "費用",
+      "CCU健康檢查表",
+      "其他所需文件"
+    ],
+    "required_documents_en": [
+      "passport",
+      "fees",
+      "CCU health examination form",
+      "other required documents"
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "參考國際處手冊內所列的詳細時間、所需文件、費用",
+        "en": "Refer to the International Office handbook for detailed schedules, required documents, and fees"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "檢查當天請攜帶護照、費用、CCU健康檢查表及其他所需文件",
+        "en": "Bring your passport, fees, CCU health examination form and other required documents on the day of the check-up"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "前往禮堂完成基本身體測量與檢查項目",
+        "en": "Go to the auditorium to complete basic physical measurements and examinations"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "約45天後將通知你前往系辦領取健檢報告（如果你是來自國際處的交換生，請至國際處領取）",
+        "en": "You will be notified approximately 45 days later to collect your health check-up report from the department office(if you are an exchange student from OIA, please go to OIA to collect it)"
       }
     ]
   },
@@ -3253,24 +3351,20 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "health_center",
     "category_id": "health",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "疫苗證明影本或其他文件"
+    ],
+    "required_documents_en": [
+      "a copy of your vaccination records or other required documents"
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "如果你有電子檔，可到校內資訊處、全家、或其它地方列印",
+        "en": "If you have an electronic file, you can print it at the Office of information technology, FamilyMart or other locations in campus"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "若你身邊沒有任何資料，請至衛生保健組或國際處尋求幫助",
+        "en": "If you do not have any materials with you, please seek assistance from Health Services Division or OIA"
       }
     ]
   },
@@ -3377,20 +3471,20 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "衛生保健組提供簡易傷口處理",
+        "en": "Health Services Division provides basic wound care and injury treatment"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "衛生保健組提供器材借用，含冷熱敷袋、體溫計、拐杖、輪椅",
+        "en": "Health Services Division provides equipment for short-term loan, including hot/cold packs, thermometers, crutches, and wheelchairs"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "衛生保健組提供簡易測量，含血壓、體溫、身高體重、體脂、腰圍",
+        "en": "Health Services Division provides basic health measurements, including blood pressure, body temperature, height, weight, body fat, and waist circumference"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "學士班C棟學生宿舍提供換藥服務（寒暑假無提供服務）",
+        "en": "Undergraduate student dormitory in building C provides dressing change services(is not available during winter or summer breaks)"
       }
     ]
   },
@@ -3407,20 +3501,20 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "前往系辦網站尋找修業規定（若英文版網站查無資料，你可能會需要使用到中文版網站，並自行翻譯修業規定內容）",
+        "en": "Visit the department website to find the study regulation (If the information is not available on the English website, you may need to use the Chinese website and translate the study regulation yourself)"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "若你在網站上無法找到資料，請至系辦確認畢業學分相關規定",
+        "en": "If you cannot find the information on the website, please go to the department office to confirm the regulations regarding graduation credits"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "檢視在選課系統上的畢業資格審查表，確認還缺多少學分",
+        "en": "Review graduation requirement checklist on course selection system to confirm how many credits you are still missing"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "若有缺少學分，請儘速與指導教授或系辦討論補救方式",
+        "en": "If you are missing credits, please discuss remedial measures with your advisor or the department office as soon as possible"
       }
     ]
   },
@@ -3433,24 +3527,32 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oia",
     "category_id": "international_support",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "所需文件"
+    ],
+    "required_documents_en": [
+      "required documents"
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "為了能領取獎學金，你需要先在校內郵局開設一個帳戶",
+        "en": "To receive your scholarship, you need to open a postal account at the on-campus Post Office"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "至國際處網站查看目前開放的獎學金項目：https://oia.ccu.edu.tw/p/412-1008-3967.php?Lang=zh-tw",
+        "en": "Check OIA website for currently available scholarships: https://oia.ccu.edu.tw/p/412-1008-3967.php?Lang=en"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "確認申請資格與截止日期",
+        "en": "Confirm eligibility requirements and application deadlines"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "備妥所需文件並於期限內提交至國際處",
+        "en": "Prepare required documents and submit before the deadline"
+      },
+      {
+        "zh": "等待審核結果通知",
+        "en": "Wait for review result notification"
       }
     ]
   },
@@ -3463,24 +3565,40 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oaa",
     "category_id": "academic_affairs",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "休學申請表"
+    ],
+    "required_documents_en": [
+      "Application Form for Suspension"
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "休學期間以一學期、一學年或二學年為期，累計以不超過二學年為原則",
+        "en": "The duration of suspension can be one semester, one academic year, or two academic years, with a total limit of two academic years in principle"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "於教務處網站上下載休學申請表，並閱讀文件內所附的辦理流程： https://oaa.ccu.edu.tw/p/406-1004-14288,r1960.php?Lang=zh-tw",
+        "en": "Download the Application Form for Suspension from the Office of Academic Affairs website and read the attached procedures: https://oaa.ccu.edu.tw/p/406-1004-14288,r1960.php?Lang=zh-tw"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "至SSO網路離校系統辦理離校手續：https://www026182.ccu.edu.tw/hZhUp6Fqyr8lLbHHA",
+        "en": "Complete the departure clearance via the Online Leave System in SSO: https://www026182.ccu.edu.tw/hZhUp6Fqyr8lLbHHA"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "等待各單位網路審核通過（若有單位審核未通過，則需親自到該單位詢問）",
+        "en": "Wait for online approval from all departments (if any department disapprove your application, you must visit that department in person to inquire)"
+      },
+      {
+        "zh": "網路審核通過後，請列印休學申請表，依照申請表需求進行填寫與取得各單位的簽名",
+        "en": "After online approval is granted, print the application form, fill it out as required, and obtain the signatures from the respective departments"
+      },
+      {
+        "zh": "若辦理完成，教務處教學組將核發休學同意涵",
+        "en": "Once completed, the Curriculum Division of the Office of Academic Affairs will issue the Suspension Approval Letter"
+      },
+      {
+        "zh": "國際生注意：休學期間居留證效力需另行確認（洽國際處）",
+        "en": "Note for International Students: Confirm the impact on your ARC or visa status during leave (contact OIA)"
       }
     ]
   },
@@ -3497,20 +3615,16 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "一但畢業、休學、退學，你便無法再以就學為理由待在台灣（除非你有繼續居留在台灣的其他理由並經移民署核准）",
+        "en": "Once you graduate, suspend your studies, or withdraw, you no longer be able to stay in Taiwan under the reason of studying(unless you have other reason for continued residence in Taiwan and have approved by NIA)"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "如果你沒有其他居留理由，你需要在期限內將居留證繳回移民署，並辦理出境",
+        "en": "If you have no other reason for residency, you must return your ARC to NIA and depart from Taiwan within the specified deadline"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "休學結束返台時，需重新申請簽證",
+        "en": "When returning to Taiwan after your suspension ends, you must re-apply for a visa"
       }
     ]
   },
@@ -3523,24 +3637,40 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oia",
     "category_id": "registration",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "國際處手冊上提供的所需文件"
+    ],
+    "required_documents_en": [
+      "required documents provided in the OIA handbook"
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "參考國際處手冊上提供的資訊與辦理流程，並準備需要的文件",
+        "en": "Refer to the information and procedures provided in the OIA handbook and prepare the required documents"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "辦理宿舍入住",
+        "en": "Handle your dormitory check-in"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "至學籍資料登錄系統填寫資料：https://www026198.ccu.edu.tw/academic/",
+        "en": "Fill out the required information in the Student Academic Record Entry System: https://www026198.ccu.edu.tw/academic/"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "列印繳費單並繳費：https://school.bot.com.tw/newTwbank/mobile/login.aspx 和https://cdn.gamma.app/m7bhp5q4xrar3i8/4bade826d004445fa87ca5b00d019599/original/How-to-get-the-payment-receipt.pdf.pdf",
+        "en": "Print the payment receipt and pay the fees: https://school.bot.com.tw/newTwbank/mobile/login.aspx and https://cdn.gamma.app/m7bhp5q4xrar3i8/4bade826d004445fa87ca5b00d019599/original/How-to-get-the-payment-receipt.pdf.pdf"
+      },
+      {
+        "zh": "準備所需資料至國際處報到",
+        "en": "Bring the required documents to OIA to complete the registration"
+      },
+      {
+        "zh": "準備所需資料至教務處教學組報到",
+        "en": "Bring the required documents to report to Division of Curriculum and Instruction to  complete the registration"
+      },
+      {
+        "zh": "所有程序完成後，即可從教學組拿到學生證",
+        "en": "Once all procedures are completed, you can receive your Student ID card from Division of Curriculum and Instruction"
       }
     ]
   },
@@ -3553,24 +3683,44 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oia",
     "category_id": "registration",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "國際處手冊上提供的所需文件"
+    ],
+    "required_documents_en": [
+      "required documents provided in the OIA handbook"
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "參考國際處手冊上提供的資訊與辦理流程，並準備需要的文件",
+        "en": "Refer to the information and procedures provided in the OIA handbook and prepare the required documents"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "辦理宿舍入住",
+        "en": "Handle your dormitory check-in"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "準備所需資料至國際處報到",
+        "en": "Bring the required documents to OIA to complete the registration"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "從國際處取得報到手續單、學生證、宿舍繳費單，並完成繳費",
+        "en": "Obtain your Registration Sheet, student ID card and dormitory payment sheet from OIA, and complete the payment."
+      },
+      {
+        "zh": "前往你的系辦報到",
+        "en": "Bring the required documents to your department office to complete the registration"
+      },
+      {
+        "zh": "於選課期間選課，並列印選課申請表給教授與系主任簽章：https://cross-school.ccu.edu.tw/index.php?language=c",
+        "en": "Select your courses during the course selection period, and print the Course Selection Application Form to obtain the required signatures from the professors and the director of your host department: https://cross-school.ccu.edu.tw/index.php?language=e"
+      },
+      {
+        "zh": "完成簽章後，將選課申請表提交給教學組，以取得eCourse使用權限",
+        "en": "After obtaining the signatures, submit the  Course Selection Application Form to Division of Curriculum and Instruction to gain access to use eCourse"
+      },
+      {
+        "zh": "將已完成的報到手續單提交給國際處",
+        "en": "Submit the completed Registration Sheet to OIA"
       }
     ]
   },
@@ -3587,20 +3737,16 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "依學校通知於期限內繳交學雜費（通常為每學期開學前）",
+        "en": "Pay your tuition and fees within the deadline according to school notifications (usually before the start of each semester)"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "登入繳費網站進行繳費（登入資訊可參考國際處提供的資料：https://cdn.gamma.app/m7bhp5q4xrar3i8/4bade826d004445fa87ca5b00d019599/original/How-to-get-the-payment-receipt.pdf.pdf）",
+        "en": "Log in to the payment website to make the payment (for login information, refer to the file provided by OIA: https://cdn.gamma.app/m7bhp5q4xrar3i8/4bade826d004445fa87ca5b00d019599/original/How-to-get-the-payment-receipt.pdf.pdf)."
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "繳費後，即完成註冊手續",
+        "en": "Once the payment is made, the registration process is complete"
       }
     ]
   },
@@ -3613,24 +3759,36 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oaa",
     "category_id": "academic_affairs",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "歷年成績單：幾乎多數學系皆要求檢附，且經常規定成績單上必須包含班級排名。",
+      "轉系理由書／動機說明：多系要求申請者撰寫轉系理由，部分科系有字數或語言限制（例如：中文系與歷史系要求300至500字、外文系要求以英文撰寫且250字為限）。",
+      "未來修課規劃／研讀計畫：部分學系（如生醫系、政治系、會資系）會要求檢附未來的研讀與修課規劃書。",
+      "其他有利審查資料：部分學系鼓勵或視實際需要要求繳交其他有利審查的資料，例如自我介紹、相關專業科目成績表現等。外文系另有規定須符合相當等級的英文能力檢定成績（如多益800分或全民英檢中高級複試等）。",
+      "特殊身分證明文件：若申請特定學系（如運技系），需額外檢附校隊證明資料或運動績優獨招入學證明。"
+    ],
+    "required_documents_en": [
+      "Official academic transcript: Most departments require this, and many specify that class ranking must be included.",
+      "Statement of purpose / transfer motivation letter: Many departments require applicants to explain their reasons for transferring. Some impose word limits or language requirements (e.g., the Department of Chinese Literature and the Department of History require 300–500 words in Chinese; the Department of Foreign Languages requires an essay in English, limited to 250 words).",
+      "Study plan / future course plan: Some departments (such as Biomedical Sciences, Political Science, and Accounting & Information Systems) require a proposed study plan.",
+      "Supporting materials: Some departments encourage or require additional materials, such as a self-introduction or evidence of academic performance in relevant subjects. The Department of Foreign Languages also requires proof of English proficiency, such as a TOEIC score of 800 or passing the High-Intermediate GEPT speaking and writing test.",
+      "Special status documentation: Applicants to certain departments (e.g., Athletic Performance) must submit additional documentation, such as proof of university team membership or admission through athletic excellence."
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "書面審查（初審）：由各學系所的招生委員會或系所事務委員會，針對申請者繳交的成績單、轉系理由書及有利資料進行初步資格審查與評分。",
+        "en": "Document review (initial review): The department's admissions or academic affairs committee reviews transcripts, the transfer statement, and supporting materials."
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "面談／口試（複審）：許多學系（涵蓋文、理、社科、工、管、法、教育等學院）規定申請者必須與系主任或轉系審查委員進行面談或口試，以此表現來決定錄取順序或名額。",
+        "en": "Interview / oral examination (secondary review): Many departments require applicants to attend an interview or oral examination with the department chair or review committee."
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "轉系考試：部分特定學系會舉辦專業科目考試。",
+        "en": "Departmental examination: Some departments may administer subject-specific examinations."
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "結果決議：最後將綜合書面審查成績、面談（或考試）表現以及原學系成績，由各學系的招生委員會或系務會議進行複審，決定最終錄取與備取名單。",
+        "en": "Final decision: Admission decisions are made based on document review, interview or examination performance, and academic records from the original department."
       }
     ]
   },
@@ -3643,24 +3801,50 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oaa",
     "category_id": "course_issues",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "線上一般查詢：無須準備任何實體文件",
+      "申請紙本核章認證（如適用）：自行於系統列印下來的課程大綱紙本",
+      "歷年成績單（用以證明確實曾修習並通過該門課程）",
+      "身分證明文件（如學生證）"
+    ],
+    "required_documents_en": [
+      "For online inquiry:No physical documents are required.",
+      "For official hard-copy certification (if applicable): Printed course syllabus from the system.",
+      "Official transcript showing successful completion of the course.",
+      "Identification (e.g., student ID)."
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "線上查詢流程：登入或前往中正大學教務系統 (https://kiki.ccu.edu.tw/)。",
+        "en": "Online inquiry: Log in to the CCU academic system: [https://kiki.ccu.edu.tw/](https://kiki.ccu.edu.tw/)"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "於網頁選單中找到「資料查詢」區塊，點選「開課資料查詢」。",
+        "en": "Select \"Course Information Search\" under the \"Information Search\" menu."
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "依照您的需求，點選對應的學期與系統。",
+        "en": "Choose the relevant semester."
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "進入查詢介面後，輸入系所、課程名稱或教師姓名進行條件檢索。",
+        "en": "Enter the department, course title, or instructor's name."
+      },
+      {
+        "zh": "點擊搜尋結果中的課程連結，即可檢視詳細的課程大綱與每週進度。",
+        "en": "Click the course link to view the full syllabus and weekly schedule."
+      },
+      {
+        "zh": "紙本核章流程（若需正式證明）：依上述流程查到課程大綱後，將網頁內容完整列印。",
+        "en": "Official certification: Print the complete syllabus."
+      },
+      {
+        "zh": "攜帶列印出的課程大綱與歷年成績單，前往「該課程的開課系所辦公室」請系所助理初步確認並核章。",
+        "en": "Bring the printed syllabus and transcript to the offering department office for initial verification and endorsement."
+      },
+      {
+        "zh": "若需求單位（如國外學校）要求需有學校教務處戳章，再送至教務處教學組加蓋認證章即可完成辦理。",
+        "en": "If an official university stamp is required, submit the endorsed documents to the Curriculum Division of the Office of Academic Affairs for certification."
       }
     ]
   },
@@ -3673,24 +3857,28 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oaa",
     "category_id": "course_issues",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "科目加簽單：需透過選課系統線上操作產生並列印，並於表單上填寫具體的「加簽理由」。"
+    ],
+    "required_documents_en": [
+      "Course override request form generated through the registration system."
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "線上申請與列印：於第二階段選課期間登入選課系統。在加選功能中，部分科目會出現「加簽」選項。點選該選項並確認後，系統會產生該科目的加簽單，請自行列印。",
+        "en": "Log in during the second-stage registration period."
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "填寫理由與核章：於紙本加簽單上填寫完整的加簽理由，並親自拿給「授課教師」與「開課系所主管」簽名同意。",
+        "en": "Select the \"Override\" option if available and print the form.\nComplete the reason section and obtain signatures from the instructor and department chair."
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "實體送件：將完成核章的加簽單，親自送至「教務處教學組」辦理審核。",
+        "en": "Submit the signed form to the Curriculum Division."
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "自行上網選課：教學組核可後，務必於選課截止前自行上網點選該課程，才算真正完成加選。\n\n例外情況（特例辦理）：由於加簽選項是由系統自行判斷產生，如果系統上沒有顯示某科目的加簽選項，但同學確實有強烈的加簽需求（例如為畢業必修等），請直接洽詢「教務處教學組」，以特例方式協助辦理。",
+        "en": "After approval, complete the course add process online before the registration deadline.\nSpecial Case:\nIf the override option does not appear in the system but you have a compelling need (e.g., graduation requirement), contact the Curriculum Division directly for assistance."
       }
     ]
   },
@@ -3703,24 +3891,34 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "it_center",
     "category_id": "it_support",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "交換生的專屬學號。",
+      "可連線上網的電腦或行動裝置。"
+    ],
+    "required_documents_en": [
+      "Your student ID number.",
+      "A computer or mobile device with internet access."
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "登入學籍系統修改預設密碼：請先前往中正大學的「校際生學籍系統」（https://www026168.ccu.edu.tw/）。首次登入時，系統的預設帳號與密碼皆為學生的學號。",
+        "en": "Visit the Intercollegiate Student Academic System: https://www026168.ccu.edu.tw/"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "登入後修改密碼。",
+        "en": "Log in using your student ID as both username and default password."
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "等待約 10 分鐘讓系統同步。",
+        "en": "Change your password."
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "同步完成後，前往 eCourse2，使用「Non-CCU Faculty/Student Login」登入。",
+        "en": "Wait approximately 10 minutes for synchronization."
+      },
+      {
+        "zh": "帳號格式為 ccu 加上學號，例如 ccu123456789；密碼為剛剛更新後的新密碼。",
+        "en": "Log in to eCourse2 via the \"Non-CCU Faculty/Student Login\" portal. Username: ccu + your student ID (e.g., ccu123456789). Password: your newly updated password."
       }
     ]
   },
@@ -3733,24 +3931,34 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oaa",
     "category_id": "course_issues",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "個人學籍資料與學號：用於初次建立校際選課系統帳號。",
+      "紙本加簽單／選課清單：用於開學第一週徵詢授課教師，並取得教師簽名同意使用。"
+    ],
+    "required_documents_en": [
+      "Student ID and academic information.",
+      "Printed course add form or registration list."
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "系統註冊帳號：國際交換生、國內交換生須先進入教務系統的「校際選課系統」完成帳號與密碼註冊手續。",
+        "en": "Register an account in the Intercollegiate Course Registration System."
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "登入選課系統：帳號註冊完成後，再前往教務系統中的「選課系統」，循著「校內教職員生」的登入入口登入系統。",
+        "en": "Log in to the regular course registration system."
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "開學第一週先去上課，並徵詢授課教師是否同意加選，取得教師簽名。",
+        "en": "Attend classes during the first week and obtain the instructor's approval and signature."
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "注意選課名額限制，尤其是通識課程與體育課程。",
+        "en": "Note enrollment limits, especially for General Education and Physical Education courses."
+      },
+      {
+        "zh": "送件與確認：將已獲教師簽名的單據依教務處規定流程送件辦理，核准後務必於選課系統內再次確認課程是否已成功加入個人的修課清單中。",
+        "en": "Submit signed documents and confirm successful enrollment online."
       }
     ]
   },
@@ -3763,24 +3971,34 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oaa",
     "category_id": "course_issues",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "學生本人的學號。",
+      "可正常收發信件的電子郵件信箱（務必確認是您在學籍系統中所登錄之信箱）。"
+    ],
+    "required_documents_en": [
+      "Student ID number.",
+      "Valid email address registered in the academic system."
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "確認網址與系統版本：請注意一般生選課系統網頁的網址中數字應為「06」。若網址顯示為「07」，則為專班學生使用之選課系統，一般生無法登入。",
+        "en": "Ensure you are using the correct registration system URL (regular students should use the version with \"06\")."
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "點選重設密碼功能：進入正確的選課系統首頁後，學號、密碼及驗證碼均不用鍵入，請直接點選「重設密碼」。",
+        "en": "Click \"Reset Password\" on the login page."
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "至信箱收取新密碼：依重設畫面說明操作後，系統將發送新密碼至您在學籍系統留存的電子郵件信箱。如果遲遲未收到系統發送之信件，請至垃圾郵件匣查看。",
+        "en": "Follow the instructions to receive a new password by email."
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "重新登入與後續修改：請以該新密碼再次登入選課系統，進行選課。如系統發送的新密碼過於複雜，登入後也可以進行重設密碼，但密碼強度需符合系統要求。教務處重設之新密碼僅適用於選課及成績查詢系統。",
+        "en": "Log in using the new password and change it if desired."
+      },
+      {
+        "zh": "例外情況（校際生／交換生）：若您是外校生或交換生忘記密碼，請前往「校際生學籍系統」的「遺失密碼查詢」功能，填寫學號、身分證字號與出生年月日確認身分，系統便會自動送出密碼至您登錄的信箱。",
+        "en": "Special Case for Exchange/Visiting Students: Use the \"Forgot Password\" function in the Intercollegiate Student Academic System."
       }
     ]
   },
@@ -3793,24 +4011,38 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "it_center",
     "category_id": "it_support",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "學號。",
+      "身分證字號或統一證號。",
+      "出生年月日。",
+      "可收信的電子郵件信箱。"
+    ],
+    "required_documents_en": [
+      "Student ID number.",
+      "National ID number or ARC/passport information.",
+      "Date of birth.",
+      "A valid email address."
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "取得初始密碼：請前往「校園單一入口網頁」（https://portal.ccu.edu.tw/），選擇「第一次登入->學生->請先按此註冊帳號」，並點選初始密碼功能，輸入個人資料進行身分驗證即可取得。或者，可至學籍系統的「新生初始密碼查詢」網頁，輸入學號、身分證字號與出生年月日，畫面即會顯示您的初始密碼。",
+        "en": "Visit the Campus Single Sign-On Portal: https://portal.ccu.edu.tw/"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "寄發啟用驗證信：回到單一入口的註冊帳號頁面，依序輸入您的學號、剛剛取得的新生初始密碼，以及您的電子郵件信箱。確認無誤後，按下「寄出驗證信」。",
+        "en": "Register your account and retrieve your initial password."
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "點擊驗證連結與初次登入：等待約 3 到 5 分鐘後，至您的電子信箱收取系統寄發的驗證信。點選信件內的「啟用連結」完成帳號啟用作業。接著，請使用學號與初始密碼進行第一次登入。",
+        "en": "Verify your email address."
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "重設個人專屬密碼：初次登入成功時，系統會馬上顯示「You must change password」連結。點選後將導向重設頁面，請在此輸入您的學號與身分證末四碼，並點選「寄送驗證信」。系統會寄送一封具 15 分鐘效期的重設連結信件，請於時效內點開連結，輸入符合複雜度要求的新密碼。",
+        "en": "Activate your account via the verification link."
+      },
+      {
+        "zh": "使用新密碼登入與日後忘記密碼處理：密碼修改成功後，即可回到單一入口首頁，使用學號與這組新設定的密碼登入單一入口。若日後不慎忘記密碼，可直接在單一入口登入頁面點選「忘記密碼」來重設（請注意：重設密碼後需等待 10 分鐘，伺服器同步後方可重新登入）。",
+        "en": "Use the new password for future access."
       }
     ]
   },
@@ -3823,24 +4055,34 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "it_center",
     "category_id": "it_support",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "學號：用以推算登入帳號。",
+      "身分證字號：用以推算登入密碼（僑外生需準備居留證號碼或出生年月日與護照英文姓名）。"
+    ],
+    "required_documents_en": [
+      "Student ID number.",
+      "National ID number or ARC/passport information for international students."
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "確認帳號編碼規則：學生信箱的帳號是將「學號第一碼數字」轉為特定的「英文字母」後，再加上原本學號的後 8 碼。數字轉換對應：4 轉為 u、6 轉為 g、5 轉為 s、8 轉為 d。範例：若學號為 406530001，帳號即為 u06530001；信箱地址為 u06530001@ccu.edu.tw。",
+        "en": "Determine your account username based on your student ID."
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "確認預設密碼規則：111 學年度（含）以後入學之一般生：Edu$ 加上身分證（或統一證號）後 5 碼。110 學年度（含）以前入學之一般生：edu 加上身分證（或統一證號）後 5 碼。交換生：edu 加上學號後 4 碼。僑生、外籍生：edu 加上居留證後 5 碼，或者 edu 加上出生月、日與英文姓氏前兩個字母。",
+        "en": "Use the default password format according to your student category."
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "登入 Webmail 系統：前往中正大學網路信箱（WebMail）首頁：https://webmail.ccu.edu.tw，輸入上述的帳號與密碼即可開始收發信件。",
+        "en": "Log in at: https://webmail.ccu.edu.tw"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "設定備援信箱與忘記密碼處理：為了避免日後登入問題，強烈建議首次登入後，至「設定」中綁定個人的「備援電子郵件」。若日後不慎忘記密碼，只要在密碼輸入錯誤 1 次後，系統便會出現「忘記密碼」連結，可透過備援信箱重設。若從未設定備援信箱，則必須下載紙本的「電子郵件帳號密碼申請表」，填寫並經主管簽章後送交資訊處人工辦理。",
+        "en": "Set a backup email address after your first login."
+      },
+      {
+        "zh": "補充說明（校友信箱 G Suite）：若您要申請的是可以使用 Google 相關服務（如雲端硬碟）的「校友信箱（@alum.ccu.edu.tw）」，則必須另外前往「校友信箱申請系統」（https://alum.ccu.edu.tw/）依網頁指示進行身分驗證來提出申請。",
+        "en": "If you are applying for an alumni email account, use the alumni email application system: https://alum.ccu.edu.tw/"
       }
     ]
   },
@@ -3853,24 +4095,40 @@ export const tasks: Task[] = [
     "target_unit_type": "department",
     "target_unit_id": "college_management_office",
     "category_id": "student_affairs",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "依據不同假別，需準備並上傳對應之證明文件（系統僅受理單一 PDF 格式檔案，且檔案大小需小於 3MB）：",
+      "事假：必須於系統內註明具體請假理由，理由不得空白，否則會被退單。部分情況下請假達特定日數需檢附相關佐證函件。",
+      "病假：須檢附證明（如醫療院所的就診收據即可）；若連續請假達四日（含）以上，則必須附上醫生診斷證明。",
+      "公假：須檢附代表國家、學校參賽，或經政府機關、學校選派擔任公務之相關證明文件（如開會通知單等）。",
+      "喪假：須檢附相關證明，且依規定僅限請假人之直系血親、直系姻親、配偶或兄弟姐妹之喪葬。",
+      "生理假：每月得請假一日，無需出示證明。",
+      "心理健康假：每學期以三天為限，無需檢附證明（但請注意：請假達第三次時需填寫量表，且系統將通知導師及諮商中心介入關懷，另不得據此假別申請補考）。"
+    ],
+    "required_documents_en": [
+      "All supporting documents must be uploaded as a single PDF file under 3 MB.",
+      "Personal leave: Detailed reason required.",
+      "Sick leave: Medical receipt or certificate; a doctor's note is required for four or more consecutive days.",
+      "Official leave: Proof of participation in official events or competitions.",
+      "Bereavement leave: Proof of relationship and relevant documentation.",
+      "Menstrual leave: No documentation required (one day per month).",
+      "Mental health leave: Up to three days per semester; no documentation required."
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "登入線上請假系統：請登入「國立中正大學單一入口」網站，點選「學生個人請假操作管理系統」。因手機介面可能導致部分功能無法順利運作，強烈建議使用電腦進行操作。",
+        "en": "Log in to the CCU Single Sign-On Portal.\nAccess the Student Leave Management System."
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "填寫假單與上傳附件：於系統內選定欲請假之日期與課程，填寫假別與事由。若需檢附證明（如病假證明），請將資料轉存為單一 PDF 檔後上傳。",
+        "en": "Select the dates and courses.\nEnter the leave type and reason.\nUpload supporting documents if required."
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "線上送出與系所審核：假單送出後，會先由「系所辦公室」進行線上審核。審核通過後，系統即會自動 Email 通知授課老師及助教，老師也可至系統後台查詢假單狀態",
+        "en": "Submit the application online.\nThe department will review the request.\nOnce approved, the system will notify the instructor and TA automatically."
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "突發狀況與事後補請假：請假原則上應「事前親自辦理」，若遇重大事故無法事前請假，可先以電話或書信向授課教師或系所報備。事後請假務必於「來校上課當日起算十日內（不含假日）」完成線上系統補請手續，逾期未補辦者將視同缺曠課。\n\n例外情況（考試假）：考試假不得以其他種類的假別申請。若需請考試假，仍維持紙本作業，請親自向系所辦公室索取紙本假單，送交授課老師簽章並確認補考安排後，再交由系所備查。",
+        "en": "Important Notes:\nLeave should generally be requested in advance.\nIf an emergency prevents prior application, notify the instructor or department immediately.\nRetroactive leave must be submitted within 10 class days of returning to campus.\nExam leave requires a paper form and direct instructor approval."
       }
     ]
   },
@@ -3883,54 +4141,26 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oia",
     "category_id": "dormitory",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "繳費單",
+      "現金或付款工具"
+    ],
+    "required_documents_en": [
+      "Payment sheet",
+      "cash or other payment methods"
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "國際處領取繳費單後根據金額選擇繳納方式並自行繳納",
+        "en": "Obtain the payment sheet from the Office of International Affairs (OIA)"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "根據金額選擇繳納方式。",
+        "en": "choose a payment method based on the amount."
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "dorm_parcel",
-    "task_name_zh": "宿舍包裹服務",
-    "task_name_en": "Dormitory Parcel Service",
-    "scenario_zh": "你需要收宿舍包裹或委託宿舍服務中心代收。",
-    "scenario_en": "You need to receive dormitory parcels or request proxy collection.",
-    "target_unit_type": "office",
-    "target_unit_id": "dorm_service",
-    "category_id": "dormitory",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "注意:如金額超過新台幣五萬則需前往銀行繳納",
+        "en": "complete the payment independently.\n\nNote:If the amount exceeds NTD 50,000, payment must be made at a bank."
       }
     ]
   },
@@ -4003,24 +4233,32 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "dorm_service",
     "category_id": "dormitory",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "能上網的裝置"
+    ],
+    "required_documents_en": [
+      "A device with internet access"
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "查看官方公告",
+        "en": "Check the official announcement"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "於期限內向國際處或相關宿舍服務中心申請",
+        "en": "apply to the Office of International Affairs (OIA) or the relevant dormitory service center within the deadline"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "準備所需資訊",
+        "en": "prepare the required information"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "完成線上選房",
+        "en": "complete online room selection"
+      },
+      {
+        "zh": "等待宿舍人員安排或確認寢室",
+        "en": "wait for the dormitory staff to arrange or confirm the room assignment"
       }
     ]
   },
@@ -4037,20 +4275,16 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "線上入口：前往 https://portal.ccu.edu.tw/sso_index.php",
+        "en": "Online Portal: Go to https://portal.ccu.edu.tw/sso_index.php"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "選擇圖書館相關圖示：My圖書館、圖書館資源探索、自學空間",
+        "en": "Select the relevant library icon: Library, AlmaPrimo, or Self-Study"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "臨櫃服務：直接前往圖書館詢問所需服務",
+        "en": "In Person: Visit the Library directly and ask the counter staff for the service you need"
       }
     ]
   },
@@ -4067,20 +4301,28 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "連接校內網路（若在校外可以使用VPN）參考網站：https://it.ccu.edu.tw/p/426100930.php 最下方下載Ivanti和查看使用說明：https://it.ccu.edu.tw/var/file/9/1009/img/1404/609499594.pdf",
+        "en": "Connect to the campus network (if offcampus, use VPN). Reference: https://it.ccu.edu.tw/p/426100930.php Download Ivanti and view instructions at the bottom of the page: https://it.ccu.edu.tw/var/file/9/1009/img/1404/609499594.pdf"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "前往 https://software.ccu.edu.tw/",
+        "en": "Go to https://software.ccu.edu.tw/"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "使用單一入口帳號密碼登入",
+        "en": "Log in with your Single SignOn (SSO) account"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "選擇想下載的類別：辦公室軟體區(Office)、作業系統區(OS)、統計套裝軟體區(Statistics)、MATLAB(數值運算套裝軟體)、程式設計區(Program)、熱門自由軟體區(Free)、防毒軟體區(AntiVirus)",
+        "en": "Select the category you need: Office Software, Operating System (OS), Statistics, MATLAB, Programming, Free Software, or AntiVirus"
+      },
+      {
+        "zh": "點擊軟體下載連結",
+        "en": "Click the software download link"
+      },
+      {
+        "zh": "認證軟體（可見 https://it.ccu.edu.tw/p/426100918.php 有安裝指導）",
+        "en": "Activate/authenticate the software (installation guides available at https://it.ccu.edu.tw/p/426100918.php)"
       }
     ]
   },
@@ -4093,24 +4335,30 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "property_management",
     "category_id": "student_affairs",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "收據",
+      "學生證"
+    ],
+    "required_documents_en": [
+      "receipt",
+      "student ID"
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "團體借用：向畢代登記並繳費後統一借用",
+        "en": "Group Borrowing: Register with the graduation class representative and pay the fee for a group loan"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "個人借用（參考 https://oga.ccu.edu.tw/p/404100611703.php?Lang=zhtw）：至出納組繳交洗滌費",
+        "en": "Individual Borrowing (Reference: https://oga.ccu.edu.tw/p/404100611703.php?Lang=zhtw): Pay the cleaning fee at the Cashier's Office"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "攜帶收據及學生證到保管組辦理借用手續",
+        "en": "Bring your receipt and student ID to the Storage Office to complete the borrowing process"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "保管組位置：行政大樓西側地下一樓",
+        "en": "Storage Office location: Basement level 1 (B1), west side of the Administration Building"
       }
     ]
   },
@@ -4157,20 +4405,16 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "前往共同教室大樓",
+        "en": "Go to the Common Classroom Building"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "走到 5 樓",
+        "en": "Head to the 5th floor"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "尋找 502 教室（即職涯發展中心）",
+        "en": "Find Room 502 (Career Development Center)"
       }
     ]
   },
@@ -4178,8 +4422,8 @@ export const tasks: Task[] = [
     "id": "work_in_taiwan",
     "task_name_zh": "畢業後留台工作",
     "task_name_en": "Working in Taiwan After Graduation",
-    "scenario_zh": "你畢業後想留在台灣工作。",
-    "scenario_en": "You have graduated and want to stay in Taiwan for work.",
+    "scenario_zh": "你畢業後想留在台灣工作，需要了解相關資源與管道。",
+    "scenario_en": "You have graduated and want to stay in Taiwan for work. Here are the relevant resources and channels.",
     "target_unit_type": "office",
     "target_unit_id": "career_center",
     "category_id": "career",
@@ -4187,20 +4431,16 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "勞動部－外國人在臺工作服務網 (EZ Work Taiwan)：https://ezworktaiwan.wda.gov.tw/Content_List.aspx?n=90B5EEEBE3049C9B",
+        "en": "Ministry of Labor – EZ Work Taiwan: https://ezworktaiwan.wda.gov.tw/Content_List.aspx?n=90B5EEEBE3049C9B"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "國發會－Talent Taiwan 國際人才服務及延攬中心：https://talent.nat.gov.tw/zh/employers/category/foreignstudentsstudyingintaiwan",
+        "en": "National Development Council – Talent Taiwan International Talent Services: https://talent.nat.gov.tw/zh/employers/category/foreignstudentsstudyingintaiwan"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "僑委會－僑生 i 就業 Career All Pass：https://ocac.events.104.com.tw/",
+        "en": "Overseas Community Affairs Council – Career All Pass (for overseas Chinese students): https://ocac.events.104.com.tw/"
       }
     ]
   },
@@ -4213,54 +4453,42 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "oia",
     "category_id": "career",
-    "required_documents_zh": [],
-    "required_documents_en": [],
+    "required_documents_zh": [
+      "學生證正反面",
+      "在學證明（影印學生證正反面至教務處加蓋註冊章）",
+      "居留證(ARC)正反面",
+      "護照正反面"
+    ],
+    "required_documents_en": [
+      "front and back of student ID",
+      "proof of enrollment (photocopy of student ID stamped by the Registrar's Office)",
+      "ARC (front and back)",
+      "passport (front and back)"
+    ],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "前往外國專業人員工作許可申辦網：https://ezwp.wda.gov.tw/",
+        "en": "Visit the Work Permit Application Portal for Foreign Professionals: https://ezwp.wda.gov.tw/"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "填入應填資料（請注意申請資格）",
+        "en": "Fill in the required information (please check eligibility requirements carefully)"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
+        "zh": "上傳個人資料：學生證正反面／在學證明（影印學生證正反面至教務處加蓋註冊章）／居留證(ARC)正反面／護照正反面",
+        "en": "Upload personal documents: front and back of student ID / proof of enrollment (photocopy of student ID stamped by the Registrar's Office) / ARC (front and back) / passport (front and back)"
       },
       {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "part_time_jobs",
-    "task_name_zh": "校園附近兼職資訊",
-    "task_name_en": "Part-Time Job Opportunities Near Campus",
-    "scenario_zh": "你想在校內或附近找打工或實習機會。",
-    "scenario_en": "You are looking for part-time work or internships on or near campus.",
-    "target_unit_type": "office",
-    "target_unit_id": "career_center",
-    "category_id": "career",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "申請費用：新台幣 100 元",
+        "en": "Application fee: NT$100"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "繳費方式（擇一）：ATM 繳費、台灣 Pay、郵局劃撥（戶名：勞動部勞動力發展署聘僱許可收費專戶 / 帳號：19058848）",
+        "en": "Payment options (choose one): ATM transfer, Taiwan Pay, or postal transfer (Account name: Work Permit Fee Account of the Workforce Development Agency, MOL / Account number: 19058848)"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "等待審核；查詢案件狀態：https://ezwp.wda.gov.tw/wcfonline/wSite/Control?function=RunAction&_action=pr0000/pr0000_qp.xml\n•「雇主編號」：輸入 ARC 號碼\n•「收文起迄日期」：輸入寄出申請件當日及一週後的日期",
+        "en": "Wait for review; check application status at: https://ezwp.wda.gov.tw/wcfonline/wSite/Control?function=RunAction&_action=pr0000/pr0000_qp.xml\n•\"number of employer\": Enter your ARC number\n•\"Submitting date\": Enter the date you submitted your application and the date one week later"
       }
     ]
   },
@@ -4277,20 +4505,12 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "前往 https://career.ccu.edu.tw/p/40310384787.php?Lang=zhtw 查詢實習相關資訊",
+        "en": "Visit https://career.ccu.edu.tw/p/40310384787.php?Lang=zhtw for internship information"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "依照需求投遞履歷並等待錄取結果",
+        "en": "Submit your resume according to your interests and wait for results"
       }
     ]
   },
@@ -4307,20 +4527,16 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "撥打 165 反詐騙專線",
+        "en": "Call the antifraud hotline: 165"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
+        "zh": "撥打 110 報警",
+        "en": "Call the police: 110"
       },
       {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "向 OIA（國際處）尋求協助",
+        "en": "Seek assistance from OIA (Office of International Affairs)"
       }
     ]
   },
@@ -4337,20 +4553,12 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "校安中心通報專線：052721114",
+        "en": "Campus Safety Center Hotline: 052721114"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "緊急公務手機：0910896288",
+        "en": "Emergency Mobile Phone: 0910896288"
       }
     ]
   },
@@ -4367,20 +4575,12 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
+        "zh": "校內急難救助：https://studentlife.ccu.edu.tw/p/404103420790.php?Lang=zhtw",
+        "en": "Oncampus emergency aid: https://studentlife.ccu.edu.tw/p/404103420790.php?Lang=zhtw"
       },
       {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
+        "zh": "校外急難救助：https://studentlife.ccu.edu.tw/p/404103420791.php?Lang=zhtw",
+        "en": "Offcampus emergency aid: https://studentlife.ccu.edu.tw/p/404103420791.php?Lang=zhtw"
       }
     ]
   },
@@ -4393,62 +4593,44 @@ export const tasks: Task[] = [
     "target_unit_type": "office",
     "target_unit_id": "health_center",
     "category_id": "health",
-    "required_documents_zh": [],
-    "required_documents_en": [],
-    "steps": [
-      {
-        "zh": "確認需求與適用條件。",
-        "en": "Confirm your need and eligibility."
-      },
-      {
-        "zh": "準備所需文件或資訊。",
-        "en": "Prepare the required documents or information."
-      },
-      {
-        "zh": "依指引至負責單位或線上系統辦理。",
-        "en": "Follow the guide to complete the process online or at the responsible unit."
-      },
-      {
-        "zh": "完成後再次確認結果。",
-        "en": "Check the result after completion."
-      }
-    ]
-  },
-  {
-    "id": "apply_work_permit",
-    "task_name_zh": "申請外籍學生工作許可證",
-    "task_name_en": "Apply for a Work Permit",
-    "scenario_zh": "國際學生想在臺灣合法打工、校內兼職或進行實習前，需要確認是否須申請工作許可證。",
-    "scenario_en": "For international students who plan to work part-time, work on campus, or take an internship in Taiwan and need to confirm work permit requirements.",
-    "target_unit_type": "office",
-    "target_unit_id": "oia",
-    "category_id": "international_support",
     "required_documents_zh": [
-      "護照或 ARC 相關資料",
-      "學生身分或在學相關證明",
-      "工作許可申請系統或國際事務處要求之文件"
+      "理賠資格：已繳納學保費之在學學生；涵蓋意外傷害及疾病住院，不含門診疾病、掛號費、診斷書費、救護車費等。門診費用累積超過 500 元可申請，上限為 5,000 元。",
+      "備妥文件",
+      "保險金申請表（未滿18歲需法定代理人簽章）",
+      "診斷證明書（正本）",
+      "醫療費用收據（正本或副本，副本須由醫療院所蓋「與正本相符」及醫院專用章）",
+      "事故學期之學保費繳費證明",
+      "X光片光碟（骨折、不完全骨折或骨骼龜裂者）",
+      "意外事故證明文件（如報案三聯單，無則免附）",
+      "居留證影本（外籍生）"
     ],
     "required_documents_en": [
-      "Passport or ARC-related information",
-      "Student status or enrollment-related proof",
-      "Documents required by the work permit application system or OIA"
+      "Eligibility: Currently enrolled students who have paid the student insurance fee. Coverage includes accidental injuries and hospitalization due to illness. Outpatient visits, registration fees, medical certificate fees, and ambulance fees are not covered. Outpatient expenses exceeding NT$500 in total may be claimed, up to a maximum of NT$5,000.",
+      "Required Documents",
+      "Insurance claim form (legal guardian signature required for those under 18)",
+      "Original medical diagnosis certificate",
+      "Medical expense receipt (original or certified copy stamped by the hospital as \"true copy\")",
+      "Proof of student insurance payment for the semester of the incident",
+      "Xray disc (for fractures, incomplete fractures, or hairline fractures)",
+      "Accident documentation (e.g., police report; not required if unavailable)",
+      "Copy of ARC (for international students)"
     ],
     "steps": [
       {
-        "zh": "先閱讀國際事務處 Work Permit 頁面與工作證申請流程。",
-        "en": "Read the OIA Work Permit page and work permit application procedure first."
+        "zh": "備齊上述文件",
+        "en": "Prepare all required documents"
       },
       {
-        "zh": "確認自己是否符合申請資格與工作時數規定。",
-        "en": "Confirm whether you meet the eligibility and working-hour requirements."
+        "zh": "每週一 12:30–14:00 由保險專員到校收件（寒暑假期間由衛保組代收）",
+        "en": "An insurance representative visits campus every Monday from 12:30–14:00 to collect submissions (during winter/summer break, documents are received by the Health Center)"
       },
       {
-        "zh": "依申請流程準備所需資料，並依系統或國際事務處指示送出申請。",
-        "en": "Prepare the required information and submit the application according to the system or OIA instructions."
+        "zh": "保險公司進行理賠審核（約 2–4 週後以簡訊通知結果）",
+        "en": "The insurance company reviews the claim (results notified by SMS within approximately 2–4 weeks)"
       },
       {
-        "zh": "取得工作許可後，再開始進行校內外工作或實習。",
-        "en": "Start working or interning only after receiving the work permit."
+        "zh": "保險金將匯入您的帳戶",
+        "en": "The claim amount will be transferred to your bank account"
       }
     ]
   },
@@ -4837,44 +5019,6 @@ export const tasks: Task[] = [
       {
         "zh": "由衛生保健組協助送交保險公司審核。",
         "en": "The Health Center will forward the application to the insurance company for review."
-      }
-    ]
-  },
-  {
-    "id": "borrow_graduation_gown",
-    "task_name_zh": "借用或歸還畢業學位服",
-    "task_name_en": "Borrow or Return Graduation Gown",
-    "scenario_zh": "畢業生需要借用、歸還學位服，或辦理離校前確認學位服是否已歸還。",
-    "scenario_en": "For graduating students who need to borrow or return a graduation gown, or confirm gown return before completing school-leaving procedures.",
-    "target_unit_type": "office",
-    "target_unit_id": "property_management",
-    "category_id": "student_affairs",
-    "required_documents_zh": [
-      "學生證或身分證明",
-      "學位服借用相關資料",
-      "保管組公告要求之文件或費用"
-    ],
-    "required_documents_en": [
-      "Student ID or identity document",
-      "Graduation gown borrowing information",
-      "Documents or fees required by the Property Management Division announcement"
-    ],
-    "steps": [
-      {
-        "zh": "確認保管組公告的學位服借用與歸還時間。",
-        "en": "Check the Property Management Division announcement for the gown borrowing and return schedule."
-      },
-      {
-        "zh": "依公告準備學生證、借用資料與可能需要的費用。",
-        "en": "Prepare your student ID, borrowing information, and any required fees according to the announcement."
-      },
-      {
-        "zh": "至總務處保管組辦理借用。",
-        "en": "Go to the Property Management Division to borrow the gown."
-      },
-      {
-        "zh": "使用完畢後依期限歸還，以免影響離校程序。",
-        "en": "Return the gown by the deadline to avoid delays in school-leaving procedures."
       }
     ]
   },
