@@ -32,7 +32,7 @@ function PhotoCard({ src, label, alt, fit = "cover" }: PhotoCardProps) {
           loading="lazy"
           decoding="async"
           onError={() => setFailed(true)}
-          className={`h-full w-full ${fit === "contain" ? "object-contain p-2" : "object-cover"}`}
+          className={`h-full w-full ${fit === "contain" ? "object-cover" : "object-cover"}`}
         />
       </div>
     </figure>
