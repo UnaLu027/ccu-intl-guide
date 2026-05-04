@@ -2408,7 +2408,9 @@ export const departments: Department[] = [
     "source_url": "",
     "needs_manual_review": false,
     "is_college_office": false,
-    "use_manual_coordinates": true
+    "use_manual_coordinates": true,
+    "entrance_image": "/images/departments/college_management/fintech_master/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/fintech_master/floor_plan.jpg"
   },
   {
     "id": "imf",
@@ -2440,7 +2442,9 @@ export const departments: Department[] = [
     "source_url": "",
     "needs_manual_review": false,
     "is_college_office": false,
-    "use_manual_coordinates": true
+    "use_manual_coordinates": true,
+    "entrance_image": "/images/departments/college_management/imf/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_management/imf/floor_plan.jpg"
   },
   {
     "id": "manufacturing_integration",
@@ -2571,7 +2575,8 @@ export const departments: Department[] = [
     "source_url": "",
     "needs_manual_review": true,
     "is_college_office": false,
-    "entrance_image": "/images/departments/college_science/college_science_office/entrance.jpg"
+    "entrance_image": "/images/departments/college_science/chem_biochem/entrance.jpg",
+    "floor_plan_image": "/images/departments/college_science/chem_biochem/floor_plan.jpg"
   },
   {
     "id": "earth_environment",
