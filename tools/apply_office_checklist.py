@@ -120,7 +120,11 @@ def extract_array_region(source: str, export_name: str) -> Tuple[int, int, str]:
     if start == -1:
         raise ValueError(f"Cannot find {marker}")
 
-    bracket_start = source.find("[", start)
+    equals_pos = source.find("=", start)
+    if equals_pos == -1:
+        raise ValueError(f"Cannot find assignment for {export_name}")
+
+    bracket_start = source.find("[", equals_pos)
     if bracket_start == -1:
         raise ValueError(f"Cannot find array start for {export_name}")
 
@@ -193,7 +197,7 @@ def get_string_value(block: str, key: str) -> str:
     m = re.search(rf'"{re.escape(key)}"\s*:\s*"((?:\\.|[^"\\])*)"', block, re.S)
     if not m:
         return ""
-    return bytes(m.group(1), "utf-8").decode("unicode_escape")
+    return m.group(1)
 
 
 def get_bool_value(block: str, key: str) -> bool | None:

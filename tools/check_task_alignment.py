@@ -146,7 +146,11 @@ def extract_array_region(source: str, export_name: str) -> Tuple[int, int, str]:
     if start == -1:
         raise ValueError(f"Cannot find {marker}")
 
-    bracket_start = source.find("[", start)
+    equals_pos = source.find("=", start)
+    if equals_pos == -1:
+        raise ValueError(f"Cannot find assignment for {export_name}")
+
+    bracket_start = source.find("[", equals_pos)
     if bracket_start == -1:
         raise ValueError(f"Cannot find array start for {export_name}")
 
@@ -218,7 +222,7 @@ def get_string_value(block: str, key: str) -> str:
     m = re.search(rf'"{re.escape(key)}"\s*:\s*"((?:\\.|[^"\\])*)"', block, re.S)
     if not m:
         return ""
-    return bytes(m.group(1), "utf-8").decode("unicode_escape")
+    return m.group(1)
 
 
 def get_string_array(block: str, key: str) -> List[str]:
@@ -227,7 +231,7 @@ def get_string_array(block: str, key: str) -> List[str]:
         return []
     inside = m.group(1)
     values = re.findall(r'"((?:\\.|[^"\\])*)"', inside)
-    return [bytes(v, "utf-8").decode("unicode_escape") for v in values]
+    return [v for v in values]
 
 
 def get_steps(block: str) -> Tuple[List[str], List[str]]:
@@ -240,8 +244,8 @@ def get_steps(block: str) -> Tuple[List[str], List[str]]:
     for obj in objs:
         zh_m = re.search(r'zh\s*:\s*"((?:\\.|[^"\\])*)"', obj)
         en_m = re.search(r'en\s*:\s*"((?:\\.|[^"\\])*)"', obj)
-        zh.append(bytes(zh_m.group(1), "utf-8").decode("unicode_escape") if zh_m else "")
-        en.append(bytes(en_m.group(1), "utf-8").decode("unicode_escape") if en_m else "")
+        zh.append(zh_m.group(1) if zh_m else "")
+        en.append(en_m.group(1) if en_m else "")
     return zh, en
 
 
