@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://ccu-intl-guide.onrender.com/</loc>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://ccu-intl-guide.onrender.com/tasks</loc>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://ccu-intl-guide.onrender.com/map</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ccu-intl-guide.onrender.com/offices</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ccu-intl-guide.onrender.com/departments</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ccu-intl-guide.onrender.com/category/registration</loc>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://ccu-intl-guide.onrender.com/category/student_id</loc>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://ccu-intl-guide.onrender.com/category/international_support</loc>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://ccu-intl-guide.onrender.com/category/department_offices</loc>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://ccu-intl-guide.onrender.com/category/academic_affairs</loc>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://ccu-intl-guide.onrender.com/category/course_issues</loc>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://ccu-intl-guide.onrender.com/category/tuition</loc>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://ccu-intl-guide.onrender.com/category/it_support</loc>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://ccu-intl-guide.onrender.com/category/health</loc>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://ccu-intl-guide.onrender.com/category/student_affairs</loc>
+    <priority>0.7</priority>
+  </url>
+
+</urlset>

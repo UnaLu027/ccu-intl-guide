@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ccu-intl-guide.onrender.com/sitemap.xml

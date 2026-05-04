@@ -9,10 +9,11 @@ import { useState } from "react";
 
 const navItems = [
   { href: "/", labelEn: "Home", labelZh: "首頁", icon: Search },
-  { href: "/map", labelEn: "Map", labelZh: "地圖", icon: Map },
-  { href: "/departments", labelEn: "Departments", labelZh: "系所", icon: Building2 },
-  { href: "/offices", labelEn: "Offices", labelZh: "行政單位", icon: Briefcase },
   { href: "/tasks", labelEn: "Tasks", labelZh: "常見任務", icon: ClipboardList },
+  { href: "/map", labelEn: "Map", labelZh: "地圖", icon: Map },
+  { href: "/offices", labelEn: "Offices", labelZh: "行政單位", icon: Briefcase },
+  { href: "/departments", labelEn: "Departments", labelZh: "系所", icon: Building2 },
+
 ];
 
 export default function Header() {
