@@ -14,7 +14,7 @@ function TaskMiniCard({ task }: { task: Task }) {
   const { t } = useLanguage();
   return (
     <Link
-      href={task.target_unit_id ? `/navigate/${task.target_unit_type === "office" ? "office" : "dept"}/${task.target_unit_id}` : "/tasks"}
+      href={`/task/${task.id}`}
       className="group flex items-center gap-3 p-3 bg-card rounded-lg border border-border hover:border-amber hover:shadow-md transition-all"
     >
       <div className="w-9 h-9 rounded-lg bg-amber/10 flex items-center justify-center shrink-0">
