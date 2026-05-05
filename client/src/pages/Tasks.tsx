@@ -19,12 +19,40 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
+declare global {
+  interface Window {
+    dataLayer?: Record<string, unknown>[];
+  }
+}
+
+function pushGtmEvent(eventName: string, params: Record<string, unknown> = {}) {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: eventName,
+    ...params,
+  });
+}
+
 export default function Tasks() {
   const { t, lang } = useLanguage();
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const toggle = (id: string) => {
-    setExpandedId((prev) => (prev === id ? null : id));
+    const task = tasks.find(t => t.id === id);
+    const isOpening = expandedId !== id;
+
+    if (task && isOpening) {
+      pushGtmEvent("select_task", {
+        task_id: task.id,
+        task_name_zh: task.task_name_zh,
+        task_name_en: task.task_name_en,
+        category_id: task.category_id,
+        target_unit_id: task.target_unit_id,
+        page_path: window.location.pathname,
+      });
+    }
+
+    setExpandedId(prev => (prev === id ? null : id));
   };
 
   return (
