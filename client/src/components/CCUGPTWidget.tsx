@@ -18,6 +18,20 @@
 import { useState, useEffect } from "react";
 import { MessageCircle, X } from "lucide-react";
 
+declare global {
+  interface Window {
+    dataLayer?: Record<string, unknown>[];
+  }
+}
+
+function pushGtmEvent(eventName: string, params: Record<string, unknown> = {}) {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: eventName,
+    ...params,
+  });
+}
+
 // ─── 設定區（串接時只需修改這裡）────────────────────────────────
 const EMBED_READY = false; // 改為 true 即啟用真實 widget
 const CCUGPT_ENDPOINT = "https://ccu-intl-guide.onrender.com/mcp"; // MCP endpoint（備查）
@@ -43,7 +57,17 @@ export default function CCUGPTWidget() {
     <>
       {/* 懸浮按鈕 */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          const nextOpen = !isOpen;
+
+          if (nextOpen) {
+            pushGtmEvent("open_ccugpt_widget", {
+              page_path: window.location.pathname,
+            });
+          }
+
+          setIsOpen(nextOpen);
+        }}
         className={`
           fixed bottom-6 right-6 z-50
           flex items-center gap-2 px-4 py-3
