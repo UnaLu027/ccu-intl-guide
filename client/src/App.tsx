@@ -13,6 +13,7 @@ import Departments from "./pages/Departments";
 import Offices from "./pages/Offices";
 import Tasks from "./pages/Tasks";
 import TaskDetail from "./pages/TaskDetail";
+import RelatedSites from "./pages/RelatedSites";
 import Navigation from "./pages/Navigation";
 import CCUGPTWidget from "@/components/CCUGPTWidget";
 
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/offices" component={Offices} />
       <Route path="/tasks" component={Tasks} />
       <Route path="/task/:id" component={TaskDetail} />
+      <Route path="/related-sites" component={RelatedSites} />
       <Route path="/navigate/:type/:id" component={Navigation} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />

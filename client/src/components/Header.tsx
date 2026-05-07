@@ -4,7 +4,17 @@
  */
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link, useLocation } from "wouter";
-import { Search, Map, Building2, Briefcase, ClipboardList, Menu, X, Globe } from "lucide-react";
+import {
+  Search,
+  Map,
+  Building2,
+  Briefcase,
+  ClipboardList,
+  Menu,
+  X,
+  Globe,
+  ExternalLink,
+} from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
@@ -13,7 +23,7 @@ const navItems = [
   { href: "/map", labelEn: "Map", labelZh: "地圖", icon: Map },
   { href: "/offices", labelEn: "Offices", labelZh: "行政單位", icon: Briefcase },
   { href: "/departments", labelEn: "Departments", labelZh: "系所", icon: Building2 },
-
+  { href: "/related-sites", labelEn: "Related Sites", labelZh: "相關網站", icon: ExternalLink },
 ];
 
 export default function Header() {
