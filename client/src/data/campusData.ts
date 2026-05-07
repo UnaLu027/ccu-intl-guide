@@ -3843,7 +3843,7 @@ export const tasks: Task[] = [
     "category_id": "course_issues",
     "required_documents_zh": [
       "個人學籍資料與學號：用於初次建立校際選課系統帳號。",
-      "紙本加簽單／選課清單：用於開學第一週徵詢授課教師，並取得教師簽名同意使用。"
+      "紙本加簽單：用於開學第一週徵詢授課教師，並取得教師簽名同意使用。"
     ],
     "required_documents_en": [
       "Student ID and academic information.",
@@ -3873,42 +3873,52 @@ export const tasks: Task[] = [
     ]
   },
   {
-    "id": "course_password_error",
-    "task_name_zh": "選課密碼輸入持續顯示錯誤",
-    "task_name_en": "Course Registration Password Keeps Showing as Incorrect",
-    "scenario_zh": "你輸入選課密碼一直顯示錯誤。",
-    "scenario_en": "Your course registration password keeps showing as incorrect.",
-    "target_unit_type": "office",
-    "target_unit_id": "oaa",
-    "category_id": "course_issues",
-    "required_documents_zh": [
-      "學生本人的學號。",
-      "可正常收發信件的電子郵件信箱（務必確認是您在學籍系統中所登錄之信箱）。"
+    id: "course_password_error",
+    task_name_zh: "單一入口或選課系統密碼錯誤",
+    task_name_en: "SSO or Course System Password Issue",
+    scenario_zh:
+      "國際學生若遇到單一入口、選課系統或校務系統密碼錯誤、忘記密碼、帳號被鎖定等問題，通常需要先確認系統綁定的身分證件號碼，再使用忘記密碼功能或尋求行政單位協助。",
+    scenario_en:
+      "International students who encounter password errors, forgotten passwords, or account lock issues with the CCU Single Sign-On Portal, course selection system, or other campus systems should first confirm the ID number linked to their account, then use the Forgot Password function or seek administrative assistance.",
+    target_unit_type: "office",
+    target_unit_id: "oia",
+    category_id: "it_support",
+    required_documents_zh: [
+      "學生證。",
+      "護照或居留證。",
+      "若尚未取得居留證，請準備護照號碼、臨時統一證號、錄取通知書或報到資料，以便確認系統綁定之身分證件號碼。",
+      "申請入學時填寫的私人 Email 信箱，因密碼重設連結通常會寄到該信箱。"
     ],
-    "required_documents_en": [
-      "Student ID number.",
-      "Valid email address registered in the academic system."
+    required_documents_en: [
+      "Student ID card.",
+      "Passport or ARC.",
+      "If you have not received your ARC yet, prepare your passport number, temporary ID number, admission letter, or registration documents to verify which ID number is linked to the school system.",
+      "The personal email address used during admission, because the password reset link is usually sent to that email address."
     ],
-    "steps": [
+    steps: [
       {
-        "zh": "確認網址與系統版本：請注意一般生選課系統網頁的網址中數字應為「06」。若網址顯示為「07」，則為專班學生使用之選課系統，一般生無法登入。",
-        "en": "Ensure you are using the correct registration system URL (regular students should use the version with \"06\")."
+        zh: "先確認系統要求輸入的身分證字號可能對應哪一組資料。國際學生最常見的是居留證號碼，請確認第一個英文字母為大寫，例如 A123456789。",
+        en: "First confirm which ID number the system may be using for verification. For international students, the most common option is the ARC number. Make sure the first letter is capitalized, such as A123456789."
       },
       {
-        "zh": "點選重設密碼功能：進入正確的選課系統首頁後，學號、密碼及驗證碼均不用鍵入，請直接點選「重設密碼」。",
-        "en": "Click \"Reset Password\" on the login page."
+        zh: "若你是新生或尚未取得居留證，請嘗試護照號碼或學校入學時配發的臨時統一證號。這些資料通常可以在錄取通知書或報到資料中找到。",
+        en: "If you are a new student or have not received your ARC yet, try your passport number or the temporary ID number assigned during admission. This information can usually be found in your admission letter or registration documents."
       },
       {
-        "zh": "至信箱收取新密碼：依重設畫面說明操作後，系統將發送新密碼至您在學籍系統留存的電子郵件信箱。如果遲遲未收到系統發送之信件，請至垃圾郵件匣查看。",
-        "en": "Follow the instructions to receive a new password by email."
+        zh: "進入國立中正大學單一入口網站，點選「忘記密碼」。在身分證字號欄位輸入居留證號碼、臨時證號或護照號碼。",
+        en: "Go to the National Chung Cheng University Single Sign-On Portal and click Forgot Password. In the ID Number field, enter your ARC number, temporary ID number, or passport number."
       },
       {
-        "zh": "重新登入與後續修改：請以該新密碼再次登入選課系統，進行選課。如系統發送的新密碼過於複雜，登入後也可以進行重設密碼，但密碼強度需符合系統要求。教務處重設之新密碼僅適用於選課及成績查詢系統。",
-        "en": "Log in using the new password and change it if desired."
+        zh: "系統會將密碼重設連結寄到你申請入學時留下的私人 Email 信箱。請確認該信箱是否能正常收信，也記得檢查垃圾郵件匣。",
+        en: "The system will send a password reset link to the personal email address you provided during admission. Make sure you can access that email account and check the spam folder if needed."
       },
       {
-        "zh": "例外情況（校際生／交換生）：若您是外校生或交換生忘記密碼，請前往「校際生學籍系統」的「遺失密碼查詢」功能，填寫學號、身分證字號與出生年月日確認身分，系統便會自動送出密碼至您登錄的信箱。",
-        "en": "Special Case for Exchange/Visiting Students: Use the \"Forgot Password\" function in the Intercollegiate Student Academic System."
+        zh: "如果嘗試上述號碼後仍顯示錯誤，或帳號因輸入太多次被鎖定，建議國際學生先帶學生證與護照或居留證前往國際事務處。國際處可協助確認系統綁定的證件號碼，或協助聯繫資訊處。",
+        en: "If the system still shows an error after trying the numbers above, or if your account is locked after too many failed attempts, international students are advised to bring their student ID card and passport or ARC to the Office of International Affairs first. OIA can help confirm the ID number linked to your account or contact the IT Center for assistance."
+      },
+      {
+        zh: "若你可以直接說明需求，也可以帶學生證前往圖書館大樓內的資訊處服務櫃檯，說明「忘記密碼」或「帳號被鎖定」，由承辦人員核對身分後協助重設密碼。",
+        en: "If you can explain the issue directly, you may also bring your student ID card to the IT Center service desk in the Library Building and explain that you forgot your password or that your account is locked. Staff can reset the password after verifying your identity."
       }
     ]
   },
@@ -4003,7 +4013,7 @@ export const tasks: Task[] = [
     "scenario_zh": "你因故無法出席課程，需要辦理請假。",
     "scenario_en": "You cannot attend class and need to apply for leave.",
     "target_unit_type": "department",
-    "target_unit_id": "college_management_office",
+    "target_unit_id": "",
     "category_id": "student_affairs",
     "required_documents_zh": [
       "依據不同假別，需準備並上傳對應之證明文件（系統僅受理單一 PDF 格式檔案，且檔案大小需小於 3MB）：",

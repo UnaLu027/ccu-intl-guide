@@ -3843,7 +3843,7 @@ export const tasks: Task[] = [
     "category_id": "course_issues",
     "required_documents_zh": [
       "個人學籍資料與學號：用於初次建立校際選課系統帳號。",
-      "紙本加簽單／選課清單：用於開學第一週徵詢授課教師，並取得教師簽名同意使用。"
+      "紙本加簽單：用於開學第一週徵詢授課教師，並取得教師簽名同意使用。"
     ],
     "required_documents_en": [
       "Student ID and academic information.",
@@ -3872,43 +3872,53 @@ export const tasks: Task[] = [
       }
     ]
   },
-  {
-    "id": "course_password_error",
-    "task_name_zh": "選課密碼輸入持續顯示錯誤",
-    "task_name_en": "Course Registration Password Keeps Showing as Incorrect",
-    "scenario_zh": "你輸入選課密碼一直顯示錯誤。",
-    "scenario_en": "Your course registration password keeps showing as incorrect.",
-    "target_unit_type": "office",
-    "target_unit_id": "oaa",
-    "category_id": "course_issues",
-    "required_documents_zh": [
-      "學生本人的學號。",
-      "可正常收發信件的電子郵件信箱（務必確認是您在學籍系統中所登錄之信箱）。"
+{
+    id: "course_password_error",
+    task_name_zh: "單一入口或選課系統密碼錯誤",
+    task_name_en: "SSO or Course System Password Issue",
+    scenario_zh:
+      "國際學生若遇到單一入口、選課系統或校務系統密碼錯誤、忘記密碼、帳號被鎖定等問題，通常需要先確認系統綁定的身分證件號碼，再使用忘記密碼功能或尋求行政單位協助。",
+    scenario_en:
+      "International students who encounter password errors, forgotten passwords, or account lock issues with the CCU Single Sign-On Portal, course selection system, or other campus systems should first confirm the ID number linked to their account, then use the Forgot Password function or seek administrative assistance.",
+    target_unit_type: "office",
+    target_unit_id: "oia",
+    category_id: "it_support",
+    required_documents_zh: [
+      "學生證。",
+      "護照或居留證。",
+      "若尚未取得居留證，請準備護照號碼、臨時統一證號、錄取通知書或報到資料，以便確認系統綁定之身分證件號碼。",
+      "申請入學時填寫的私人 Email 信箱，因密碼重設連結通常會寄到該信箱。"
     ],
-    "required_documents_en": [
-      "Student ID number.",
-      "Valid email address registered in the academic system."
+    required_documents_en: [
+      "Student ID card.",
+      "Passport or ARC.",
+      "If you have not received your ARC yet, prepare your passport number, temporary ID number, admission letter, or registration documents to verify which ID number is linked to the school system.",
+      "The personal email address used during admission, because the password reset link is usually sent to that email address."
     ],
-    "steps": [
+    steps: [
       {
-        "zh": "確認網址與系統版本：請注意一般生選課系統網頁的網址中數字應為「06」。若網址顯示為「07」，則為專班學生使用之選課系統，一般生無法登入。",
-        "en": "Ensure you are using the correct registration system URL (regular students should use the version with \"06\")."
+        zh: "先確認系統要求輸入的身分證字號可能對應哪一組資料。國際學生最常見的是居留證號碼，請確認第一個英文字母為大寫，例如 A123456789。",
+        en: "First confirm which ID number the system may be using for verification. For international students, the most common option is the ARC number. Make sure the first letter is capitalized, such as A123456789."
       },
       {
-        "zh": "點選重設密碼功能：進入正確的選課系統首頁後，學號、密碼及驗證碼均不用鍵入，請直接點選「重設密碼」。",
-        "en": "Click \"Reset Password\" on the login page."
+        zh: "若你是新生或尚未取得居留證，請嘗試護照號碼或學校入學時配發的臨時統一證號。這些資料通常可以在錄取通知書或報到資料中找到。",
+        en: "If you are a new student or have not received your ARC yet, try your passport number or the temporary ID number assigned during admission. This information can usually be found in your admission letter or registration documents."
       },
       {
-        "zh": "至信箱收取新密碼：依重設畫面說明操作後，系統將發送新密碼至您在學籍系統留存的電子郵件信箱。如果遲遲未收到系統發送之信件，請至垃圾郵件匣查看。",
-        "en": "Follow the instructions to receive a new password by email."
+        zh: "進入國立中正大學單一入口網站，點選「忘記密碼」。在身分證字號欄位輸入居留證號碼、臨時證號或護照號碼。",
+        en: "Go to the National Chung Cheng University Single Sign-On Portal and click Forgot Password. In the ID Number field, enter your ARC number, temporary ID number, or passport number."
       },
       {
-        "zh": "重新登入與後續修改：請以該新密碼再次登入選課系統，進行選課。如系統發送的新密碼過於複雜，登入後也可以進行重設密碼，但密碼強度需符合系統要求。教務處重設之新密碼僅適用於選課及成績查詢系統。",
-        "en": "Log in using the new password and change it if desired."
+        zh: "系統會將密碼重設連結寄到你申請入學時留下的私人 Email 信箱。請確認該信箱是否能正常收信，也記得檢查垃圾郵件匣。",
+        en: "The system will send a password reset link to the personal email address you provided during admission. Make sure you can access that email account and check the spam folder if needed."
       },
       {
-        "zh": "例外情況（校際生／交換生）：若您是外校生或交換生忘記密碼，請前往「校際生學籍系統」的「遺失密碼查詢」功能，填寫學號、身分證字號與出生年月日確認身分，系統便會自動送出密碼至您登錄的信箱。",
-        "en": "Special Case for Exchange/Visiting Students: Use the \"Forgot Password\" function in the Intercollegiate Student Academic System."
+        zh: "如果嘗試上述號碼後仍顯示錯誤，或帳號因輸入太多次被鎖定，建議國際學生先帶學生證與護照或居留證前往國際事務處。國際處可協助確認系統綁定的證件號碼，或協助聯繫資訊處。",
+        en: "If the system still shows an error after trying the numbers above, or if your account is locked after too many failed attempts, international students are advised to bring their student ID card and passport or ARC to the Office of International Affairs first. OIA can help confirm the ID number linked to your account or contact the IT Center for assistance."
+      },
+      {
+        zh: "若你可以直接說明需求，也可以帶學生證前往圖書館大樓內的資訊處服務櫃檯，說明「忘記密碼」或「帳號被鎖定」，由承辦人員核對身分後協助重設密碼。",
+        en: "If you can explain the issue directly, you may also bring your student ID card to the IT Center service desk in the Library Building and explain that you forgot your password or that your account is locked. Staff can reset the password after verifying your identity."
       }
     ]
   },
@@ -3997,48 +4007,64 @@ export const tasks: Task[] = [
     ]
   },
   {
-    "id": "leave_application",
-    "task_name_zh": "請假",
-    "task_name_en": "Leave of Absence from Class",
-    "scenario_zh": "你因故無法出席課程，需要辦理請假。",
-    "scenario_en": "You cannot attend class and need to apply for leave.",
-    "target_unit_type": "department",
-    "target_unit_id": "college_management_office",
-    "category_id": "student_affairs",
-    "required_documents_zh": [
-      "依據不同假別，需準備並上傳對應之證明文件（系統僅受理單一 PDF 格式檔案，且檔案大小需小於 3MB）：",
-      "事假：必須於系統內註明具體請假理由，理由不得空白，否則會被退單。部分情況下請假達特定日數需檢附相關佐證函件。",
-      "病假：須檢附證明（如醫療院所的就診收據即可）；若連續請假達四日（含）以上，則必須附上醫生診斷證明。",
-      "公假：須檢附代表國家、學校參賽，或經政府機關、學校選派擔任公務之相關證明文件（如開會通知單等）。",
+    id: "class_leave",
+    task_name_zh: "請假",
+    task_name_en: "Leave of Absence from Class",
+    scenario_zh:
+      "學生若因故無法出席課程，應依規定透過線上請假系統辦理請假。一般請假不再接受紙本假單；但若遇期中或期末考需請考試假，仍須使用紙本假單並直接向授課教師申請。",
+    scenario_en:
+      "Students who are unable to attend class must apply for leave through the online leave system. Paper leave forms are no longer accepted for regular leave. However, midterm or final exam leave still requires a paper form submitted directly to the course instructor.",
+    target_unit_type: "department",
+    target_unit_id: "",
+    category_id: "course_issues",
+    required_documents_zh: [
+      "所有需檢附之證明文件須合併為單一 PDF 檔，且檔案大小須小於 3MB。",
+      "事假：須於系統內填寫具體請假理由，理由不得空白；部分情況下，若請假達特定日數，須檢附相關佐證文件。",
+      "病假：須檢附證明，如醫療院所就診收據；若連續請假達四日含以上，須檢附醫生診斷證明。",
+      "公假：須檢附代表國家、學校參賽，或經政府機關、學校選派擔任公務之相關證明文件，例如開會通知單。",
       "喪假：須檢附相關證明，且依規定僅限請假人之直系血親、直系姻親、配偶或兄弟姐妹之喪葬。",
       "生理假：每月得請假一日，無需出示證明。",
-      "心理健康假：每學期以三天為限，無需檢附證明（但請注意：請假達第三次時需填寫量表，且系統將通知導師及諮商中心介入關懷，另不得據此假別申請補考）。"
+      "心理健康假：每學期以三天為限，無需檢附證明；請假達第三次時須填寫量表，系統將通知導師及諮商中心介入關懷，且不得以此假別申請補考。",
+      "考試假：不得以其他種類假別代替，須使用紙本假單向授課教師申請。"
     ],
-    "required_documents_en": [
-      "All supporting documents must be uploaded as a single PDF file under 3 MB.",
-      "Personal leave: Detailed reason required.",
-      "Sick leave: Medical receipt or certificate; a doctor's note is required for four or more consecutive days.",
-      "Official leave: Proof of participation in official events or competitions.",
-      "Bereavement leave: Proof of relationship and relevant documentation.",
-      "Menstrual leave: No documentation required (one day per month).",
-      "Mental health leave: Up to three days per semester; no documentation required."
+    required_documents_en: [
+      "All supporting documents must be combined into a single PDF file under 3 MB.",
+      "Personal leave: A detailed reason must be entered in the system. The reason cannot be blank. Additional proof may be required depending on the number of leave days.",
+      "Sick leave: A medical receipt or certificate is required. A doctor's diagnosis certificate is required for four or more consecutive days.",
+      "Official leave: Proof of participation in official events, competitions, government-assigned duties, or school-assigned duties is required.",
+      "Bereavement leave: Relevant proof is required and is limited to the funeral of direct blood relatives, direct relatives by marriage, spouse, or siblings.",
+      "Menstrual leave: One day per month may be requested without documentation.",
+      "Mental health leave: Up to three days per semester may be requested without documentation. On the third request, the student must complete a questionnaire and the system will notify the advisor and Counseling Center. This leave type cannot be used to apply for make-up exams.",
+      "Exam leave: Other leave types cannot be used as exam leave. A paper form must be submitted directly to the instructor."
     ],
-    "steps": [
+    steps: [
       {
-        "zh": "登入線上請假系統：請登入「國立中正大學單一入口」網站，點選「學生個人請假操作管理系統」。因手機介面可能導致部分功能無法順利運作，強烈建議使用電腦進行操作。",
-        "en": "Log in to the CCU Single Sign-On Portal.\nAccess the Student Leave Management System."
+        zh: "登入「國立中正大學單一入口」網站，進入「學生個人請假操作管理系統」。建議使用電腦操作，避免手機介面造成部分功能無法正常使用。",
+        en: "Log in to the National Chung Cheng University Single Sign-On Portal and access the Student Leave Management System. Using a computer is strongly recommended because some functions may not work properly on mobile devices."
       },
       {
-        "zh": "填寫假單與上傳附件：於系統內選定欲請假之日期與課程，填寫假別與事由。若需檢附證明（如病假證明），請將資料轉存為單一 PDF 檔後上傳。",
-        "en": "Select the dates and courses.\nEnter the leave type and reason.\nUpload supporting documents if required."
+        zh: "在系統中選擇欲請假之日期與課程，填寫假別與請假事由。",
+        en: "Select the dates and courses for the leave request, then enter the leave type and reason."
       },
       {
-        "zh": "線上送出與系所審核：假單送出後，會先由「系所辦公室」進行線上審核。審核通過後，系統即會自動 Email 通知授課老師及助教，老師也可至系統後台查詢假單狀態",
-        "en": "Submit the application online.\nThe department will review the request.\nOnce approved, the system will notify the instructor and TA automatically."
+        zh: "若該假別需要證明文件，請將資料整理為單一 PDF 檔後上傳，且檔案大小須小於 3MB。",
+        en: "If supporting documents are required for the selected leave type, combine them into one PDF file under 3 MB and upload it to the system."
       },
       {
-        "zh": "突發狀況與事後補請假：請假原則上應「事前親自辦理」，若遇重大事故無法事前請假，可先以電話或書信向授課教師或系所報備。事後請假務必於「來校上課當日起算十日內（不含假日）」完成線上系統補請手續，逾期未補辦者將視同缺曠課。\n\n例外情況（考試假）：考試假不得以其他種類的假別申請。若需請考試假，仍維持紙本作業，請親自向系所辦公室索取紙本假單，送交授課老師簽章並確認補考安排後，再交由系所備查。",
-        "en": "Important Notes:\nLeave should generally be requested in advance.\nIf an emergency prevents prior application, notify the instructor or department immediately.\nRetroactive leave must be submitted within 10 class days of returning to campus.\nExam leave requires a paper form and direct instructor approval."
+        zh: "送出假單後，會先由各開課系所辦公室進行線上審核。審核通過後，系統會自動 Email 通知授課教師與課程助教。",
+        en: "After submission, the department office of the course will review the request online. Once approved, the system will automatically notify the course instructor and teaching assistant by email."
+      },
+      {
+        zh: "請假原則上應事前親自辦理。若因重大事故無法事前請假，應先以電話或書信向授課教師或系所報備。",
+        en: "Leave should generally be requested in advance. If an emergency prevents prior application, notify the course instructor or department office by phone or written message first."
+      },
+      {
+        zh: "事後補請假須於來校上課當日起算十日內完成線上補請手續，不含假日。逾期未補辦者，將視同缺曠課。",
+        en: "Retroactive leave must be submitted online within 10 class days from the day the student returns to campus, excluding holidays. Late applications will be treated as absence."
+      },
+      {
+        zh: "若需請期中或期末考之考試假，仍須使用紙本假單。請向系所辦公室索取紙本假單，送交授課教師簽章並確認補考安排後，再交由系所備查。",
+        en: "For midterm or final exam leave, a paper form is still required. Obtain the paper form from the department office, submit it to the instructor for approval and make-up exam arrangements, then return it to the department office for record keeping."
       }
     ]
   },
