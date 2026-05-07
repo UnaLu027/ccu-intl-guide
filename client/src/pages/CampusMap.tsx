@@ -484,7 +484,7 @@ export default function CampusMap() {
       <div className="flex-1 relative" style={{ minHeight: "60vh" }}>
         <MapView onMapReady={handleMapReady} />
 
-        <div className="absolute bottom-4 right-4 z-10 flex flex-col items-end gap-2">
+        <div className="absolute bottom-4 left-4 z-10 flex flex-col items-end gap-2">
           {locationError && (
             <p className="bg-white border border-red-200 text-red-600 text-xs px-3 py-2 rounded-lg shadow-md max-w-[240px] text-right leading-snug">
               {locationError}
