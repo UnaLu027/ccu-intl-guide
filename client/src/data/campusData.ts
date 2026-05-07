@@ -3884,8 +3884,8 @@ export const tasks: Task[] = [
     scenario_en:
       "International students who encounter password errors, forgotten passwords, or account lock issues with the CCU Single Sign-On Portal, course selection system, or other campus systems should first confirm the ID number linked to their account, then use the Forgot Password function or seek administrative assistance.",
     target_unit_type: "office",
-    target_unit_id: "oia",
-    category_id: "it_support",
+    target_unit_id: "it_center",
+    category_id: "course_issues",
     required_documents_zh: [
       "學生證。",
       "護照或居留證。",
