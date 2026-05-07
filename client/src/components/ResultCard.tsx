@@ -4,6 +4,7 @@
  */
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getGoogleMapsSearchUrl } from "@/lib/mapTarget";
 import { Link } from "wouter";
 import { MapPin, ClipboardList, ExternalLink, Clock, Phone, Mail, AlertTriangle, DoorOpen, ArrowRight } from "lucide-react";
 import type { Office, Department } from "@/data/campusData";
@@ -65,6 +66,7 @@ interface OfficeCardProps {
 export function OfficeCard({ office, reason }: OfficeCardProps) {
   const { t } = useLanguage();
   const o = office;
+  const googleMapsUrl = getGoogleMapsSearchUrl(o);
 
   return (
     <div className="bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow overflow-hidden">
@@ -180,15 +182,17 @@ export function OfficeCard({ office, reason }: OfficeCardProps) {
             <ClipboardList className="w-3.5 h-3.5" />
             {t("Details", "查看詳情")}
           </Link>
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(o.google_maps_query)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-2 bg-sage text-white text-xs font-semibold rounded-md hover:opacity-90 transition-opacity"
-          >
-            <MapPin className="w-3.5 h-3.5" />
-            Google Maps
-          </a>
+          {googleMapsUrl && (
+            <a
+              href={googleMapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-sage text-white text-xs font-semibold rounded-md hover:opacity-90 transition-opacity"
+            >
+              <MapPin className="w-3.5 h-3.5" />
+              Google Maps
+            </a>
+          )}
           {o.official_url && (
             <a
               href={o.official_url}
@@ -213,6 +217,7 @@ interface DeptCardProps {
 export function DeptCard({ dept }: DeptCardProps) {
   const { t } = useLanguage();
   const d = dept;
+  const googleMapsUrl = getGoogleMapsSearchUrl(d);
 
   return (
     <div className="bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow overflow-hidden">
@@ -282,15 +287,17 @@ export function DeptCard({ dept }: DeptCardProps) {
             <ClipboardList className="w-3.5 h-3.5" />
             {t("Details", "查看詳情")}
           </Link>
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.google_maps_query)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-2 bg-sage text-white text-xs font-semibold rounded-md hover:opacity-90 transition-opacity"
-          >
-            <MapPin className="w-3.5 h-3.5" />
-            Google Maps
-          </a>
+          {googleMapsUrl && (
+            <a
+              href={googleMapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-sage text-white text-xs font-semibold rounded-md hover:opacity-90 transition-opacity"
+            >
+              <MapPin className="w-3.5 h-3.5" />
+              Google Maps
+            </a>
+          )}
           {d.official_url && (
             <a
               href={d.official_url}

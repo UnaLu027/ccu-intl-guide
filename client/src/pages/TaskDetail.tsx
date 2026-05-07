@@ -5,6 +5,7 @@
 import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { tasks, offices, departments } from "@/data/campusData";
+import { getGoogleMapsSearchUrl } from "@/lib/mapTarget";
 import { Link, useParams } from "wouter";
 import {
   ArrowLeft,
@@ -127,10 +128,7 @@ export default function TaskDetail() {
     : "";
 
   const officialUrl = targetUnit?.official_url || "";
-  const googleMapsQuery =
-    targetUnit && "google_maps_query" in targetUnit
-      ? targetUnit.google_maps_query
-      : "";
+  const googleMapsUrl = targetUnit ? getGoogleMapsSearchUrl(targetUnit) : "";
 
   const isOffice = targetUnit && "office_hours" in targetUnit;
 
@@ -207,43 +205,43 @@ export default function TaskDetail() {
                 </p>
 
                 <div className="space-y-2">
-                    {task.steps.map((step, index) => {
+                  {task.steps.map((step, index) => {
                     const stepText = t(step.en, step.zh);
                     const { cleanedText, urls } = extractUrlsFromText(stepText);
 
                     return (
-                        <div key={index} className="flex items-start gap-2.5">
+                      <div key={index} className="flex items-start gap-2.5">
                         <div className="w-6 h-6 rounded-full bg-navy/10 flex items-center justify-center shrink-0 mt-0.5">
-                            <span className="text-xs font-bold text-navy">
+                          <span className="text-xs font-bold text-navy">
                             {index + 1}
-                            </span>
+                          </span>
                         </div>
 
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm text-foreground/80 leading-relaxed pt-0.5">
+                          <p className="text-sm text-foreground/80 leading-relaxed pt-0.5">
                             {cleanedText || stepText}
-                            </p>
+                          </p>
 
-                            {urls.length > 0 && (
+                          {urls.length > 0 && (
                             <div className="mt-2 flex flex-wrap gap-2">
-                                {urls.map((url, linkIndex) => (
+                              {urls.map((url, linkIndex) => (
                                 <a
-                                    key={linkIndex}
-                                    href={url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-md text-xs font-semibold text-navy hover:bg-muted transition-colors"
+                                  key={linkIndex}
+                                  href={url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-md text-xs font-semibold text-navy hover:bg-muted transition-colors"
                                 >
-                                    <ExternalLink className="w-3.5 h-3.5" />
-                                    {getAutoLinkLabel(url, linkIndex, t)}
+                                  <ExternalLink className="w-3.5 h-3.5" />
+                                  {getAutoLinkLabel(url, linkIndex, t)}
                                 </a>
-                                ))}
+                              ))}
                             </div>
-                            )}
+                          )}
                         </div>
-                        </div>
+                      </div>
                     );
-                    })}
+                  })}
                 </div>
               </div>
             </div>
@@ -319,11 +317,9 @@ export default function TaskDetail() {
                 )}
 
                 <div className="flex flex-wrap gap-2">
-                  {googleMapsQuery && (
+                  {googleMapsUrl && (
                     <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                        googleMapsQuery
-                      )}`}
+                      href={googleMapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 px-3 py-2 bg-sage text-white text-xs font-semibold rounded-md hover:opacity-90 transition-opacity"

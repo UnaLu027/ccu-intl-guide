@@ -13,6 +13,11 @@ import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { offices, departments } from "@/data/campusData";
 import { MapView } from "@/components/Map";
+import {
+  getGoogleMapsSearchUrlFromPosition,
+  lookupPlaceLocation,
+  shouldUseManualCoordinates,
+} from "@/lib/mapTarget";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Link } from "wouter";
 import { ArrowLeft, Building2, Briefcase, DoorOpen, Loader2, Locate, MapPin, X } from "lucide-react";
@@ -93,10 +98,6 @@ const allItems: MapItem[] = [
   })),
 ];
 
-function shouldUseManualCoordinates(item: MapItem) {
-  return item.use_manual_coordinates === true;
-}
-
 function getGroupingKey(item: MapItem) {
   return shouldUseManualCoordinates(item)
     ? `manual:${item.latitude},${item.longitude}`
@@ -120,42 +121,6 @@ function getDisplayPosition(item: MapItem, indexWithinSameCoordinate: number, to
 
 function formatLocation(building: string, floor: string, room?: string) {
   return [building, floor ? `· ${floor}` : "", room ? ` ${room}` : ""].join("").replace(/\s+/g, " ").trim();
-}
-
-function lookupPlaceLocation(
-  service: google.maps.places.PlacesService,
-  query: string
-): Promise<google.maps.LatLng | null> {
-  if (!query) return Promise.resolve(null);
-
-  const cacheKey = "ccu_place_" + query;
-  const cached = sessionStorage.getItem(cacheKey);
-  if (cached) {
-    try {
-      const { lat, lng } = JSON.parse(cached);
-      return Promise.resolve(new google.maps.LatLng(lat, lng));
-    } catch {
-      sessionStorage.removeItem(cacheKey);
-    }
-  }
-
-  return new Promise(resolve => {
-    service.findPlaceFromQuery(
-      { query, fields: ["geometry.location"] },
-      (results, status) => {
-        if (
-          status === google.maps.places.PlacesServiceStatus.OK &&
-          results && results[0]?.geometry?.location
-        ) {
-          const loc = results[0].geometry.location;
-          sessionStorage.setItem(cacheKey, JSON.stringify({ lat: loc.lat(), lng: loc.lng() }));
-          resolve(loc);
-        } else {
-          resolve(null);
-        }
-      }
-    );
-  });
 }
 
 export default function CampusMap() {
@@ -301,6 +266,10 @@ export default function CampusMap() {
     );
   }, []);
 
+  const selectedGoogleMapsUrl = selected
+    ? getGoogleMapsSearchUrlFromPosition({ lat: selected.lat, lng: selected.lng })
+    : "";
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
@@ -404,7 +373,7 @@ export default function CampusMap() {
                 )}
 
                 <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${selected.lat},${selected.lng}`}
+                  href={selectedGoogleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-3 py-2 bg-sage text-white text-xs font-semibold rounded-md hover:opacity-90 transition-opacity"

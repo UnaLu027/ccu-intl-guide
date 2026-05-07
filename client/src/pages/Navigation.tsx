@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { offices, departments, tasks } from "@/data/campusData";
 import { MapView } from "@/components/Map";
+import { getGoogleMapsSearchUrl, resolveMapPosition } from "@/lib/mapTarget";
 import { Link, useParams } from "wouter";
 import { useMemo, useCallback } from "react";
 import {
@@ -45,13 +46,20 @@ export default function Navigation() {
   }, [item, type, id]);
 
   const handleMapReady = useCallback(
-    (map: google.maps.Map) => {
+    async (map: google.maps.Map) => {
       if (!item) return;
 
-      const lat = "latitude" in item ? item.latitude : 0;
-      const lng = "longitude" in item ? item.longitude : 0;
+      const placesService = new google.maps.places.PlacesService(map);
+      const resolvedPosition = await resolveMapPosition(placesService, item);
 
-      map.setCenter({ lat, lng });
+      if (!resolvedPosition) return;
+
+      const position = {
+        lat: resolvedPosition.lat,
+        lng: resolvedPosition.lng,
+      };
+
+      map.setCenter(position);
       map.setZoom(17);
 
       const pin = new google.maps.marker.PinElement({
@@ -63,7 +71,7 @@ export default function Navigation() {
 
       new google.maps.marker.AdvancedMarkerElement({
         map,
-        position: { lat, lng },
+        position,
         title: "name_en" in item ? item.name_en : "",
         content: pin.element,
       });
@@ -106,7 +114,7 @@ export default function Navigation() {
   const func_zh = item.function_desc_zh;
   const service_en = item.service_scope_en;
   const service_zh = item.service_scope_zh;
-  const google_query = "google_maps_query" in item ? item.google_maps_query : "";
+  const googleMapsUrl = getGoogleMapsSearchUrl(item);
   const official_url = item.official_url;
   const needs_review = item.needs_manual_review;
 
@@ -334,17 +342,17 @@ export default function Navigation() {
                 </div>
 
                 <div className="flex flex-wrap gap-2 mt-4">
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                      google_query
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-2 bg-sage text-white text-xs font-semibold rounded-md hover:opacity-90 transition-opacity"
-                  >
-                    <NavIcon className="w-3.5 h-3.5" />
-                    Google Maps
-                  </a>
+                  {googleMapsUrl && (
+                    <a
+                      href={googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 bg-sage text-white text-xs font-semibold rounded-md hover:opacity-90 transition-opacity"
+                    >
+                      <NavIcon className="w-3.5 h-3.5" />
+                      Google Maps
+                    </a>
+                  )}
 
                   {official_url && (
                     <a
