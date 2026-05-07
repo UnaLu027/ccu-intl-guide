@@ -2060,13 +2060,14 @@ export const departments: Department[] = [
     ],
     "official_url": "https://deptphi.ccu.edu.tw/",
     "google_maps_query": "國立中正大學哲學系",
-    "latitude": 23.5613,
-    "longitude": 120.47,
+    "latitude": 23.561108015876506,
+    "longitude": 120.4734927610213,
     "source_url": "",
     "needs_manual_review": false,
     "is_college_office": false,
     "entrance_image": "/images/departments/college_humanities/philosophy/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_humanities/philosophy/floor_plan.jpg"
+    "floor_plan_image": "/images/departments/college_humanities/philosophy/floor_plan.jpg",
+    "use_manual_coordinates": true
   },
   {
     "id": "linguistics",
