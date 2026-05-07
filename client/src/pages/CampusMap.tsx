@@ -7,6 +7,7 @@
  * 2. Displays compact location format: Building · Floor Room.
  * 3. Adds a room/classroom-style icon for the floor + room row.
  * 4. Slightly separates markers that share the same resolved coordinate so users can click each unit.
+ * 5. Adds location search for offices and departments on the map page.
  */
 
 import Header from "@/components/Header";
@@ -18,9 +19,19 @@ import {
   lookupPlaceLocation,
   shouldUseManualCoordinates,
 } from "@/lib/mapTarget";
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, Building2, Briefcase, DoorOpen, Loader2, Locate, MapPin, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Building2,
+  Briefcase,
+  DoorOpen,
+  Loader2,
+  Locate,
+  MapPin,
+  Search,
+  X,
+} from "lucide-react";
 
 type MarkerType = "office" | "department";
 
@@ -46,6 +57,14 @@ interface MapItem {
 interface SelectedItem extends MapItem {
   lat: number;
   lng: number;
+}
+
+interface MarkerEntry {
+  marker: google.maps.marker.AdvancedMarkerElement;
+  type: MarkerType;
+  id: string;
+  item: MapItem;
+  position: google.maps.LatLngLiteral;
 }
 
 const filterOptions: { type: MarkerType | "all"; label_en: string; label_zh: string; icon: any }[] = [
@@ -123,26 +142,90 @@ function formatLocation(building: string, floor: string, room?: string) {
   return [building, floor ? `· ${floor}` : "", room ? ` ${room}` : ""].join("").replace(/\s+/g, " ").trim();
 }
 
+function normalizeSearchText(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function buildSearchText(item: MapItem) {
+  return [
+    item.name_zh,
+    item.name_en,
+    item.building_zh,
+    item.building_en,
+    item.floor,
+    item.room_zh,
+    item.room_en,
+    item.detail_zh,
+    item.detail_en,
+    item.google_maps_query,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+}
+
+function matchesFilter(type: MarkerType, filter: MarkerType | "all") {
+  return filter === "all" || type === filter;
+}
+
+function matchesSearch(item: MapItem, query: string) {
+  const normalizedQuery = normalizeSearchText(query);
+  if (!normalizedQuery) return true;
+  return buildSearchText(item).includes(normalizedQuery);
+}
+
 export default function CampusMap() {
   const { t } = useLanguage();
   const [filter, setFilter] = useState<MarkerType | "all">("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState<SelectedItem | null>(null);
   const [locating, setLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<{ marker: google.maps.marker.AdvancedMarkerElement; type: MarkerType }[]>([]);
+  const markersRef = useRef<MarkerEntry[]>([]);
   const filterRef = useRef<MarkerType | "all">("all");
+  const searchQueryRef = useRef("");
   const userLocationMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
+
+  const matchedItems = useMemo(() => {
+    return allItems.filter(item =>
+      matchesFilter(item.type, filter) && matchesSearch(item, searchQuery)
+    );
+  }, [filter, searchQuery]);
+
+  const showSearchResults = searchQuery.trim().length > 0;
+  const visibleSearchResults = matchedItems.slice(0, 10);
 
   useEffect(() => {
     filterRef.current = filter;
-    markersRef.current.forEach(({ marker, type }) => {
-      marker.map = filter === "all" || type === filter ? mapRef.current : null;
+    searchQueryRef.current = searchQuery;
+
+    markersRef.current.forEach(({ marker, type, item }) => {
+      const shouldShow =
+        matchesFilter(type, filter) && matchesSearch(item, searchQuery);
+      marker.map = shouldShow ? mapRef.current : null;
     });
-  }, [filter]);
+  }, [filter, searchQuery]);
+
+  const openItemOnMap = useCallback((item: MapItem) => {
+    const entry = markersRef.current.find(
+      markerEntry => markerEntry.id === item.id && markerEntry.type === item.type
+    );
+
+    if (!entry || !mapRef.current) return;
+
+    mapRef.current.panTo(entry.position);
+    mapRef.current.setZoom(Math.max(mapRef.current.getZoom() || 16, 18));
+    setSelected({ ...entry.item, lat: entry.position.lat, lng: entry.position.lng });
+  }, []);
 
   const handleMapReady = useCallback(async (map: google.maps.Map) => {
     mapRef.current = map;
+    markersRef.current.forEach(({ marker }) => {
+      marker.map = null;
+    });
+    markersRef.current = [];
+
     map.setCenter({ lat: 23.5628, lng: 120.4724 });
     map.setZoom(16);
 
@@ -201,7 +284,9 @@ export default function CampusMap() {
         scale: 0.9,
       });
 
-      const shouldShow = filterRef.current === "all" || filterRef.current === item.type;
+      const shouldShow =
+        matchesFilter(item.type, filterRef.current) &&
+        matchesSearch(item, searchQueryRef.current);
 
       const marker = new google.maps.marker.AdvancedMarkerElement({
         map: shouldShow ? map : null,
@@ -215,7 +300,13 @@ export default function CampusMap() {
         map.panTo(position);
       });
 
-      markersRef.current.push({ marker, type: item.type });
+      markersRef.current.push({
+        marker,
+        type: item.type,
+        id: item.id,
+        item,
+        position,
+      });
     });
   }, [t]);
 
@@ -301,6 +392,91 @@ export default function CampusMap() {
                 {t(opt.label_en, opt.label_zh)}
               </button>
             ))}
+          </div>
+
+          <div className="mt-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder={t("Search locations", "搜尋地點")}
+                className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-9 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-navy focus:ring-2 focus:ring-navy/10"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSelected(null);
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  aria-label={t("Clear search", "清除搜尋")}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {showSearchResults && (
+              <div className="mt-2 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+                <div className="flex items-center justify-between border-b border-border px-3 py-2">
+                  <p className="text-xs font-semibold text-navy">
+                    {t("Search Results", "搜尋結果")}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {matchedItems.length} {t("matches", "筆結果")}
+                  </p>
+                </div>
+
+                {matchedItems.length === 0 ? (
+                  <p className="px-3 py-3 text-sm text-muted-foreground">
+                    {t("No matching locations", "找不到符合的地點")}
+                  </p>
+                ) : (
+                  <div className="max-h-64 overflow-y-auto">
+                    {visibleSearchResults.map(item => (
+                      <button
+                        key={`${item.type}-${item.id}`}
+                        type="button"
+                        onClick={() => openItemOnMap(item)}
+                        className="w-full border-b border-border last:border-b-0 px-3 py-2 text-left hover:bg-muted/60 transition-colors"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-navy truncate">
+                              {t(item.name_en, item.name_zh)}
+                            </p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {formatLocation(
+                                t(item.building_en, item.building_zh),
+                                item.floor,
+                                t(item.room_en || "", item.room_zh || "")
+                              )}
+                            </p>
+                          </div>
+                          <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                            {item.type === "office"
+                              ? t("Office", "行政單位")
+                              : t("Department", "系所")}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+
+                    {matchedItems.length > visibleSearchResults.length && (
+                      <p className="px-3 py-2 text-xs text-muted-foreground bg-muted/30">
+                        {t(
+                          `Showing first ${visibleSearchResults.length} results. Please refine your search.`,
+                          `目前顯示前 ${visibleSearchResults.length} 筆結果，請輸入更精準的關鍵字。`
+                        )}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
