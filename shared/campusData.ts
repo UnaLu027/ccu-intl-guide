@@ -1993,13 +1993,14 @@ export const departments: Department[] = [
     ],
     "official_url": "https://depthis.ccu.edu.tw/",
     "google_maps_query": "國立中正大學歷史學系",
-    "latitude": 23.5613,
-    "longitude": 120.47,
+    "latitude": 23.561371243550617, 
+    "longitude": 120.47371080736323,
     "source_url": "",
     "needs_manual_review": false,
     "is_college_office": false,
     "entrance_image": "/images/departments/college_humanities/history/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_humanities/history/floor_plan.jpg"
+    "floor_plan_image": "/images/departments/college_humanities/history/floor_plan.jpg",
+    "use_manual_coordinates": true
   },
   {
     "id": "east_asian_classics",
