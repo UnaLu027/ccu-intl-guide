@@ -5262,6 +5262,370 @@ export const tasks: Task[] = [
         "en": "Submit the application materials to the Student Life Division according to the announcement, then provide supplements or wait for the review result as instructed."
       }
     ]
+  },
+  {
+    id: "gender_equity_case_or_form_inquiry",
+    task_name_zh: "性別平等事件申請、檢舉與表單查詢",
+    task_name_en: "Gender Equity Case Application, Report, and Form Inquiry",
+    scenario_zh:
+      "你遇到或想了解校園性別事件、性騷擾、性侵害、性霸凌、性別平等相關申請或檢舉流程，或需要下載性平會相關表單。",
+    scenario_en:
+      "You need information about campus gender equity cases, sexual harassment, sexual assault, gender bullying, gender equity investigation applications, reports, or related forms.",
+    target_unit_type: "office",
+    target_unit_id: "secretariat",
+    category_id: "student_affairs",
+    required_documents_zh: [
+      "國立中正大學校園性別事件調查或檢舉申請書。",
+      "可協助說明事件的相關資料或證明文件。",
+      "申請或檢舉須具真實姓名；可依官方說明親送、Email 或郵寄提出。"
+    ],
+    required_documents_en: [
+      "CCU campus gender-related incident investigation or report application form.",
+      "Relevant information or supporting documents that may help explain the case.",
+      "The application or report must be submitted under the real name of the applicant or reporter. It may be submitted in person, by email, or by post according to the official instructions."
+    ],
+    steps: [
+      {
+        zh: "先至秘書室網站的「性平會表單」或性別平等教育委員會頁面確認最新表單與申請說明。",
+        en: "First check the Secretariat website under Gender Equity Committee forms or the Gender Equity Education Committee page for the latest forms and instructions."
+      },
+      {
+        zh: "下載並填寫「校園性別事件調查或檢舉申請書」，並準備可協助說明事件的相關資料。",
+        en: "Download and complete the campus gender-related incident investigation or report application form, and prepare relevant supporting information."
+      },
+      {
+        zh: "依官方說明，將申請或檢舉資料以親送、Email 或郵寄方式，具真實姓名向收件單位提出。官方頁面列出的收件單位為學務處衛生保健組，Email 為 health@ccu.edu.tw。",
+        en: "Submit the application or report under your real name in person, by email, or by post according to the official instructions. The official page lists the Health Services Division of the Office of Student Affairs as the receiving unit, with email health@ccu.edu.tw."
+      },
+      {
+        zh: "收件後，校園性別事件申請調查會於三日內交由學校性別平等教育委員會調查處理。",
+        en: "After receiving the application, the school will forward the case to the Gender Equity Education Committee for investigation within three days."
+      },
+      {
+        zh: "學校會於接獲申請書二十日內，以書面通知申請人或檢舉人是否受理。",
+        en: "The school will notify the applicant or reporter in writing within twenty days whether the case is accepted."
+      }
+    ]
+  },
+  {
+    id: "admission_application_and_appeal_inquiry",
+    task_name_zh: "查詢入學申請、招生資料與考生申訴",
+    task_name_en: "Admission Application, Recruitment Information, and Applicant Appeal Inquiry",
+    scenario_zh:
+      "你需要查詢招生簡章、招生日程、招生名額、申請資料、考生陳情、申訴或退費相關問題。",
+    scenario_en:
+      "You need information about admission guidelines, admission schedules, admission quotas, application documents, applicant petitions, appeals, or refund-related issues.",
+    target_unit_type: "office",
+    target_unit_id: "oaa_admissions",
+    category_id: "registration",
+    required_documents_zh: [
+      "申請入學或招生相關問題：請準備申請身分、申請學制、系所名稱與申請編號。",
+      "考生陳情、申訴或退費：請準備相關通知、繳費資料、申請紀錄或可說明問題的文件。"
+    ],
+    required_documents_en: [
+      "For admission or application inquiries: prepare your applicant status, degree level, department or program name, and application number.",
+      "For applicant petitions, appeals, or refund issues: prepare relevant notices, payment records, application records, or documents explaining the issue."
+    ],
+    steps: [
+      {
+        zh: "先確認你的問題屬於招生簡章、招生日程、招生名額、申請資料、考生陳情、申訴或退費哪一類。",
+        en: "First identify whether your issue is about admission guidelines, admission schedules, admission quotas, application documents, applicant petitions, appeals, or refunds."
+      },
+      {
+        zh: "至教務處招生相關頁面或招生資訊系統查看最新公告與申請資訊。",
+        en: "Check the Office of Academic Affairs admission pages or admission information system for the latest announcements and application information."
+      },
+      {
+        zh: "若是個案問題，請準備申請編號、身分資料、系所名稱與相關文件，再洽詢教務處招生組。",
+        en: "For case-specific issues, prepare your application number, identity information, department or program name, and relevant documents before contacting the Division of Admissions."
+      },
+      {
+        zh: "若涉及考生陳情、申訴或退費，請依招生組或當年度簡章公告的方式提出。",
+        en: "If the issue involves applicant petitions, appeals, or refunds, follow the instructions provided by the Division of Admissions or the admission guidelines for that year."
+      }
+    ]
+  },
+  {
+    id: "academic_program_and_statistics_inquiry",
+    task_name_zh: "查詢學程、境外專班與教務統計相關資訊",
+    task_name_en: "Academic Program, Overseas Program, and Academic Statistics Inquiry",
+    scenario_zh:
+      "你需要查詢院系所或學位學程增設調整、境外專班、招生名額、年度報告、校務研究或教務統計相關資訊。",
+    scenario_en:
+      "You need information about the establishment or adjustment of colleges, departments, degree programs, overseas programs, admission quotas, annual reports, institutional research, or academic statistics.",
+    target_unit_type: "office",
+    target_unit_id: "oaa_generalaffairs",
+    category_id: "academic_affairs",
+    required_documents_zh: [
+      "明確的查詢主題，例如學程名稱、系所名稱、招生名額、年度報告、境外專班或校務研究資料。",
+      "若是正式申請或校內行政流程，請依綜合業務組公告或承辦人指示準備資料。"
+    ],
+    required_documents_en: [
+      "A clear inquiry topic, such as program name, department name, admission quota, annual report, overseas program, or institutional research data.",
+      "For formal applications or internal administrative procedures, prepare documents according to the Division of General Affairs announcement or staff instructions."
+    ],
+    steps: [
+      {
+        zh: "先確認你要查詢的是學程資訊、院系所增設調整、境外專班、招生名額、年度報告或校務研究資料。",
+        en: "First identify whether your inquiry is about program information, department or program establishment and adjustment, overseas programs, admission quotas, annual reports, or institutional research."
+      },
+      {
+        zh: "至教務處綜合業務組頁面查看業務職掌與相關資訊。",
+        en: "Visit the Division of General Affairs page under the Office of Academic Affairs to check its responsibilities and related information."
+      },
+      {
+        zh: "若是增設調整院系所或學位學程相關問題，請查看教務處「增設調整系所」頁面與作業要點。",
+        en: "For questions about establishing or adjusting departments or degree programs, check the Office of Academic Affairs page on department and program establishment or adjustment and its related regulations."
+      },
+      {
+        zh: "若需要進一步資料或正式行政協助，請依頁面提供之承辦人或信箱洽詢綜合業務組。",
+        en: "If further data or formal administrative assistance is needed, contact the Division of General Affairs using the staff contact information or email listed on the official page."
+      }
+    ]
+  },
+  {
+    id: "course_feedback_ta_and_learning_support",
+    task_name_zh: "教學意見調查、TA 認證與學習支持",
+    task_name_en: "Course Feedback, TA Certification, and Learning Support",
+    scenario_zh:
+      "你需要填寫教學意見調查、了解學習支持資源，或查詢教學助理 TA 認證課程與相關研習資訊。",
+    scenario_en:
+      "You need to complete course feedback, find learning support resources, or check Teaching Assistant certification courses and related training information.",
+    target_unit_type: "office",
+    target_unit_id: "ctld",
+    category_id: "academic_affairs",
+    required_documents_zh: [
+      "教學意見調查：通常需使用學校系統登入。",
+      "TA 認證或研習：請準備學生身分、課程或助教相關資料，並依公告要求辦理。",
+      "學習支持或教學相關問題：請準備課程名稱、授課教師、問題描述與相關截圖或證明。"
+    ],
+    required_documents_en: [
+      "Course feedback: school system login is usually required.",
+      "TA certification or training: prepare your student identity, course or TA-related information, and follow the announcement requirements.",
+      "Learning support or teaching-related issues: prepare the course name, instructor name, issue description, and relevant screenshots or evidence."
+    ],
+    steps: [
+      {
+        zh: "若要填寫教學意見調查，請從教務處線上系統或常用系統進入線上教學意見調查系統。",
+        en: "To complete course feedback, access the online course evaluation system through the Office of Academic Affairs online systems or common systems."
+      },
+      {
+        zh: "若要查詢 TA 認證或研習，請至教學發展中心的教學助理 TA 頁面確認當學期課程與名單公告。",
+        en: "To check TA certification or training, visit the Teaching Assistant section of the Center for Teaching and Learning Development to confirm current semester courses and certification lists."
+      },
+      {
+        zh: "若是學習支持或教學相關問題，請先整理課程名稱、授課教師與問題內容，再依教學發展中心公告或承辦人資訊洽詢。",
+        en: "For learning support or teaching-related issues, organize the course name, instructor, and issue description before contacting the Center for Teaching and Learning Development according to its announcements or staff information."
+      }
+    ]
+  },
+  {
+    id: "counseling_first_appointment",
+    task_name_zh: "預約初次諮商與心理支持",
+    task_name_en: "First Counseling Appointment and Mental Health Support",
+    scenario_zh:
+      "你感到壓力、焦慮、孤單、適應困難，或希望預約初次晤談與了解心理支持資源。",
+    scenario_en:
+      "You feel stressed, anxious, lonely, have adjustment difficulties, or want to schedule a first counseling appointment and learn about mental health support resources.",
+    target_unit_type: "office",
+    target_unit_id: "counseling",
+    category_id: "counseling",
+    required_documents_zh: [
+      "可使用的 Email 信箱，系統會寄送預約成功通知。",
+      "初談時請提前 5 至 10 分鐘親至諮商中心填寫基本資料表。",
+      "若需取消，請依官方說明於預定晤談日前一天透過系統或電話取消。"
+    ],
+    required_documents_en: [
+      "An accessible email address, as the system will send a successful reservation notice.",
+      "Arrive at the Counseling Center 5 to 10 minutes early for the first interview to complete the basic information form.",
+      "If cancellation is needed, cancel through the system or by phone no later than the day before the scheduled appointment according to official instructions."
+    ],
+    steps: [
+      {
+        zh: "進入諮商中心初次晤談預約系統，查看預約時間表。",
+        en: "Enter the Counseling Center first appointment reservation system and check the available schedule."
+      },
+      {
+        zh: "預約受理時間為預定初談日前兩週至前一天；請選擇可出席的時段。",
+        en: "Reservations are accepted from two weeks before to one day before the planned first appointment. Choose a time slot you can attend."
+      },
+      {
+        zh: "完成預約後，系統出現預約成功畫面才算完成，系統也會寄信至你填寫的信箱。",
+        en: "The reservation is completed only when the system shows a successful reservation screen. The system will also send an email to the address you provided."
+      },
+      {
+        zh: "請於預約時段前 5 至 10 分鐘到活動中心三樓諮商中心，填寫基本資料表並準時報到。",
+        en: "Arrive at the Counseling Center on the third floor of the Activity Center 5 to 10 minutes before your appointment to complete the basic information form and check in on time."
+      },
+      {
+        zh: "若無法前來，最遲應於預定晤談日前一天透過系統或電話取消，以維護資源使用公平。",
+        en: "If you cannot attend, cancel through the system or by phone no later than the day before the scheduled appointment to maintain fair access to resources."
+      }
+    ]
+  },
+  {
+    id: "activity_venue_equipment_and_club_application",
+    task_name_zh: "活動場地器材借用與社團活動申請",
+    task_name_en: "Activity Venue, Equipment, and Club Activity Application",
+    scenario_zh:
+      "你或你的社團需要申請活動中心場地、器材、社團活動、校外活動、電子看板或社團行政服務。",
+    scenario_en:
+      "You or your club need to apply for Activity Center venues, equipment, club activities, off-campus activities, digital signage, or student club administrative services.",
+    target_unit_type: "office",
+    target_unit_id: "osa_extracurricular",
+    category_id: "student_affairs",
+    required_documents_zh: [
+      "活動基本資料與活動計畫書。",
+      "若為校外活動，依公告可能需家長同意書與保險相關資料。",
+      "若借用場地或器材，需確認活動日期、時間、場地、器材需求與申請人聯絡資料。"
+    ],
+    required_documents_en: [
+      "Basic activity information and activity proposal.",
+      "For off-campus activities, parental consent forms and insurance-related documents may be required according to announcements.",
+      "For venue or equipment borrowing, confirm activity date, time, venue, equipment needs, and applicant contact information."
+    ],
+    steps: [
+      {
+        zh: "先確認你要申請的是校內活動、校外活動、活動中心場地器材、社團服務或電子看板。",
+        en: "First identify whether you are applying for an on-campus activity, off-campus activity, Activity Center venue or equipment, club service, or digital signage."
+      },
+      {
+        zh: "依課外活動組公告，使用 SSO 登入活中場器系統線上申請。",
+        en: "According to the Division of Extracurricular Activities announcement, use SSO to log in to the Activity Center venue and equipment system for online application."
+      },
+      {
+        zh: "填寫活動基本資料，並依申請類型附上活動計畫書或相關文件。",
+        en: "Fill in the basic activity information and attach the activity proposal or required documents according to the application type."
+      },
+      {
+        zh: "課外活動組承辦人會依活動內容提出注意事項並進行初步審核，必要時會會簽相關主管單位。",
+        en: "The staff of the Division of Extracurricular Activities will review the application, provide comments based on the activity content, and coordinate with related units if necessary."
+      },
+      {
+        zh: "活動核准後，請依核准時間與規定使用場地及器材，並於使用後恢復原狀。",
+        en: "After approval, use the venue and equipment according to the approved time and rules, and restore the venue after use."
+      }
+    ]
+  },
+  {
+    id: "vehicle_parking_permit_inquiry",
+    task_name_zh: "申請車輛通行證與停車相關服務",
+    task_name_en: "Vehicle Access Permit and Parking Service Inquiry",
+    scenario_zh:
+      "你需要了解校內車輛通行、停車規定、機車或汽車通行證、車證申請系統或車管相關問題。",
+    scenario_en:
+      "You need information about campus vehicle access, parking rules, scooter or car permits, the vehicle permit application system, or vehicle management issues.",
+    target_unit_type: "office",
+    target_unit_id: "vehicle_control",
+    category_id: "student_affairs",
+    required_documents_zh: [
+      "學生證或本校身分證明。",
+      "車輛相關資料，例如車牌號碼、行照或申請系統要求之資料。",
+      "若為特殊車種或特殊情況，請依駐警隊車管業務或車證申請系統公告準備。"
+    ],
+    required_documents_en: [
+      "Student ID card or CCU identification.",
+      "Vehicle information such as license plate number, vehicle registration, or other information required by the application system.",
+      "For special vehicle types or special circumstances, prepare documents according to the Campus Security vehicle management or permit application system announcements."
+    ],
+    steps: [
+      {
+        zh: "先確認你的需求是汽車、機車、微型電動二輪車或其他車輛通行與停車問題。",
+        en: "First identify whether your need concerns cars, scooters, micro electric two-wheel vehicles, or other vehicle access and parking issues."
+      },
+      {
+        zh: "至總務處駐警隊的車管業務或車證申請系統查看最新申請規定。",
+        en: "Check the Campus Security vehicle management page or vehicle permit application system under the Office of General Affairs for the latest application rules."
+      },
+      {
+        zh: "依系統要求填寫申請資料並上傳或提供車輛相關證明。",
+        en: "Fill in the application information and upload or provide vehicle-related documents as required by the system."
+      },
+      {
+        zh: "若不確定是否符合申請資格，請先洽詢駐警隊車管相關窗口。",
+        en: "If you are unsure whether you are eligible, contact the Campus Security vehicle management service first."
+      }
+    ]
+  },
+  {
+    id: "campus_facility_repair_inquiry",
+    task_name_zh: "校園公共設施維修與緊急搶修通報",
+    task_name_en: "Campus Public Facility Repair and Emergency Maintenance Report",
+    scenario_zh:
+      "你發現公共空間設備損壞，例如燈具、浴室漏水、局部跳電或其他需要維修的校園設施問題。",
+    scenario_en:
+      "You notice damage or malfunction in public facilities, such as lights, bathroom leaks, partial power outages, or other campus maintenance issues.",
+    target_unit_type: "office",
+    target_unit_id: "oga_services",
+    category_id: "student_affairs",
+    required_documents_zh: [
+      "問題地點，例如建築物、樓層、房間或公共區域。",
+      "問題描述與照片。",
+      "若為緊急狀況，請準備可聯絡電話並立即通知相關管理或警衛單位。"
+    ],
+    required_documents_en: [
+      "Problem location, such as building, floor, room, or public area.",
+      "Description and photos of the issue.",
+      "For emergencies, prepare a contact phone number and notify the responsible manager or campus security immediately."
+    ],
+    steps: [
+      {
+        zh: "先判斷問題是否屬於各單位自行管理設備；若是單位自行管理設備，應由使用單位自行處理。",
+        en: "First determine whether the issue concerns equipment managed by a specific unit. If so, the user unit should handle it first."
+      },
+      {
+        zh: "若是公共區域問題，請先通知該區域或單位管理員，由管理員進行初級維修或判斷。",
+        en: "For public area issues, notify the area or unit manager first so they can conduct basic repair or assessment."
+      },
+      {
+        zh: "若管理員無法處理，再由管理員填具維修單送交營繕組處理。",
+        en: "If the manager cannot resolve the issue, the manager should submit a maintenance request to the Construction and Maintenance Division."
+      },
+      {
+        zh: "若為下班時間緊急搶修，依官方流程請通知警衛室，再由警衛室通知相關單位處理。",
+        en: "For emergency repairs after office hours, notify the security office according to the official procedure, and the security office will contact the relevant unit."
+      }
+    ]
+  },
+  {
+    id: "tuition_payment_receipt_and_cashier_service",
+    task_name_zh: "學雜費繳費、收據與出納服務",
+    task_name_en: "Tuition Payment, Receipt, and Cashier Services",
+    scenario_zh:
+      "你需要列印學雜費繳費單、確認線上繳費方式、處理就學貸款、繳納工本費、申請收據或洽詢出納相關服務。",
+    scenario_en:
+      "You need to print a tuition payment slip, check online payment methods, handle student loans, pay processing fees, request receipts, or ask about cashier services.",
+    target_unit_type: "office",
+    target_unit_id: "cashier",
+    category_id: "tuition",
+    required_documents_zh: [
+      "學生證或學號。",
+      "繳費單、繳費通知或台灣銀行學雜費入口網站資料。",
+      "若申請收據或處理工本費，請準備申請項目與繳款資料。"
+    ],
+    required_documents_en: [
+      "Student ID card or student number.",
+      "Payment slip, payment notice, or information from the Bank of Taiwan tuition payment portal.",
+      "For receipt requests or processing fee payments, prepare the application item and payment information."
+    ],
+    steps: [
+      {
+        zh: "先確認你要辦理的是學雜費繳費、列印繳費單、線上繳費、就學貸款、工本費繳納或收據問題。",
+        en: "First identify whether your issue concerns tuition payment, printing payment slips, online payment, student loans, processing fees, or receipts."
+      },
+      {
+        zh: "至出納組學雜費繳費專區查看收費標準、台灣銀行學雜費入口網站與線上繳費說明。",
+        en: "Visit the Cashier Division tuition and fees section to check fee standards, the Bank of Taiwan tuition payment portal, and online payment instructions."
+      },
+      {
+        zh: "若為就學貸款，依頁面說明使用台灣銀行就學貸款入口網，或從學校 SSO 進入就學貸款可貸費用明細線上申請系統。",
+        en: "For student loans, follow the page instructions to use the Bank of Taiwan student loan portal, or access the school loan-related online application system through CCU SSO."
+      },
+      {
+        zh: "若為工本費繳納，例如補發學生證、宿舍鑰匙等，官方流程指出可至出納櫃台填寫申請書並繳費，再交由相關單位辦理。",
+        en: "For processing fees such as student ID replacement or dormitory key fees, the official procedure states that you may complete the application form and pay at the cashier counter, then submit it to the relevant unit."
+      }
+    ]
   }
 ];
 
