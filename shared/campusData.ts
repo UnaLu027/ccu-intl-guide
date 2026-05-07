@@ -2812,13 +2812,14 @@ export const departments: Department[] = [
     "service_categories": ["department_offices", "academic_affairs", "course_issues"],
     "official_url": "https://polsci.ccu.edu.tw/",
     "google_maps_query": "國立中正大學政治學系",
-    "latitude": 23.5636,
-    "longitude": 120.4692,
+    "latitude": 23.564325100954154,
+    "longitude": 120.47715262114119,
     "source_url": "https://polsci.ccu.edu.tw/",
     "needs_manual_review": false,
     "is_college_office": false,
     "entrance_image": "/images/departments/college_social_sciences/political_science/entrance.jpg",
-    "floor_plan_image": "/images/departments/college_social_sciences/political_science/floor_plan.jpg"
+    "floor_plan_image": "/images/departments/college_social_sciences/political_science/floor_plan.jpg",
+    "use_manual_coordinates": true
   },
   {
     "id": "communication",
