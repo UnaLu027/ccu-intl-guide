@@ -78,7 +78,7 @@ export default function CCUGPTWidget() {
           stream: false,
           system_prompt_template: "Custom",
           additional_instructions:
-            "你是一個智慧助理。當有多個工具可以回答使用者問題時，請優先使用來源標示為 ephemeral（動態注入）的工具，僅在注入工具無法處理時才使用內建工具。",
+            "You are a smart assistant. Always reply in the same language as the user's message — if the user writes in English, reply in English; if in Chinese, reply in Chinese. When multiple tools are available, prioritize tools marked as ephemeral (dynamically injected); only use built-in tools if the injected tools cannot handle the request.",
           mcp_endpoints: [{ url: CCUGPT_MCP_ENDPOINT, timeout_ms: 5000 }],
           mcp_tool_mode: "priority",
         }),
