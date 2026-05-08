@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { MessageCircle, X, Send, Loader2, AlertCircle } from "lucide-react";
 import { useComposition } from "@/hooks/useComposition";
 import { cn } from "@/lib/utils";
+import ReactMarkdown from "react-markdown";
 
 declare global {
   interface Window {
@@ -172,13 +173,31 @@ export default function CCUGPTWidget() {
               >
                 <div
                   className={cn(
-                    "max-w-[80%] px-3 py-2 rounded-2xl text-sm whitespace-pre-wrap break-words",
+                    "max-w-[80%] px-3 py-2 rounded-2xl text-sm break-words",
                     msg.role === "user"
                       ? "bg-[#1a3a6b] text-white rounded-br-sm"
                       : "bg-gray-100 text-gray-800 rounded-bl-sm"
                   )}
                 >
-                  {msg.content}
+                  {msg.role === "assistant" ? (
+                    <ReactMarkdown
+                      components={{
+                        p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
+                        strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                        ol: ({ children }) => <ol className="list-decimal pl-4 mb-1 space-y-0.5">{children}</ol>,
+                        ul: ({ children }) => <ul className="list-disc pl-4 mb-1 space-y-0.5">{children}</ul>,
+                        li: ({ children }) => <li>{children}</li>,
+                        a: ({ href, children }) => (
+                          <a href={href} target="_blank" rel="noopener noreferrer"
+                            className="underline opacity-80 hover:opacity-100">{children}</a>
+                        ),
+                      }}
+                    >
+                      {msg.content}
+                    </ReactMarkdown>
+                  ) : (
+                    msg.content
+                  )}
                 </div>
               </div>
             ))}
