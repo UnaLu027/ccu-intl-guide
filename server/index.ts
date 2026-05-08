@@ -36,7 +36,9 @@ function firstNonEmpty(...values: Array<string | undefined>) {
   return values.find((value) => value && value.trim().length > 0)?.trim() ?? "";
 }
 
-const languageSchema = z.enum(["auto", "en", "zh-TW"]).optional().describe("Preferred answer language. Use auto by default.");
+const languageSchema = z.enum(["auto", "en", "zh-TW"]).optional().describe(
+  'Response language for this tool result. Pass "en" if the user wrote in English, "zh-TW" if the user wrote in Chinese. Use "auto" only when the user language is genuinely unknown.'
+);
 
 function registerTools(server: McpServer) {
   server.tool(

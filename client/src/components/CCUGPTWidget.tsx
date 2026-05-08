@@ -28,6 +28,12 @@ const WELCOME_MESSAGE: Message = {
     "Hi! I'm CCUGPT, your CCU International Student Assistant. Ask me anything about campus offices, departments, tasks, or student life!",
 };
 
+type ChatLanguage = "en" | "zh-TW";
+
+function detectLanguage(text: string): ChatLanguage {
+  return /[㐀-鿿]/.test(text) ? "zh-TW" : "en";
+}
+
 export default function CCUGPTWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
@@ -51,6 +57,8 @@ export default function CCUGPTWidget() {
   const handleSend = useCallback(async () => {
     const text = input.trim();
     if (!text || isLoading) return;
+
+    const detectedLang = detectLanguage(text);
 
     const userMessage: Message = { role: "user", content: text };
     const nextMessages = [...messages, userMessage];
@@ -78,7 +86,9 @@ export default function CCUGPTWidget() {
           stream: false,
           system_prompt_template: "Custom",
           additional_instructions:
-            "You are a smart assistant. Always reply in the same language as the user's message — if the user writes in English, reply in English; if in Chinese, reply in Chinese. When multiple tools are available, prioritize tools marked as ephemeral (dynamically injected); only use built-in tools if the injected tools cannot handle the request.",
+            detectedLang === "zh-TW"
+              ? "You are a smart assistant. The user is writing in Traditional Chinese. You MUST reply in Traditional Chinese (zh-TW). You MUST pass language: \"zh-TW\" to every MCP tool call. Do not use English in your reply. When multiple tools are available, prioritize tools marked as ephemeral (dynamically injected); only use built-in tools if the injected tools cannot handle the request."
+              : "You are a smart assistant. The user is writing in English. You MUST reply in English. You MUST pass language: \"en\" to every MCP tool call. Do not use Chinese in your reply. When multiple tools are available, prioritize tools marked as ephemeral (dynamically injected); only use built-in tools if the injected tools cannot handle the request.",
           mcp_endpoints: [{ url: CCUGPT_MCP_ENDPOINT, timeout_ms: 5000 }],
           mcp_tool_mode: "priority",
         }),
