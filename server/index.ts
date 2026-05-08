@@ -239,6 +239,24 @@ async function startServer() {
     res.status(405).json({ error: "Method not allowed. Use POST." });
   });
 
+  app.post("/api/chat", express.json(), async (req, res) => {
+    try {
+      const response = await fetch("https://ccugpt.ccu.edu.tw/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer mcp-demo-2026",
+        },
+        body: JSON.stringify(req.body),
+      });
+      const data = await response.json();
+      res.status(response.status).json(data);
+    } catch (err) {
+      console.error("CCU GPT proxy error:", err);
+      res.status(502).json({ error: "Failed to reach CCU GPT service" });
+    }
+  });
+
   const staticPath =
     process.env.NODE_ENV === "production"
       ? path.resolve(__dirname, "public")

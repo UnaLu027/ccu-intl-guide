@@ -14,8 +14,6 @@ function pushGtmEvent(eventName: string, params: Record<string, unknown> = {}) {
   window.dataLayer.push({ event: eventName, ...params });
 }
 
-const CCUGPT_API_URL = "https://ccugpt.ccu.edu.tw/v1/chat/completions";
-const CCUGPT_API_KEY = "mcp-demo-2026";
 const CCUGPT_MCP_ENDPOINT = "https://ccu-intl-guide.onrender.com/mcp";
 
 interface Message {
@@ -67,11 +65,10 @@ export default function CCUGPTWidget() {
     });
 
     try {
-      const res = await fetch(CCUGPT_API_URL, {
+      const res = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${CCUGPT_API_KEY}`,
         },
         body: JSON.stringify({
           model: "gpt-5.4-nano",
