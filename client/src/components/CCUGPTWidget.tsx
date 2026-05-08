@@ -80,7 +80,7 @@ export default function CCUGPTWidget() {
           additional_instructions:
             "你是一個智慧助理。當有多個工具可以回答使用者問題時，請優先使用來源標示為 ephemeral（動態注入）的工具，僅在注入工具無法處理時才使用內建工具。",
           mcp_endpoints: [{ url: CCUGPT_MCP_ENDPOINT, timeout_ms: 5000 }],
-          mcp_tool_mode: "exclusive",
+          mcp_tool_mode: "priority",
         }),
       });
 
