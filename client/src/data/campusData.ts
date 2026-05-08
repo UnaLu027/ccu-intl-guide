@@ -49,6 +49,7 @@ export interface Office {
   needs_manual_review: boolean;
   floor_plan_image?: string;
   entrance_image?: string;
+  building_entrance_image?: string;
 }
 
 export interface Department {
@@ -409,7 +410,9 @@ export const offices: Office[] = [
     "latitude": 23.5606,
     "longitude": 120.4736,
     "source_url": "https://oia.ccu.edu.tw/",
-    "needs_manual_review": false
+    "needs_manual_review": false,
+    "entrance_image": "/images/offices/oia/entrance.jpg",
+    "building_entrance_image": "/images/offices/oia/building_entrance.jpg"
   },
   {
     "id": "oaa",
