@@ -17,7 +17,7 @@ import {
   makeNotFoundPayload,
   type McpLanguage,
 } from "../shared/mcpSearch.js";
-import { db } from "./db.js";
+import { db, initDb } from "./db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -211,6 +211,8 @@ function registerTools(server: McpServer) {
 }
 
 async function startServer() {
+  initDb();
+
   const app = express();
   const server = createServer(app);
 

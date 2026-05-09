@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node dist/index.js)",
+      "Bash(curl -s http://localhost:3000/api/admin/stats)",
+      "Bash(kill %1)"
+    ]
+  }
+}
