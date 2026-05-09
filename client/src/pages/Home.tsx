@@ -54,7 +54,7 @@ export default function Home() {
       <section className="relative overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0">
-          <img src={HERO_IMG} alt="" className="w-full h-full object-cover" />
+          <img src={HERO_IMG} alt="" className="w-full h-full object-cover" fetchpriority="high" />
           <div className="absolute inset-0 bg-gradient-to-b from-navy/85 via-navy/75 to-navy/90" />
         </div>
 
@@ -217,7 +217,7 @@ export default function Home() {
             href="/map"
             className="group relative overflow-hidden rounded-xl h-48 md:h-56"
           >
-            <img src={SEARCH_IMG} alt="" className="w-full h-full object-cover" />
+            <img src={SEARCH_IMG} alt="" className="w-full h-full object-cover" loading="lazy" />
             <div className="absolute inset-0 bg-gradient-to-t from-navy/80 to-navy/20 group-hover:from-navy/90 transition-colors" />
             <div className="absolute bottom-0 left-0 right-0 p-5">
               <div className="flex items-center gap-2 mb-1">
@@ -237,7 +237,7 @@ export default function Home() {
             href="/departments"
             className="group relative overflow-hidden rounded-xl h-48 md:h-56"
           >
-            <img src={CAMPUS_LIFE_IMG} alt="" className="w-full h-full object-cover" />
+            <img src={CAMPUS_LIFE_IMG} alt="" className="w-full h-full object-cover" loading="lazy" />
             <div className="absolute inset-0 bg-gradient-to-t from-navy/80 to-navy/20 group-hover:from-navy/90 transition-colors" />
             <div className="absolute bottom-0 left-0 right-0 p-5">
               <div className="flex items-center gap-2 mb-1">
@@ -257,7 +257,7 @@ export default function Home() {
             href="/offices"
             className="group relative overflow-hidden rounded-xl h-48 md:h-56"
           >
-            <img src={INDOOR_IMG} alt="" className="w-full h-full object-cover" />
+            <img src={INDOOR_IMG} alt="" className="w-full h-full object-cover" loading="lazy" />
             <div className="absolute inset-0 bg-gradient-to-t from-navy/80 to-navy/20 group-hover:from-navy/90 transition-colors" />
             <div className="absolute bottom-0 left-0 right-0 p-5">
               <div className="flex items-center gap-2 mb-1">

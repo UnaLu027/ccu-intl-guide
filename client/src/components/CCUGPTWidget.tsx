@@ -66,6 +66,9 @@ export default function CCUGPTWidget() {
     setMessages(nextMessages);
     setInput("");
     setIsLoading(true);
+    const slowTimer = setTimeout(() => {
+      setError("Server is waking up, please wait a moment…");
+    }, 6000);
     setError(null);
 
     pushGtmEvent("ccugpt_message_sent", {
@@ -89,10 +92,12 @@ export default function CCUGPTWidget() {
             detectedLang === "zh-TW"
               ? "You are a smart assistant. The user is writing in Traditional Chinese. You MUST reply in Traditional Chinese (zh-TW). You MUST pass language: \"zh-TW\" to every MCP tool call. Do not use English in your reply. When multiple tools are available, prioritize tools marked as ephemeral (dynamically injected); only use built-in tools if the injected tools cannot handle the request."
               : "You are a smart assistant. The user is writing in English. You MUST reply in English. You MUST pass language: \"en\" to every MCP tool call. Do not use Chinese in your reply. When multiple tools are available, prioritize tools marked as ephemeral (dynamically injected); only use built-in tools if the injected tools cannot handle the request.",
-          mcp_endpoints: [{ url: CCUGPT_MCP_ENDPOINT, timeout_ms: 5000 }],
+          mcp_endpoints: [{ url: CCUGPT_MCP_ENDPOINT, timeout_ms: 15000 }],
           mcp_tool_mode: "priority",
         }),
       });
+      clearTimeout(slowTimer);
+      setError(null);
 
       if (!res.ok) throw new Error(`API error ${res.status}: ${res.statusText}`);
 
@@ -102,6 +107,7 @@ export default function CCUGPTWidget() {
 
       setMessages((prev) => [...prev, { role: "assistant", content: assistantContent }]);
     } catch (err) {
+      clearTimeout(slowTimer);
       const isCorsOrNetwork =
         err instanceof TypeError && err.message.toLowerCase().includes("fetch");
       const message = isCorsOrNetwork

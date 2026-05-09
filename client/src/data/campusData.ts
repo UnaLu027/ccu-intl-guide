@@ -5723,6 +5723,30 @@ const SEARCH_SYNONYMS: Record<string, string[]> = {
   "國際處": ["oia", "office of international affairs"],
   "教務處": ["oaa", "office of academic affairs"],
   "資訊處": ["it center", "information technology office"],
+
+  "歷史": ["history", "歷史學系", "department of history"],
+  "history": ["歷史", "歷史學系"],
+  "哲學": ["philosophy", "哲學系"],
+  "philosophy": ["哲學", "哲學系"],
+  "中文": ["chinese literature", "中國文學系", "chinese"],
+  "心理": ["psychology", "心理學系"],
+  "psychology": ["心理", "心理學系"],
+  "法律": ["law", "法律學系"],
+  "law": ["法律", "法律學系"],
+  "電機": ["electrical engineering", "ee", "電機工程"],
+  "資工": ["computer science", "csie", "資訊工程"],
+  "機械": ["mechanical engineering", "mechanical"],
+  "化工": ["chemical engineering", "化學工程"],
+  "mis": ["資訊管理", "information management", "資管"],
+  "資管": ["mis", "information management", "資訊管理"],
+  "經濟": ["economics", "經濟學系"],
+  "economics": ["經濟", "經濟學系"],
+  "財金": ["finance", "財務金融"],
+  "企管": ["business administration", "business", "企業管理"],
+  "傳播": ["communication", "傳播學系"],
+  "勞工": ["labor relations", "勞工關係"],
+  "社福": ["social welfare", "社會福利"],
+  "政治": ["political science", "政治學系"],
 };
 
 function normalizeText(value: string): string {
@@ -5832,7 +5856,7 @@ export function searchByNeed(query: string, _language: "en" | "zh" = "en"): { of
 
       return { item: task, score };
     })
-    .filter(({ score }) => score > 0)
+    .filter(({ score }) => score >= 3)
     .sort((a, b) => b.score - a.score);
 
   const matchedTaskUnitIds = new Set(
@@ -5865,6 +5889,8 @@ export function searchByNeed(query: string, _language: "en" | "zh" = "en"): { of
       ]);
 
       let score = countMatches(searchableText, queryTerms);
+      score += countMatches(office.id, queryTerms) * 6;
+      score += (office.name_en.toLowerCase().includes(queryTerms[0] ?? "") ? 4 : 0);
 
       score += countMatches(office.name_zh, queryTerms) * 3;
       score += countMatches(office.name_en, queryTerms) * 3;
@@ -5877,7 +5903,7 @@ export function searchByNeed(query: string, _language: "en" | "zh" = "en"): { of
 
       return { item: office, score };
     })
-    .filter(({ score }) => score > 0)
+    .filter(({ score }) => score >= 3)
     .sort((a, b) => b.score - a.score);
 
   const scoredDepartments = departments
@@ -5901,6 +5927,8 @@ export function searchByNeed(query: string, _language: "en" | "zh" = "en"): { of
       ]);
 
       let score = countMatches(searchableText, queryTerms);
+      score += countMatches(dept.id, queryTerms) * 6;
+      score += (dept.name_en.toLowerCase().includes(queryTerms[0] ?? "") ? 4 : 0);
 
       score += countMatches(dept.name_zh, queryTerms) * 3;
       score += countMatches(dept.name_en, queryTerms) * 3;
@@ -5913,13 +5941,13 @@ export function searchByNeed(query: string, _language: "en" | "zh" = "en"): { of
 
       return { item: dept, score };
     })
-    .filter(({ score }) => score > 0)
+    .filter(({ score }) => score >= 3)
     .sort((a, b) => b.score - a.score);
 
   return {
-    tasks: scoredTasks.slice(0, 12).map(({ item }) => item),
-    offices: scoredOffices.slice(0, 8).map(({ item }) => item),
-    departments: scoredDepartments.slice(0, 8).map(({ item }) => item),
+    tasks: scoredTasks.slice(0, 15).map(({ item }) => item),
+    offices: scoredOffices.slice(0, 10).map(({ item }) => item),
+    departments: scoredDepartments.slice(0, 10).map(({ item }) => item),
   };
 }
 

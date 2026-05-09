@@ -269,6 +269,14 @@ async function startServer() {
     res.sendFile(path.join(staticPath, "index.html"));
   });
 
+  // Keep Render from sleeping
+  const SELF_URL = process.env.RENDER_EXTERNAL_URL || "https://ccu-intl-guide.onrender.com";
+  setInterval(async () => {
+    try {
+      await fetch(`${SELF_URL}/mcp`, { method: "GET" });
+    } catch {}
+  }, 13 * 60 * 1000);
+
   const port = process.env.PORT || 3000;
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
