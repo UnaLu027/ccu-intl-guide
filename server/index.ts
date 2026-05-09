@@ -17,6 +17,7 @@ import {
   makeNotFoundPayload,
   type McpLanguage,
 } from "../shared/mcpSearch.js";
+import { db } from "./db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -259,6 +260,40 @@ async function startServer() {
     }
   });
 
+  // ── Admin API ────────────────────────────────────────────────────────────────
+  app.get("/api/admin/stats", (_req, res) => {
+    const totalSearches = (db.prepare("SELECT COUNT(*) as n FROM search_events").get() as { n: number }).n;
+    const totalConversations = (db.prepare("SELECT COUNT(*) as n FROM ccugpt_conversations").get() as { n: number }).n;
+    const totalMessages = (db.prepare("SELECT COUNT(*) as n FROM ccugpt_messages").get() as { n: number }).n;
+    const totalSessions = (db.prepare("SELECT COUNT(*) as n FROM sessions").get() as { n: number }).n;
+    const topQueries = db.prepare(
+      "SELECT query, COUNT(*) as count FROM search_events GROUP BY normalized_query ORDER BY count DESC LIMIT 10"
+    ).all();
+    res.json({ totalSearches, totalConversations, totalMessages, totalSessions, topQueries });
+  });
+
+  app.get("/api/admin/search-events", (_req, res) => {
+    const events = db.prepare(
+      "SELECT id, created_at, query, language, result_count, result_types, response_time_ms, page_path FROM search_events ORDER BY created_at DESC LIMIT 200"
+    ).all();
+    res.json(events);
+  });
+
+  app.get("/api/admin/ccugpt-conversations", (_req, res) => {
+    const conversations = db.prepare(
+      "SELECT id, created_at, updated_at, language, model, status, page_path FROM ccugpt_conversations ORDER BY created_at DESC LIMIT 100"
+    ).all() as { id: number }[];
+
+    const result = conversations.map((conv) => {
+      const messages = db.prepare(
+        "SELECT role, content, created_at FROM ccugpt_messages WHERE conversation_id = ? ORDER BY created_at ASC"
+      ).all(conv.id);
+      return { ...conv, messages };
+    });
+    res.json(result);
+  });
+
+  // ── Static / SPA ─────────────────────────────────────────────────────────────
   const staticPath =
     process.env.NODE_ENV === "production"
       ? path.resolve(__dirname, "public")

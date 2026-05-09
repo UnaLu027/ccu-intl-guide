@@ -15,6 +15,7 @@ import Tasks from "./pages/Tasks";
 import TaskDetail from "./pages/TaskDetail";
 import RelatedSites from "./pages/RelatedSites";
 import Navigation from "./pages/Navigation";
+import Admin from "./pages/Admin";
 import CCUGPTWidget from "@/components/CCUGPTWidget";
 
 function Router() {
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/task/:id" component={TaskDetail} />
       <Route path="/related-sites" component={RelatedSites} />
       <Route path="/navigate/:type/:id" component={Navigation} />
+      <Route path="/admin" component={Admin} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
