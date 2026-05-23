@@ -1,3 +1,3 @@
 import { initDb } from "./db.ts";
 
-initDb();
+void initDb();

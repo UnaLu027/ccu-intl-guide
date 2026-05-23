@@ -1,18 +1,148 @@
 import { DatabaseSync } from "node:sqlite";
-import { readFileSync, mkdirSync } from "fs";
+import { mkdirSync, readFileSync } from "fs";
+import { createRequire } from "module";
 import path from "path";
+import type { Pool as PgPool, PoolClient } from "pg";
+
+const require = createRequire(import.meta.url);
+const { Pool, types: pgTypes } = require("pg") as typeof import("pg");
+
+type QueryParam = string | number | null;
+
+type DbRunResult = {
+  changes?: number;
+  lastInsertRowid?: number | string;
+};
+
+type Statement = {
+  get<T = unknown>(...params: QueryParam[]): Promise<T | undefined>;
+  all<T = unknown>(...params: QueryParam[]): Promise<T[]>;
+  run(...params: QueryParam[]): Promise<DbRunResult>;
+};
 
 const DB_PATH =
   process.env.DATABASE_PATH ??
   path.join(process.cwd(), "data", "ccu-guide.sqlite");
 
-mkdirSync(path.dirname(DB_PATH), { recursive: true });
+const DATABASE_URL = process.env.DATABASE_URL;
 
-export const db = new DatabaseSync(DB_PATH);
+function toPostgresSql(sql: string) {
+  let index = 0;
+  return sql.replace(/\?/g, () => `$${++index}`);
+}
 
-export function initDb(): void {
-  db.exec(
-    readFileSync(path.join(process.cwd(), "database", "schema.sql"), "utf-8")
-  );
-  console.log(`[db] Initialized: ${DB_PATH}`);
+function withReturningId(sql: string) {
+  if (!/^\s*insert\s+into\s+/i.test(sql) || /\breturning\b/i.test(sql)) {
+    return sql;
+  }
+  return `${sql} RETURNING id`;
+}
+
+class SqliteDatabaseAdapter {
+  readonly dialect = "sqlite";
+  private readonly sqlite: DatabaseSync;
+
+  constructor() {
+    mkdirSync(path.dirname(DB_PATH), { recursive: true });
+    this.sqlite = new DatabaseSync(DB_PATH);
+  }
+
+  async init() {
+    this.exec(readFileSync(path.join(process.cwd(), "database", "schema.sql"), "utf-8"));
+    console.log(`[db] Initialized SQLite: ${DB_PATH}`);
+  }
+
+  prepare(sql: string): Statement {
+    const statement = this.sqlite.prepare(sql);
+    return {
+      get: async <T = unknown>(...params: QueryParam[]) => statement.get(...params) as T | undefined,
+      all: async <T = unknown>(...params: QueryParam[]) => statement.all(...params) as T[],
+      run: async (...params: QueryParam[]) => statement.run(...params) as DbRunResult,
+    };
+  }
+
+  exec(sql: string) {
+    this.sqlite.exec(sql);
+  }
+
+  async transaction(action: () => Promise<void>) {
+    this.exec("BEGIN IMMEDIATE");
+    try {
+      await action();
+      this.exec("COMMIT");
+    } catch (err) {
+      this.exec("ROLLBACK");
+      throw err;
+    }
+  }
+}
+
+class PostgresDatabaseAdapter {
+  readonly dialect = "postgres";
+  private readonly pool: PgPool;
+  private activeClient: PoolClient | null = null;
+
+  constructor(connectionString: string) {
+    pgTypes.setTypeParser(20, (value: string) => Number(value));
+    this.pool = new Pool({ connectionString });
+  }
+
+  async init() {
+    await this.exec(readFileSync(path.join(process.cwd(), "database", "schema.postgres.sql"), "utf-8"));
+    console.log("[db] Initialized PostgreSQL from DATABASE_URL");
+  }
+
+  prepare(sql: string): Statement {
+    const query = (querySql: string, params: QueryParam[]) =>
+      this.activeClient
+        ? this.activeClient.query(querySql, params)
+        : this.pool.query(querySql, params);
+
+    return {
+      get: async <T = unknown>(...params: QueryParam[]) => {
+        const result = await query(toPostgresSql(sql), params);
+        return result.rows[0] as T | undefined;
+      },
+      all: async <T = unknown>(...params: QueryParam[]) => {
+        const result = await query(toPostgresSql(sql), params);
+        return result.rows as T[];
+      },
+      run: async (...params: QueryParam[]) => {
+        const result = await query(toPostgresSql(withReturningId(sql)), params);
+        return {
+          changes: result.rowCount ?? 0,
+          lastInsertRowid: result.rows[0]?.id,
+        };
+      },
+    };
+  }
+
+  async exec(sql: string) {
+    await this.pool.query(sql);
+  }
+
+  async transaction(action: () => Promise<void>) {
+    const client = await this.pool.connect();
+
+    try {
+      await client.query("BEGIN");
+      this.activeClient = client;
+      await action();
+      await client.query("COMMIT");
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      this.activeClient = null;
+      client.release();
+    }
+  }
+}
+
+export const db = DATABASE_URL
+  ? new PostgresDatabaseAdapter(DATABASE_URL)
+  : new SqliteDatabaseAdapter();
+
+export function initDb(): Promise<void> {
+  return db.init();
 }
