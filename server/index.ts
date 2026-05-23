@@ -659,7 +659,7 @@ async function startServer() {
     const totalMessages = ((await db.prepare("SELECT COUNT(*) as n FROM ccugpt_messages").get()) as { n: number }).n;
     const totalSessions = ((await db.prepare("SELECT COUNT(*) as n FROM sessions").get()) as { n: number }).n;
     const topQueries = await db.prepare(
-      "SELECT query, COUNT(*) as count FROM search_events GROUP BY normalized_query ORDER BY count DESC, MAX(created_at) DESC LIMIT 10"
+      "SELECT MIN(query) as query, COUNT(*) as count FROM search_events GROUP BY normalized_query ORDER BY count DESC, MAX(created_at) DESC LIMIT 10"
     ).all();
     const recentActivity = await db.prepare(
       [
