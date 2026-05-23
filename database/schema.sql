@@ -123,6 +123,19 @@ CREATE TABLE IF NOT EXISTS feedback_events (
   FOREIGN KEY (session_id) REFERENCES sessions(id)
 );
 
+CREATE TABLE IF NOT EXISTS content_drafts (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_at   TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at   TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  content_type TEXT NOT NULL,
+  item_id      TEXT NOT NULL,
+  item_label   TEXT NOT NULL,
+  before_json  TEXT NOT NULL,
+  after_json   TEXT NOT NULL,
+  status       TEXT NOT NULL DEFAULT 'draft',
+  note         TEXT
+);
+
 -- ─── Indexes ──────────────────────────────────────────────────────────────────
 CREATE INDEX IF NOT EXISTS idx_search_events_created_at       ON search_events(created_at);
 CREATE INDEX IF NOT EXISTS idx_search_events_query            ON search_events(query);
@@ -136,3 +149,5 @@ CREATE INDEX IF NOT EXISTS idx_ccugpt_req_session_id          ON ccugpt_requests
 CREATE INDEX IF NOT EXISTS idx_ccugpt_req_created_at          ON ccugpt_requests(created_at);
 CREATE INDEX IF NOT EXISTS idx_mcp_tool_conversation_id       ON mcp_tool_call_events(conversation_id);
 CREATE INDEX IF NOT EXISTS idx_feedback_session_id            ON feedback_events(session_id);
+CREATE INDEX IF NOT EXISTS idx_content_drafts_created_at      ON content_drafts(created_at);
+CREATE INDEX IF NOT EXISTS idx_content_drafts_item            ON content_drafts(content_type, item_id);

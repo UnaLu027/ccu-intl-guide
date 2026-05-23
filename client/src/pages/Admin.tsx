@@ -1,9 +1,16 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  AlertCircle,
+  LockKeyhole,
+  LogOut,
+  MessageSquare,
+  RefreshCw,
+  Search,
+  Users,
+} from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-// ── Types ────────────────────────────────────────────────────────────────────
 
 interface Stats {
   totalSearches: number;
@@ -11,6 +18,12 @@ interface Stats {
   totalMessages: number;
   totalSessions: number;
   topQueries: { query: string; count: number }[];
+  recentActivity?: {
+    type: "search" | "ccugpt";
+    created_at: string;
+    label: string;
+    page_path: string | null;
+  }[];
 }
 
 interface SearchEvent {
@@ -41,23 +54,93 @@ interface Conversation {
   messages: Message[];
 }
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+interface AdminData {
+  stats: Stats;
+  searchEvents: SearchEvent[];
+  conversations: Conversation[];
+  drafts: ContentDraft[];
+}
+
+interface AuthStatus {
+  authenticated: boolean;
+  passwordConfigured: boolean;
+}
+
+type ContentType = "office" | "department" | "task";
+
+interface ContentItem {
+  type: ContentType;
+  id: string;
+  label: string;
+  data: Record<string, unknown>;
+}
+
+interface ContentDraft {
+  id: number;
+  created_at: string;
+  updated_at: string;
+  content_type: ContentType;
+  item_id: string;
+  item_label: string;
+  before_json: string;
+  after_json: string;
+  status: string;
+  note: string | null;
+}
+
+type ApiError = Error & { status?: number };
 
 function fmt(ts: string) {
   return new Date(ts).toLocaleString("zh-TW", { hour12: false });
 }
 
-function roleColor(role: string) {
-  return role === "user" ? "bg-blue-50 border-blue-200" : "bg-gray-50 border-gray-200";
+async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(url, {
+    credentials: "same-origin",
+    ...init,
+    headers: {
+      ...(init?.headers ?? {}),
+    },
+  });
+  const contentType = res.headers.get("content-type") ?? "";
+
+  if (!res.ok) {
+    const error = new Error(`${url} returned ${res.status}`) as ApiError;
+    error.status = res.status;
+    throw error;
+  }
+
+  if (!contentType.includes("application/json")) {
+    throw new Error(`${url} did not return JSON. Make sure the Express backend is running.`);
+  }
+
+  return res.json() as Promise<T>;
 }
 
-// ── Components ───────────────────────────────────────────────────────────────
+function EmptyState({ title, description }: { title: string; description: string }) {
+  return (
+    <div className="flex min-h-48 flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
+      <AlertCircle className="mb-3 h-8 w-8 text-muted-foreground" />
+      <p className="font-semibold">{title}</p>
+      <p className="mt-1 max-w-md text-sm text-muted-foreground">{description}</p>
+    </div>
+  );
+}
 
-function StatCard({ label, value }: { label: string; value: number }) {
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof Search;
+  label: string;
+  value: number;
+}) {
   return (
     <Card>
-      <CardHeader className="pb-1">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
+        <Icon className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
         <p className="text-3xl font-bold">{value.toLocaleString()}</p>
@@ -66,46 +149,157 @@ function StatCard({ label, value }: { label: string; value: number }) {
   );
 }
 
-function OverviewTab({ stats }: { stats: Stats }) {
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <StatCard label="搜尋次數" value={stats.totalSearches} />
-        <StatCard label="CCUGPT 對話" value={stats.totalConversations} />
-        <StatCard label="CCUGPT 訊息" value={stats.totalMessages} />
-        <StatCard label="Sessions" value={stats.totalSessions} />
-      </div>
+function LoginForm({
+  passwordConfigured,
+  onLogin,
+}: {
+  passwordConfigured: boolean;
+  onLogin: (password: string) => Promise<void>;
+}) {
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-      <Card>
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      await onLogin(password);
+      setPassword("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "登入失敗");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
+      <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-base">熱門搜尋關鍵字 Top 10</CardTitle>
+          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-md bg-navy text-white">
+            <LockKeyhole className="h-5 w-5" />
+          </div>
+          <CardTitle className="text-xl">管理後台登入</CardTitle>
+          <p className="text-sm text-muted-foreground">請輸入管理員密碼以查看使用紀錄與 CCUGPT 對話。</p>
         </CardHeader>
         <CardContent>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b text-left text-muted-foreground">
-                <th className="pb-2 pr-4">#</th>
-                <th className="pb-2 pr-4">查詢</th>
-                <th className="pb-2 text-right">次數</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stats.topQueries.map((q, i) => (
-                <tr key={i} className="border-b last:border-0">
-                  <td className="py-1.5 pr-4 text-muted-foreground">{i + 1}</td>
-                  <td className="py-1.5 pr-4 font-medium">{q.query}</td>
-                  <td className="py-1.5 text-right">{q.count}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {!passwordConfigured && (
+            <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              production 尚未設定 ADMIN_PASSWORD，後台登入已停用。
+            </div>
+          )}
+
+          <form onSubmit={submit} className="space-y-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="admin-password">
+                管理員密碼
+              </label>
+              <input
+                id="admin-password"
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                disabled={!passwordConfigured || submitting}
+                className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-navy/30 disabled:opacity-60"
+                autoComplete="current-password"
+              />
+            </div>
+
+            {error && <p className="text-sm text-red-600">{error}</p>}
+
+            <button
+              type="submit"
+              disabled={!passwordConfigured || submitting || password.trim().length === 0}
+              className="w-full rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white hover:bg-navy-light disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {submitting ? "登入中..." : "登入"}
+            </button>
+          </form>
         </CardContent>
       </Card>
     </div>
   );
 }
 
+function OverviewTab({ stats }: { stats: Stats }) {
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard icon={Search} label="搜尋總次數" value={stats.totalSearches} />
+        <StatCard icon={MessageSquare} label="CCUGPT 對話數" value={stats.totalConversations} />
+        <StatCard icon={MessageSquare} label="CCUGPT 訊息數" value={stats.totalMessages} />
+        <StatCard icon={Users} label="Session 數" value={stats.totalSessions} />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">熱門搜尋 Top 10</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {stats.topQueries.length === 0 ? (
+              <EmptyState title="目前尚無搜尋資料" description="使用者從首頁搜尋後，資料會自動寫入這裡。" />
+            ) : (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b text-left text-muted-foreground">
+                    <th className="pb-2 pr-4">#</th>
+                    <th className="pb-2 pr-4">關鍵字</th>
+                    <th className="pb-2 text-right">次數</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stats.topQueries.map((q, i) => (
+                    <tr key={`${q.query}-${i}`} className="border-b last:border-0">
+                      <td className="py-2 pr-4 text-muted-foreground">{i + 1}</td>
+                      <td className="py-2 pr-4 font-medium">{q.query}</td>
+                      <td className="py-2 text-right">{q.count}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">最近活動</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!stats.recentActivity || stats.recentActivity.length === 0 ? (
+              <EmptyState title="目前尚無活動" description="搜尋與 CCUGPT 使用紀錄會依時間出現在這裡。" />
+            ) : (
+              <div className="space-y-3">
+                {stats.recentActivity.map((item, i) => (
+                  <div key={`${item.type}-${item.created_at}-${i}`} className="rounded border p-3">
+                    <div className="mb-1 flex items-center gap-2">
+                      <Badge variant={item.type === "search" ? "default" : "secondary"}>
+                        {item.type === "search" ? "搜尋" : "CCUGPT"}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">{fmt(item.created_at)}</span>
+                    </div>
+                    <p className="line-clamp-2 text-sm">{item.label}</p>
+                    {item.page_path && <p className="mt-1 text-xs text-muted-foreground">{item.page_path}</p>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
 function SearchTab({ events }: { events: SearchEvent[] }) {
+  if (events.length === 0) {
+    return <EmptyState title="目前尚無搜尋紀錄" description="進入 /search?q=... 的查詢會自動寫入 search_events。" />;
+  }
+
   return (
     <Card>
       <CardContent className="p-0">
@@ -116,22 +310,22 @@ function SearchTab({ events }: { events: SearchEvent[] }) {
                 <th className="px-4 py-2">時間</th>
                 <th className="px-4 py-2">查詢</th>
                 <th className="px-4 py-2">語言</th>
+                <th className="px-4 py-2">類型</th>
                 <th className="px-4 py-2 text-right">結果數</th>
-                <th className="px-4 py-2 text-right">回應(ms)</th>
+                <th className="px-4 py-2 text-right">耗時</th>
                 <th className="px-4 py-2">頁面</th>
               </tr>
             </thead>
             <tbody>
-              {events.map((e) => (
-                <tr key={e.id} className="border-b last:border-0 hover:bg-muted/30">
-                  <td className="px-4 py-2 whitespace-nowrap text-muted-foreground">{fmt(e.created_at)}</td>
-                  <td className="px-4 py-2 max-w-xs truncate font-medium">{e.query}</td>
-                  <td className="px-4 py-2">
-                    {e.language && <Badge variant="outline">{e.language}</Badge>}
-                  </td>
-                  <td className="px-4 py-2 text-right">{e.result_count}</td>
-                  <td className="px-4 py-2 text-right">{e.response_time_ms ?? "—"}</td>
-                  <td className="px-4 py-2 max-w-[140px] truncate text-xs text-muted-foreground">{e.page_path ?? "—"}</td>
+              {events.map((event) => (
+                <tr key={event.id} className="border-b last:border-0 hover:bg-muted/30">
+                  <td className="whitespace-nowrap px-4 py-2 text-muted-foreground">{fmt(event.created_at)}</td>
+                  <td className="max-w-xs truncate px-4 py-2 font-medium">{event.query}</td>
+                  <td className="px-4 py-2">{event.language && <Badge variant="outline">{event.language}</Badge>}</td>
+                  <td className="px-4 py-2 text-xs text-muted-foreground">{event.result_types || "-"}</td>
+                  <td className="px-4 py-2 text-right">{event.result_count}</td>
+                  <td className="px-4 py-2 text-right">{event.response_time_ms ?? "-"} ms</td>
+                  <td className="max-w-[180px] truncate px-4 py-2 text-xs text-muted-foreground">{event.page_path ?? "-"}</td>
                 </tr>
               ))}
             </tbody>
@@ -142,37 +336,39 @@ function SearchTab({ events }: { events: SearchEvent[] }) {
   );
 }
 
-function ConversationRow({ conv }: { conv: Conversation }) {
+function roleColor(role: string) {
+  return role === "user" ? "border-blue-200 bg-blue-50" : "border-gray-200 bg-gray-50";
+}
+
+function ConversationRow({ conversation }: { conversation: Conversation }) {
   const [open, setOpen] = useState(false);
+
   return (
     <>
-      <tr
-        className="cursor-pointer border-b hover:bg-muted/30"
-        onClick={() => setOpen((v) => !v)}
-      >
-        <td className="px-4 py-2 text-muted-foreground whitespace-nowrap">{fmt(conv.created_at)}</td>
-        <td className="px-4 py-2">{conv.messages.length} 則</td>
+      <tr className="cursor-pointer border-b hover:bg-muted/30" onClick={() => setOpen((value) => !value)}>
+        <td className="whitespace-nowrap px-4 py-2 text-muted-foreground">{fmt(conversation.created_at)}</td>
+        <td className="px-4 py-2">{conversation.messages.length} 則</td>
+        <td className="px-4 py-2">{conversation.language && <Badge variant="outline">{conversation.language}</Badge>}</td>
+        <td className="px-4 py-2 text-xs text-muted-foreground">{conversation.model ?? "-"}</td>
         <td className="px-4 py-2">
-          {conv.language && <Badge variant="outline">{conv.language}</Badge>}
+          <Badge variant={conversation.status === "active" ? "default" : "secondary"}>{conversation.status}</Badge>
         </td>
-        <td className="px-4 py-2 text-xs text-muted-foreground">{conv.model ?? "—"}</td>
-        <td className="px-4 py-2">
-          <Badge variant={conv.status === "active" ? "default" : "secondary"}>{conv.status}</Badge>
-        </td>
-        <td className="px-4 py-2 text-xs text-muted-foreground truncate max-w-[140px]">{conv.page_path ?? "—"}</td>
-        <td className="px-4 py-2 text-muted-foreground">{open ? "▲" : "▼"}</td>
+        <td className="max-w-[180px] truncate px-4 py-2 text-xs text-muted-foreground">{conversation.page_path ?? "-"}</td>
+        <td className="px-4 py-2 text-muted-foreground">{open ? "收合" : "展開"}</td>
       </tr>
       {open && (
         <tr>
-          <td colSpan={7} className="bg-muted/10 px-6 pb-4 pt-2">
+          <td colSpan={7} className="bg-muted/10 px-6 py-4">
             <div className="space-y-2">
-              {conv.messages.map((m, i) => (
-                <div key={i} className={`rounded border p-3 text-sm ${roleColor(m.role)}`}>
+              {conversation.messages.map((message, i) => (
+                <div key={`${message.created_at}-${i}`} className={`rounded border p-3 text-sm ${roleColor(message.role)}`}>
                   <div className="mb-1 flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">{m.role}</Badge>
-                    <span className="text-xs text-muted-foreground">{fmt(m.created_at)}</span>
+                    <Badge variant="outline" className="text-xs">
+                      {message.role}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">{fmt(message.created_at)}</span>
                   </div>
-                  <p className="whitespace-pre-wrap">{m.content}</p>
+                  <p className="whitespace-pre-wrap">{message.content}</p>
                 </div>
               ))}
             </div>
@@ -184,6 +380,10 @@ function ConversationRow({ conv }: { conv: Conversation }) {
 }
 
 function CCUGPTTab({ conversations }: { conversations: Conversation[] }) {
+  if (conversations.length === 0) {
+    return <EmptyState title="目前尚無 CCUGPT 對話" description="使用者送出 CCUGPT 訊息後，user 與 assistant 訊息都會寫入資料庫。" />;
+  }
+
   return (
     <Card>
       <CardContent className="p-0">
@@ -201,8 +401,8 @@ function CCUGPTTab({ conversations }: { conversations: Conversation[] }) {
               </tr>
             </thead>
             <tbody>
-              {conversations.map((conv) => (
-                <ConversationRow key={conv.id} conv={conv} />
+              {conversations.map((conversation) => (
+                <ConversationRow key={conversation.id} conversation={conversation} />
               ))}
             </tbody>
           </table>
@@ -212,57 +412,407 @@ function CCUGPTTab({ conversations }: { conversations: Conversation[] }) {
   );
 }
 
-// ── Page ─────────────────────────────────────────────────────────────────────
+function valueToText(value: unknown) {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => (typeof item === "object" && item !== null ? JSON.stringify(item) : String(item)))
+      .join("\n");
+  }
+  if (typeof value === "object" && value !== null) return JSON.stringify(value, null, 2);
+  return value == null ? "" : String(value);
+}
 
-export default function Admin() {
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [searchEvents, setSearchEvents] = useState<SearchEvent[]>([]);
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [loading, setLoading] = useState(true);
+function textToValue(original: unknown, value: string) {
+  if (Array.isArray(original)) return value.split("\n").map((line) => line.trim()).filter(Boolean);
+  if (typeof original === "number") return Number(value);
+  if (typeof original === "boolean") return value === "true";
+  if (typeof original === "object" && original !== null) {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return original;
+    }
+  }
+  return value;
+}
+
+function diffFields(before: Record<string, unknown>, after: Record<string, unknown>) {
+  return Object.keys({ ...before, ...after }).filter(
+    (key) => JSON.stringify(before[key]) !== JSON.stringify(after[key])
+  );
+}
+
+function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
+  const [query, setQuery] = useState("");
+  const [items, setItems] = useState<ContentItem[]>([]);
+  const [selected, setSelected] = useState<ContentItem | null>(null);
+  const [formData, setFormData] = useState<Record<string, unknown>>({});
+  const [note, setNote] = useState("");
+  const [loadingItems, setLoadingItems] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const searchItems = async () => {
+    setLoadingItems(true);
+    setMessage(null);
+    try {
+      const result = await fetchJson<ContentItem[]>(`/api/admin/content-items?query=${encodeURIComponent(query)}`);
+      setItems(result);
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "搜尋失敗");
+    } finally {
+      setLoadingItems(false);
+    }
+  };
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api/admin/stats").then((r) => r.json()),
-      fetch("/api/admin/search-events").then((r) => r.json()),
-      fetch("/api/admin/ccugpt-conversations").then((r) => r.json()),
-    ]).then(([s, se, conv]) => {
-      setStats(s);
-      setSearchEvents(se);
-      setConversations(conv);
-      setLoading(false);
-    });
+    void searchItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center text-muted-foreground">
-        載入中...
-      </div>
-    );
+  const choose = (item: ContentItem) => {
+    setSelected(item);
+    setFormData(item.data);
+    setNote("");
+    setMessage(null);
+  };
+
+  const changedFields = selected ? diffFields(selected.data, formData) : [];
+
+  const saveDraft = async () => {
+    if (!selected) return;
+    setSaving(true);
+    setMessage(null);
+    try {
+      await fetchJson<{ ok: true; id: number }>("/api/admin/content-drafts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content_type: selected.type,
+          item_id: selected.id,
+          after_data: formData,
+          note,
+        }),
+      });
+      setMessage("已儲存為修改草稿。正式套用前，網站資料不會被覆蓋。");
+      await onSaved();
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "儲存草稿失敗");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-[360px_1fr]">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">搜尋要修改的內容</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <form
+            className="flex gap-2"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void searchItems();
+            }}
+          >
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="國際處 / 學生證 / 財金系辦"
+              className="min-w-0 flex-1 rounded-md border px-3 py-2 text-sm"
+            />
+            <button type="submit" className="rounded-md border px-3 py-2 text-sm font-medium">
+              {loadingItems ? "搜尋中" : "搜尋"}
+            </button>
+          </form>
+
+          <div className="max-h-[560px] space-y-2 overflow-y-auto">
+            {items.map((item) => (
+              <button
+                key={`${item.type}-${item.id}`}
+                type="button"
+                onClick={() => choose(item)}
+                className="w-full rounded-md border p-3 text-left text-sm hover:bg-muted"
+              >
+                <div className="mb-1 flex items-center gap-2">
+                  <Badge variant="outline">{item.type}</Badge>
+                  <span className="font-mono text-xs text-muted-foreground">{item.id}</span>
+                </div>
+                <div className="font-medium">{item.label}</div>
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{selected ? `編輯：${selected.label}` : "尚未選擇資料"}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!selected ? (
+            <EmptyState title="請先選擇一筆資料" description="左側搜尋並選取行政單位、系所或任務流程後，這裡會產生表單欄位。" />
+          ) : (
+            <div className="space-y-5">
+              <div className="grid gap-3 md:grid-cols-2">
+                {Object.entries(selected.data).map(([key, original]) => (
+                  <label key={key} className="block">
+                    <span className="mb-1 block text-xs font-semibold text-muted-foreground">{key}</span>
+                    {Array.isArray(original) || (typeof original === "object" && original !== null) ? (
+                      <textarea
+                        value={valueToText(formData[key])}
+                        onChange={(event) =>
+                          setFormData((current) => ({
+                            ...current,
+                            [key]: textToValue(original, event.target.value),
+                          }))
+                        }
+                        rows={Array.isArray(original) ? 4 : 6}
+                        className="w-full rounded-md border px-3 py-2 text-sm"
+                      />
+                    ) : (
+                      <input
+                        value={valueToText(formData[key])}
+                        onChange={(event) =>
+                          setFormData((current) => ({
+                            ...current,
+                            [key]: textToValue(original, event.target.value),
+                          }))
+                        }
+                        className="w-full rounded-md border px-3 py-2 text-sm"
+                      />
+                    )}
+                  </label>
+                ))}
+              </div>
+
+              <div className="rounded-md border p-4">
+                <div className="mb-3 font-semibold">修改前後對照</div>
+                {changedFields.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">尚未修改任何欄位。</p>
+                ) : (
+                  <div className="space-y-3">
+                    {changedFields.map((key) => (
+                      <div key={key} className="grid gap-2 md:grid-cols-2">
+                        <div className="rounded bg-red-50 p-3">
+                          <div className="mb-1 text-xs font-semibold text-red-700">原本：{key}</div>
+                          <pre className="whitespace-pre-wrap text-xs">{valueToText(selected.data[key])}</pre>
+                        </div>
+                        <div className="rounded bg-green-50 p-3">
+                          <div className="mb-1 text-xs font-semibold text-green-700">修改後：{key}</div>
+                          <pre className="whitespace-pre-wrap text-xs">{valueToText(formData[key])}</pre>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <label className="block">
+                <span className="mb-1 block text-sm font-medium">修改備註</span>
+                <textarea
+                  value={note}
+                  onChange={(event) => setNote(event.target.value)}
+                  rows={3}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  placeholder="例如：更新國際處辦公時間與分機"
+                />
+              </label>
+
+              {message && <p className="text-sm text-muted-foreground">{message}</p>}
+
+              <button
+                type="button"
+                onClick={() => void saveDraft()}
+                disabled={saving || changedFields.length === 0}
+                className="rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white hover:bg-navy-light disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {saving ? "儲存中..." : "儲存修改草稿"}
+              </button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function DraftsTab({ drafts }: { drafts: ContentDraft[] }) {
+  if (drafts.length === 0) {
+    return <EmptyState title="目前尚無修改紀錄" description="內容維護儲存草稿後，修改前後 JSON 會保留在這裡。" />;
+  }
+
+  return (
+    <div className="space-y-3">
+      {drafts.map((draft) => (
+        <Card key={draft.id}>
+          <CardHeader>
+            <CardTitle className="flex flex-wrap items-center gap-2 text-base">
+              <Badge variant="outline">{draft.content_type}</Badge>
+              {draft.item_label}
+              <span className="text-xs font-normal text-muted-foreground">{fmt(draft.created_at)}</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {draft.note && <p className="text-sm text-muted-foreground">{draft.note}</p>}
+            <div className="grid gap-3 md:grid-cols-2">
+              <pre className="max-h-72 overflow-auto rounded bg-red-50 p-3 text-xs">{JSON.stringify(JSON.parse(draft.before_json), null, 2)}</pre>
+              <pre className="max-h-72 overflow-auto rounded bg-green-50 p-3 text-xs">{JSON.stringify(JSON.parse(draft.after_json), null, 2)}</pre>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+export default function Admin() {
+  const [auth, setAuth] = useState<AuthStatus | null>(null);
+  const [data, setData] = useState<AdminData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async (isRefresh = false) => {
+    if (isRefresh) setRefreshing(true);
+    else setLoading(true);
+    setError(null);
+
+    try {
+      const [stats, searchEvents, conversations, drafts] = await Promise.all([
+        fetchJson<Stats>("/api/admin/stats"),
+        fetchJson<SearchEvent[]>("/api/admin/search-events"),
+        fetchJson<Conversation[]>("/api/admin/ccugpt-conversations"),
+        fetchJson<ContentDraft[]>("/api/admin/content-drafts"),
+      ]);
+      setData({ stats, searchEvents, conversations, drafts });
+    } catch (err) {
+      const apiError = err as ApiError;
+      if (apiError.status === 401) {
+        setAuth((current) => ({ authenticated: false, passwordConfigured: current?.passwordConfigured ?? true }));
+      }
+      setError(err instanceof Error ? err.message : "後台資料載入失敗");
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  const checkAuth = useCallback(async () => {
+    setCheckingAuth(true);
+    try {
+      const status = await fetchJson<AuthStatus>("/api/admin/me");
+      setAuth(status);
+      if (status.authenticated) {
+        await load();
+      }
+    } catch {
+      setAuth({ authenticated: false, passwordConfigured: false });
+    } finally {
+      setCheckingAuth(false);
+    }
+  }, [load]);
+
+  useEffect(() => {
+    void checkAuth();
+  }, [checkAuth]);
+
+  const login = async (password: string) => {
+    await fetchJson<{ ok: true }>("/api/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+    setAuth({ authenticated: true, passwordConfigured: true });
+    await load();
+  };
+
+  const logout = async () => {
+    await fetchJson<{ ok: true }>("/api/admin/logout", { method: "POST" });
+    setData(null);
+    setAuth((current) => ({ authenticated: false, passwordConfigured: current?.passwordConfigured ?? true }));
+  };
+
+  if (checkingAuth) {
+    return <div className="flex h-screen items-center justify-center text-muted-foreground">檢查登入狀態中...</div>;
+  }
+
+  if (!auth?.authenticated) {
+    return <LoginForm passwordConfigured={auth?.passwordConfigured ?? false} onLogin={login} />;
   }
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold">管理後台</h1>
-      <Tabs defaultValue="overview">
-        <TabsList className="mb-6">
-          <TabsTrigger value="overview">總覽</TabsTrigger>
-          <TabsTrigger value="search">搜尋紀錄 ({searchEvents.length})</TabsTrigger>
-          <TabsTrigger value="ccugpt">CCUGPT 對話 ({conversations.length})</TabsTrigger>
-        </TabsList>
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">管理後台</h1>
+          <p className="mt-1 text-sm text-muted-foreground">搜尋紀錄、CCUGPT 對話與使用概況</p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => void load(true)}
+            disabled={loading || refreshing}
+            className="inline-flex items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+            重新整理
+          </button>
+          <button
+            type="button"
+            onClick={() => void logout()}
+            className="inline-flex items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted"
+          >
+            <LogOut className="h-4 w-4" />
+            登出
+          </button>
+        </div>
+      </div>
 
-        <TabsContent value="overview">
-          {stats && <OverviewTab stats={stats} />}
-        </TabsContent>
+      {error && (
+        <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
 
-        <TabsContent value="search">
-          <SearchTab events={searchEvents} />
-        </TabsContent>
+      {loading && !data ? (
+        <div className="flex h-64 items-center justify-center text-muted-foreground">載入中...</div>
+      ) : data ? (
+        <Tabs defaultValue="overview">
+          <TabsList className="mb-6">
+            <TabsTrigger value="overview">總覽</TabsTrigger>
+            <TabsTrigger value="search">搜尋紀錄 ({data.searchEvents.length})</TabsTrigger>
+            <TabsTrigger value="ccugpt">CCUGPT 對話 ({data.conversations.length})</TabsTrigger>
+            <TabsTrigger value="content">內容維護</TabsTrigger>
+            <TabsTrigger value="drafts">修改紀錄 ({data.drafts.length})</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="ccugpt">
-          <CCUGPTTab conversations={conversations} />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="overview">
+            <OverviewTab stats={data.stats} />
+          </TabsContent>
+
+          <TabsContent value="search">
+            <SearchTab events={data.searchEvents} />
+          </TabsContent>
+
+          <TabsContent value="ccugpt">
+            <CCUGPTTab conversations={data.conversations} />
+          </TabsContent>
+
+          <TabsContent value="content">
+            <ContentMaintenanceTab onSaved={() => load(true)} />
+          </TabsContent>
+
+          <TabsContent value="drafts">
+            <DraftsTab drafts={data.drafts} />
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <EmptyState title="後台資料無法載入" description="請確認 Express 後端已啟動，且 /api/admin/* 沒有被 Vite fallback 成 index.html。" />
+      )}
     </div>
   );
 }

@@ -1,11 +1,12 @@
 import express from "express";
+import { createHmac, createHash, timingSafeEqual } from "crypto";
 import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { z } from "zod";
-import { serviceCategories } from "../shared/campusData.js";
+import { departments, offices, serviceCategories, tasks } from "../shared/campusData.js";
 import {
   searchCampusServices,
   resolveOffice,
@@ -21,6 +22,206 @@ import { db, initDb } from "./db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+type AnalyticsSessionInput = {
+  sessionId?: unknown;
+  language?: unknown;
+  pagePath?: unknown;
+  referrer?: unknown;
+  userAgent?: unknown;
+};
+
+type ContentType = "office" | "department" | "task";
+
+function getContentCollection(type: ContentType) {
+  if (type === "office") return offices;
+  if (type === "department") return departments;
+  return tasks;
+}
+
+function contentLabel(type: ContentType, item: Record<string, unknown>) {
+  if (type === "task") {
+    return `${readString(item.task_name_zh) ?? item.id} / ${readString(item.task_name_en) ?? ""}`;
+  }
+  return `${readString(item.name_zh) ?? item.id} / ${readString(item.name_en) ?? ""}`;
+}
+
+function searchContentItems(query: string) {
+  const q = normalizeQuery(query);
+  const collections: Array<[ContentType, Array<Record<string, unknown>>]> = [
+    ["office", offices as unknown as Array<Record<string, unknown>>],
+    ["department", departments as unknown as Array<Record<string, unknown>>],
+    ["task", tasks as unknown as Array<Record<string, unknown>>],
+  ];
+
+  return collections.flatMap(([type, items]) =>
+    items
+      .filter((item) => {
+        if (!q) return true;
+        return normalizeQuery(JSON.stringify(item)).includes(q);
+      })
+      .slice(0, q ? 50 : 15)
+      .map((item) => ({
+        type,
+        id: String(item.id),
+        label: contentLabel(type, item),
+        data: item,
+      }))
+  );
+}
+
+function findContentItem(type: ContentType, id: string) {
+  const item = (getContentCollection(type) as Array<{ id: string }>).find((entry) => entry.id === id);
+  if (!item) return null;
+  return {
+    type,
+    id,
+    label: contentLabel(type, item as unknown as Record<string, unknown>),
+    data: item,
+  };
+}
+
+function readString(value: unknown): string | null {
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
+}
+
+function normalizeQuery(query: string) {
+  return query.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function ensureSession(input: AnalyticsSessionInput, fallbackUserAgent?: string): string | null {
+  const sessionId = readString(input.sessionId);
+  if (!sessionId) return null;
+
+  const language = readString(input.language);
+  const pagePath = readString(input.pagePath);
+  const referrer = readString(input.referrer);
+  const userAgent = readString(input.userAgent) ?? fallbackUserAgent ?? null;
+
+  db.prepare(
+    [
+      "INSERT INTO sessions (id, language, user_agent, first_page_path, referrer)",
+      "VALUES (?, ?, ?, ?, ?)",
+      "ON CONFLICT(id) DO UPDATE SET",
+      "last_seen_at = CURRENT_TIMESTAMP,",
+      "language = COALESCE(excluded.language, sessions.language),",
+      "user_agent = COALESCE(excluded.user_agent, sessions.user_agent)",
+    ].join(" ")
+  ).run(sessionId, language, userAgent, pagePath, referrer);
+
+  return sessionId;
+}
+
+function adminJson(res: express.Response, action: () => unknown) {
+  try {
+    res.json(action());
+  } catch (err) {
+    console.error("Admin API error:", err);
+    res.status(500).json({ error: "Admin API failed" });
+  }
+}
+
+const ADMIN_COOKIE_NAME = "ccu_admin_session";
+const ADMIN_SESSION_TTL_SECONDS = 8 * 60 * 60;
+
+type AdminTokenPayload = {
+  role: "admin";
+  exp: number;
+};
+
+function getAdminPassword() {
+  return process.env.ADMIN_PASSWORD ?? (process.env.NODE_ENV === "production" ? null : "admin");
+}
+
+function getAdminSecret() {
+  return process.env.ADMIN_SESSION_SECRET ?? process.env.ADMIN_PASSWORD ?? "ccu-guide-dev-admin-secret";
+}
+
+function safeEqual(a: string, b: string) {
+  const aHash = createHash("sha256").update(a).digest();
+  const bHash = createHash("sha256").update(b).digest();
+  return timingSafeEqual(aHash, bHash);
+}
+
+function signAdminToken(payload: AdminTokenPayload) {
+  const data = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  const signature = createHmac("sha256", getAdminSecret()).update(data).digest("base64url");
+  return `${data}.${signature}`;
+}
+
+function verifyAdminToken(token: string | null): AdminTokenPayload | null {
+  if (!token) return null;
+
+  const [data, signature] = token.split(".");
+  if (!data || !signature) return null;
+
+  const expected = createHmac("sha256", getAdminSecret()).update(data).digest("base64url");
+  if (!safeEqual(signature, expected)) return null;
+
+  try {
+    const payload = JSON.parse(Buffer.from(data, "base64url").toString("utf8")) as AdminTokenPayload;
+    if (payload.role !== "admin" || typeof payload.exp !== "number" || payload.exp < Date.now()) {
+      return null;
+    }
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+function parseCookies(header: string | undefined) {
+  const cookies = new Map<string, string>();
+  if (!header) return cookies;
+
+  for (const part of header.split(";")) {
+    const index = part.indexOf("=");
+    if (index === -1) continue;
+    const key = part.slice(0, index).trim();
+    const value = part.slice(index + 1).trim();
+    if (key) cookies.set(key, decodeURIComponent(value));
+  }
+
+  return cookies;
+}
+
+function getAdminPayload(req: express.Request) {
+  return verifyAdminToken(parseCookies(req.headers.cookie).get(ADMIN_COOKIE_NAME) ?? null);
+}
+
+function adminCookieAttributes(maxAge: number) {
+  return [
+    "HttpOnly",
+    "Path=/",
+    "SameSite=Lax",
+    `Max-Age=${maxAge}`,
+    process.env.NODE_ENV === "production" ? "Secure" : "",
+  ]
+    .filter(Boolean)
+    .join("; ");
+}
+
+function setAdminCookie(res: express.Response) {
+  const token = signAdminToken({
+    role: "admin",
+    exp: Date.now() + ADMIN_SESSION_TTL_SECONDS * 1000,
+  });
+  res.setHeader(
+    "Set-Cookie",
+    `${ADMIN_COOKIE_NAME}=${encodeURIComponent(token)}; ${adminCookieAttributes(ADMIN_SESSION_TTL_SECONDS)}`
+  );
+}
+
+function clearAdminCookie(res: express.Response) {
+  res.setHeader("Set-Cookie", `${ADMIN_COOKIE_NAME}=; ${adminCookieAttributes(0)}`);
+}
+
+function requireAdmin(req: express.Request, res: express.Response, next: express.NextFunction) {
+  if (getAdminPayload(req)) {
+    next();
+    return;
+  }
+  res.status(401).json({ error: "Admin login required" });
+}
 
 function textResponse(payload: unknown) {
   return {
@@ -244,44 +445,236 @@ async function startServer() {
     res.status(405).json({ error: "Method not allowed. Use POST." });
   });
 
-  app.post("/api/chat", express.json(), async (req, res) => {
+  app.post("/api/analytics/search-event", express.json(), (req, res) => {
     try {
+      const startedAt = Date.now();
+      const body = req.body as Record<string, unknown>;
+      const query = readString(body.query);
+
+      if (!query) {
+        res.status(400).json({ error: "query is required" });
+        return;
+      }
+
+      const sessionId = ensureSession(
+        {
+          sessionId: body.session_id,
+          language: body.language,
+          pagePath: body.page_path,
+          referrer: body.referrer,
+        },
+        req.get("user-agent")
+      );
+
+      const resultTypesValue = body.result_types;
+      const resultTypes = Array.isArray(resultTypesValue)
+        ? resultTypesValue.filter((item) => typeof item === "string").join(",")
+        : readString(resultTypesValue);
+
+      db.prepare(
+        [
+          "INSERT INTO search_events",
+          "(session_id, query, normalized_query, language, page_path, result_count, result_types, response_time_ms)",
+          "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        ].join(" ")
+      ).run(
+        sessionId,
+        query,
+        normalizeQuery(query),
+        readString(body.language),
+        readString(body.page_path),
+        typeof body.result_count === "number" ? body.result_count : 0,
+        resultTypes,
+        Date.now() - startedAt
+      );
+
+      res.json({ ok: true });
+    } catch (err) {
+      console.error("Search analytics error:", err);
+      res.status(500).json({ error: "Failed to record search event" });
+    }
+  });
+
+  app.post("/api/chat", express.json(), async (req, res) => {
+    let conversationId: number | null = null;
+    let sessionId: string | null = null;
+    const startedAt = Date.now();
+
+    try {
+      const body = req.body as Record<string, unknown>;
+      const analytics = (body.analytics && typeof body.analytics === "object"
+        ? body.analytics
+        : {}) as Record<string, unknown>;
+      const messages = Array.isArray(body.messages) ? body.messages : [];
+      const userMessage = messages
+        .slice()
+        .reverse()
+        .find((message): message is { role: string; content: string } =>
+          Boolean(
+            message &&
+              typeof message === "object" &&
+              (message as { role?: unknown }).role === "user" &&
+              typeof (message as { content?: unknown }).content === "string"
+          )
+        );
+
+      sessionId = ensureSession(
+        {
+          sessionId: analytics.session_id,
+          language: analytics.language,
+          pagePath: analytics.page_path,
+          referrer: analytics.referrer,
+        },
+        req.get("user-agent")
+      );
+
+      const conversationKey = readString(analytics.conversation_key);
+      if (conversationKey) {
+        const existing = db
+          .prepare("SELECT id FROM ccugpt_conversations WHERE conversation_key = ? LIMIT 1")
+          .get(conversationKey) as { id: number } | undefined;
+
+        if (existing) {
+          conversationId = existing.id;
+          db.prepare(
+            "UPDATE ccugpt_conversations SET updated_at = CURRENT_TIMESTAMP, language = COALESCE(?, language), model = COALESCE(?, model), page_path = COALESCE(?, page_path), status = 'active' WHERE id = ?"
+          ).run(readString(analytics.language), readString(body.model), readString(analytics.page_path), conversationId);
+        } else {
+          const result = db.prepare(
+            [
+              "INSERT INTO ccugpt_conversations",
+              "(session_id, conversation_key, page_path, language, model, status)",
+              "VALUES (?, ?, ?, ?, ?, 'active')",
+            ].join(" ")
+          ).run(sessionId, conversationKey, readString(analytics.page_path), readString(analytics.language), readString(body.model));
+          conversationId = Number(result.lastInsertRowid);
+        }
+      }
+
+      if (conversationId && userMessage) {
+        db.prepare(
+          "INSERT INTO ccugpt_messages (conversation_id, session_id, role, content, language, page_path) VALUES (?, ?, 'user', ?, ?, ?)"
+        ).run(conversationId, sessionId, userMessage.content, readString(analytics.language), readString(analytics.page_path));
+      }
+
+      const forwardedBody = { ...body };
+      delete forwardedBody.analytics;
+
       const response = await fetch("https://ccugpt.ccu.edu.tw/v1/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer mcp-demo-2026",
         },
-        body: JSON.stringify(req.body),
+        body: JSON.stringify(forwardedBody),
       });
       const data = await response.json();
+
+      const assistantMessage = data?.choices?.[0]?.message?.content;
+      if (conversationId && typeof assistantMessage === "string") {
+        db.prepare(
+          "INSERT INTO ccugpt_messages (conversation_id, session_id, role, content, language, page_path) VALUES (?, ?, 'assistant', ?, ?, ?)"
+        ).run(conversationId, sessionId, assistantMessage, readString(analytics.language), readString(analytics.page_path));
+        db.prepare("UPDATE ccugpt_conversations SET updated_at = CURRENT_TIMESTAMP WHERE id = ?").run(conversationId);
+      }
+
+      if (conversationId && userMessage) {
+        db.prepare(
+          [
+            "INSERT INTO ccugpt_requests",
+            "(conversation_id, session_id, user_message, assistant_message, model, success, status_code, latency_ms, error_message, raw_response_json)",
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+          ].join(" ")
+        ).run(
+          conversationId,
+          sessionId,
+          userMessage.content,
+          typeof assistantMessage === "string" ? assistantMessage : null,
+          readString(body.model),
+          response.ok ? 1 : 0,
+          response.status,
+          Date.now() - startedAt,
+          response.ok ? null : `CCUGPT API error ${response.status}`,
+          JSON.stringify(data).slice(0, 20000)
+        );
+      }
+
       res.status(response.status).json(data);
     } catch (err) {
       console.error("CCU GPT proxy error:", err);
+      if (conversationId) {
+        db.prepare(
+          [
+            "INSERT INTO ccugpt_requests",
+            "(conversation_id, session_id, user_message, model, success, latency_ms, error_message)",
+            "VALUES (?, ?, ?, ?, 0, ?, ?)",
+          ].join(" ")
+        ).run(conversationId, sessionId, "", null, Date.now() - startedAt, err instanceof Error ? err.message : String(err));
+      }
       res.status(502).json({ error: "Failed to reach CCU GPT service" });
     }
   });
 
-  // ── Admin API ────────────────────────────────────────────────────────────────
-  app.get("/api/admin/stats", (_req, res) => {
+  // ── Admin Auth / API ─────────────────────────────────────────────────────────
+  app.post("/api/admin/login", express.json(), (req, res) => {
+    const configuredPassword = getAdminPassword();
+    const password = readString((req.body as { password?: unknown }).password);
+
+    if (!configuredPassword) {
+      res.status(503).json({ error: "ADMIN_PASSWORD is not configured" });
+      return;
+    }
+
+    if (!password || !safeEqual(password, configuredPassword)) {
+      res.status(401).json({ error: "Invalid admin password" });
+      return;
+    }
+
+    setAdminCookie(res);
+    res.json({ ok: true });
+  });
+
+  app.post("/api/admin/logout", (_req, res) => {
+    clearAdminCookie(res);
+    res.json({ ok: true });
+  });
+
+  app.get("/api/admin/me", (req, res) => {
+    res.json({
+      authenticated: Boolean(getAdminPayload(req)),
+      passwordConfigured: Boolean(getAdminPassword()),
+    });
+  });
+
+  app.use("/api/admin", requireAdmin);
+
+  app.get("/api/admin/stats", (_req, res) => adminJson(res, () => {
     const totalSearches = (db.prepare("SELECT COUNT(*) as n FROM search_events").get() as { n: number }).n;
     const totalConversations = (db.prepare("SELECT COUNT(*) as n FROM ccugpt_conversations").get() as { n: number }).n;
     const totalMessages = (db.prepare("SELECT COUNT(*) as n FROM ccugpt_messages").get() as { n: number }).n;
     const totalSessions = (db.prepare("SELECT COUNT(*) as n FROM sessions").get() as { n: number }).n;
     const topQueries = db.prepare(
-      "SELECT query, COUNT(*) as count FROM search_events GROUP BY normalized_query ORDER BY count DESC LIMIT 10"
+      "SELECT query, COUNT(*) as count FROM search_events GROUP BY normalized_query ORDER BY count DESC, MAX(created_at) DESC LIMIT 10"
     ).all();
-    res.json({ totalSearches, totalConversations, totalMessages, totalSessions, topQueries });
-  });
+    const recentActivity = db.prepare(
+      [
+        "SELECT 'search' as type, created_at, query as label, page_path FROM search_events",
+        "UNION ALL",
+        "SELECT 'ccugpt' as type, created_at, substr(content, 1, 120) as label, page_path FROM ccugpt_messages WHERE role = 'user'",
+        "ORDER BY created_at DESC LIMIT 12",
+      ].join(" ")
+    ).all();
+    return { totalSearches, totalConversations, totalMessages, totalSessions, topQueries, recentActivity };
+  }));
 
-  app.get("/api/admin/search-events", (_req, res) => {
+  app.get("/api/admin/search-events", (_req, res) => adminJson(res, () => {
     const events = db.prepare(
       "SELECT id, created_at, query, language, result_count, result_types, response_time_ms, page_path FROM search_events ORDER BY created_at DESC LIMIT 200"
     ).all();
-    res.json(events);
-  });
+    return events;
+  }));
 
-  app.get("/api/admin/ccugpt-conversations", (_req, res) => {
+  app.get("/api/admin/ccugpt-conversations", (_req, res) => adminJson(res, () => {
     const conversations = db.prepare(
       "SELECT id, created_at, updated_at, language, model, status, page_path FROM ccugpt_conversations ORDER BY created_at DESC LIMIT 100"
     ).all() as { id: number }[];
@@ -292,8 +685,79 @@ async function startServer() {
       ).all(conv.id);
       return { ...conv, messages };
     });
-    res.json(result);
-  });
+    return result;
+  }));
+
+  app.get("/api/admin/content-items", (req, res) => adminJson(res, () => {
+    const query = readString(req.query.query) ?? "";
+    return searchContentItems(query);
+  }));
+
+  app.get("/api/admin/content-items/:type/:id", (req, res) => adminJson(res, () => {
+    const type = req.params.type as ContentType;
+    if (!["office", "department", "task"].includes(type)) {
+      res.status(400);
+      return { error: "Invalid content type" };
+    }
+
+    const item = findContentItem(type, req.params.id);
+    if (!item) {
+      res.status(404);
+      return { error: "Content item not found" };
+    }
+
+    return item;
+  }));
+
+  app.get("/api/admin/content-drafts", (_req, res) => adminJson(res, () => {
+    return db.prepare(
+      [
+        "SELECT id, created_at, updated_at, content_type, item_id, item_label, before_json, after_json, status, note",
+        "FROM content_drafts ORDER BY created_at DESC LIMIT 100",
+      ].join(" ")
+    ).all();
+  }));
+
+  app.post("/api/admin/content-drafts", express.json({ limit: "2mb" }), (req, res) => adminJson(res, () => {
+    const body = req.body as Record<string, unknown>;
+    const type = readString(body.content_type) as ContentType | null;
+    const itemId = readString(body.item_id);
+    const note = readString(body.note);
+
+    if (!type || !["office", "department", "task"].includes(type) || !itemId) {
+      res.status(400);
+      return { error: "content_type and item_id are required" };
+    }
+
+    const original = findContentItem(type, itemId);
+    if (!original) {
+      res.status(404);
+      return { error: "Content item not found" };
+    }
+
+    const after = body.after_data;
+    if (!after || typeof after !== "object") {
+      res.status(400);
+      return { error: "after_data is required" };
+    }
+
+    const result = db.prepare(
+      [
+        "INSERT INTO content_drafts",
+        "(content_type, item_id, item_label, before_json, after_json, status, note)",
+        "VALUES (?, ?, ?, ?, ?, 'draft', ?)",
+      ].join(" ")
+    ).run(
+      type,
+      itemId,
+      original.label,
+      JSON.stringify(original.data),
+      JSON.stringify(after),
+      note
+    );
+
+    return { ok: true, id: Number(result.lastInsertRowid) };
+  }));
 
   // ── Static / SPA ─────────────────────────────────────────────────────────────
   const staticPath =

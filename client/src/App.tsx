@@ -32,6 +32,7 @@ function Router() {
       <Route path="/related-sites" component={RelatedSites} />
       <Route path="/navigate/:type/:id" component={Navigation} />
       <Route path="/admin" component={Admin} />
+      <Route path="/admin/login" component={Admin} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

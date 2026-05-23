@@ -5,9 +5,10 @@
 import Header from "@/components/Header";
 import { OfficeCard, DeptCard } from "@/components/ResultCard";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getPageMetadata } from "@/lib/analytics";
 import { searchByNeed, tasks, type Task } from "@/data/campusData";
 import { Link, useSearch, useLocation } from "wouter";
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Search, ArrowLeft, ClipboardList, ChevronRight, Building2, Briefcase, AlertCircle } from "lucide-react";
 
 function TaskMiniCard({ task }: { task: Task }) {
@@ -34,7 +35,7 @@ function TaskMiniCard({ task }: { task: Task }) {
 }
 
 export default function SearchResults() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [, navigate] = useLocation();
   const searchParams = useSearch();
   const params = new URLSearchParams(searchParams);
@@ -46,6 +47,30 @@ export default function SearchResults() {
   }, [initialQuery]);
 
   const totalResults = results.offices.length + results.departments.length + results.tasks.length;
+
+  useEffect(() => {
+    if (!initialQuery.trim()) return;
+
+    const resultTypes = [
+      results.offices.length > 0 ? "office" : null,
+      results.departments.length > 0 ? "department" : null,
+      results.tasks.length > 0 ? "task" : null,
+    ].filter(Boolean);
+
+    fetch("/api/analytics/search-event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...getPageMetadata(),
+        query: initialQuery,
+        language: lang,
+        result_count: totalResults,
+        result_types: resultTypes,
+      }),
+    }).catch(() => {
+      // Analytics should never interrupt search results.
+    });
+  }, [initialQuery, lang, results.departments.length, results.offices.length, results.tasks.length, totalResults]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
