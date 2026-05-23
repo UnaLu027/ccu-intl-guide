@@ -54,7 +54,7 @@ export default function Home() {
       <section className="relative overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0">
-          <img src={HERO_IMG} alt="" className="w-full h-full object-cover" fetchpriority="high" />
+          <img src={HERO_IMG} alt="" className="w-full h-full object-cover" fetchPriority="high" />
           <div className="absolute inset-0 bg-gradient-to-b from-navy/85 via-navy/75 to-navy/90" />
         </div>
 

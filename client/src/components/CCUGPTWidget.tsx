@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { MessageCircle, X, Send, Loader2, AlertCircle } from "lucide-react";
 import { useComposition } from "@/hooks/useComposition";
+import { getConversationKey, getPageMetadata } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 
@@ -94,6 +95,11 @@ export default function CCUGPTWidget() {
               : "You are a smart assistant. The user is writing in English. You MUST reply in English. You MUST pass language: \"en\" to every MCP tool call. Do not use Chinese in your reply. When multiple tools are available, prioritize tools marked as ephemeral (dynamically injected); only use built-in tools if the injected tools cannot handle the request.",
           mcp_endpoints: [{ url: CCUGPT_MCP_ENDPOINT, timeout_ms: 15000 }],
           mcp_tool_mode: "priority",
+          analytics: {
+            ...getPageMetadata(),
+            conversation_key: getConversationKey(),
+            language: detectedLang,
+          },
         }),
       });
       clearTimeout(slowTimer);
