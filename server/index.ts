@@ -89,7 +89,7 @@ function normalizeQuery(query: string) {
   return query.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
 }
 
-function ensureSession(input: AnalyticsSessionInput, fallbackUserAgent?: string): string | null {
+async function ensureSession(input: AnalyticsSessionInput, fallbackUserAgent?: string): Promise<string | null> {
   const sessionId = readString(input.sessionId);
   if (!sessionId) return null;
 
@@ -98,7 +98,7 @@ function ensureSession(input: AnalyticsSessionInput, fallbackUserAgent?: string)
   const referrer = readString(input.referrer);
   const userAgent = readString(input.userAgent) ?? fallbackUserAgent ?? null;
 
-  db.prepare(
+  await db.prepare(
     [
       "INSERT INTO sessions (id, language, user_agent, first_page_path, referrer)",
       "VALUES (?, ?, ?, ?, ?)",
@@ -112,13 +112,18 @@ function ensureSession(input: AnalyticsSessionInput, fallbackUserAgent?: string)
   return sessionId;
 }
 
-function adminJson(res: express.Response, action: () => unknown) {
+async function adminJson(res: express.Response, action: () => unknown | Promise<unknown>) {
   try {
-    res.json(action());
+    const payload = await action();
+    if (!res.headersSent) res.json(payload);
   } catch (err) {
     console.error("Admin API error:", err);
     res.status(500).json({ error: "Admin API failed" });
   }
+}
+
+async function runDbTransaction(action: () => Promise<void>) {
+  await db.transaction(action);
 }
 
 const ADMIN_COOKIE_NAME = "ccu_admin_session";
@@ -412,7 +417,7 @@ function registerTools(server: McpServer) {
 }
 
 async function startServer() {
-  initDb();
+  await initDb();
 
   const app = express();
   const server = createServer(app);
@@ -445,7 +450,7 @@ async function startServer() {
     res.status(405).json({ error: "Method not allowed. Use POST." });
   });
 
-  app.post("/api/analytics/search-event", express.json(), (req, res) => {
+  app.post("/api/analytics/search-event", express.json(), async (req, res) => {
     try {
       const startedAt = Date.now();
       const body = req.body as Record<string, unknown>;
@@ -456,7 +461,7 @@ async function startServer() {
         return;
       }
 
-      const sessionId = ensureSession(
+      const sessionId = await ensureSession(
         {
           sessionId: body.session_id,
           language: body.language,
@@ -471,7 +476,7 @@ async function startServer() {
         ? resultTypesValue.filter((item) => typeof item === "string").join(",")
         : readString(resultTypesValue);
 
-      db.prepare(
+      await db.prepare(
         [
           "INSERT INTO search_events",
           "(session_id, query, normalized_query, language, page_path, result_count, result_types, response_time_ms)",
@@ -518,7 +523,7 @@ async function startServer() {
           )
         );
 
-      sessionId = ensureSession(
+      sessionId = await ensureSession(
         {
           sessionId: analytics.session_id,
           language: analytics.language,
@@ -530,17 +535,17 @@ async function startServer() {
 
       const conversationKey = readString(analytics.conversation_key);
       if (conversationKey) {
-        const existing = db
+        const existing = await db
           .prepare("SELECT id FROM ccugpt_conversations WHERE conversation_key = ? LIMIT 1")
           .get(conversationKey) as { id: number } | undefined;
 
         if (existing) {
           conversationId = existing.id;
-          db.prepare(
+          await db.prepare(
             "UPDATE ccugpt_conversations SET updated_at = CURRENT_TIMESTAMP, language = COALESCE(?, language), model = COALESCE(?, model), page_path = COALESCE(?, page_path), status = 'active' WHERE id = ?"
           ).run(readString(analytics.language), readString(body.model), readString(analytics.page_path), conversationId);
         } else {
-          const result = db.prepare(
+          const result = await db.prepare(
             [
               "INSERT INTO ccugpt_conversations",
               "(session_id, conversation_key, page_path, language, model, status)",
@@ -552,7 +557,7 @@ async function startServer() {
       }
 
       if (conversationId && userMessage) {
-        db.prepare(
+        await db.prepare(
           "INSERT INTO ccugpt_messages (conversation_id, session_id, role, content, language, page_path) VALUES (?, ?, 'user', ?, ?, ?)"
         ).run(conversationId, sessionId, userMessage.content, readString(analytics.language), readString(analytics.page_path));
       }
@@ -572,14 +577,14 @@ async function startServer() {
 
       const assistantMessage = data?.choices?.[0]?.message?.content;
       if (conversationId && typeof assistantMessage === "string") {
-        db.prepare(
+        await db.prepare(
           "INSERT INTO ccugpt_messages (conversation_id, session_id, role, content, language, page_path) VALUES (?, ?, 'assistant', ?, ?, ?)"
         ).run(conversationId, sessionId, assistantMessage, readString(analytics.language), readString(analytics.page_path));
-        db.prepare("UPDATE ccugpt_conversations SET updated_at = CURRENT_TIMESTAMP WHERE id = ?").run(conversationId);
+        await db.prepare("UPDATE ccugpt_conversations SET updated_at = CURRENT_TIMESTAMP WHERE id = ?").run(conversationId);
       }
 
       if (conversationId && userMessage) {
-        db.prepare(
+        await db.prepare(
           [
             "INSERT INTO ccugpt_requests",
             "(conversation_id, session_id, user_message, assistant_message, model, success, status_code, latency_ms, error_message, raw_response_json)",
@@ -603,7 +608,7 @@ async function startServer() {
     } catch (err) {
       console.error("CCU GPT proxy error:", err);
       if (conversationId) {
-        db.prepare(
+        await db.prepare(
           [
             "INSERT INTO ccugpt_requests",
             "(conversation_id, session_id, user_message, model, success, latency_ms, error_message)",
@@ -648,15 +653,15 @@ async function startServer() {
 
   app.use("/api/admin", requireAdmin);
 
-  app.get("/api/admin/stats", (_req, res) => adminJson(res, () => {
-    const totalSearches = (db.prepare("SELECT COUNT(*) as n FROM search_events").get() as { n: number }).n;
-    const totalConversations = (db.prepare("SELECT COUNT(*) as n FROM ccugpt_conversations").get() as { n: number }).n;
-    const totalMessages = (db.prepare("SELECT COUNT(*) as n FROM ccugpt_messages").get() as { n: number }).n;
-    const totalSessions = (db.prepare("SELECT COUNT(*) as n FROM sessions").get() as { n: number }).n;
-    const topQueries = db.prepare(
+  app.get("/api/admin/stats", (_req, res) => void adminJson(res, async () => {
+    const totalSearches = ((await db.prepare("SELECT COUNT(*) as n FROM search_events").get()) as { n: number }).n;
+    const totalConversations = ((await db.prepare("SELECT COUNT(*) as n FROM ccugpt_conversations").get()) as { n: number }).n;
+    const totalMessages = ((await db.prepare("SELECT COUNT(*) as n FROM ccugpt_messages").get()) as { n: number }).n;
+    const totalSessions = ((await db.prepare("SELECT COUNT(*) as n FROM sessions").get()) as { n: number }).n;
+    const topQueries = await db.prepare(
       "SELECT query, COUNT(*) as count FROM search_events GROUP BY normalized_query ORDER BY count DESC, MAX(created_at) DESC LIMIT 10"
     ).all();
-    const recentActivity = db.prepare(
+    const recentActivity = await db.prepare(
       [
         "SELECT 'search' as type, created_at, query as label, page_path FROM search_events",
         "UNION ALL",
@@ -667,33 +672,109 @@ async function startServer() {
     return { totalSearches, totalConversations, totalMessages, totalSessions, topQueries, recentActivity };
   }));
 
-  app.get("/api/admin/search-events", (_req, res) => adminJson(res, () => {
-    const events = db.prepare(
+  app.get("/api/admin/search-events", (_req, res) => void adminJson(res, async () => {
+    const events = await db.prepare(
       "SELECT id, created_at, query, language, result_count, result_types, response_time_ms, page_path FROM search_events ORDER BY created_at DESC LIMIT 200"
     ).all();
     return events;
   }));
 
-  app.get("/api/admin/ccugpt-conversations", (_req, res) => adminJson(res, () => {
-    const conversations = db.prepare(
+  app.get("/api/admin/ccugpt-conversations", (_req, res) => void adminJson(res, async () => {
+    const conversations = await db.prepare(
       "SELECT id, created_at, updated_at, language, model, status, page_path FROM ccugpt_conversations ORDER BY created_at DESC LIMIT 100"
     ).all() as { id: number }[];
 
-    const result = conversations.map((conv) => {
-      const messages = db.prepare(
+    const result = await Promise.all(conversations.map(async (conv) => {
+      const messages = await db.prepare(
         "SELECT role, content, created_at FROM ccugpt_messages WHERE conversation_id = ? ORDER BY created_at ASC"
       ).all(conv.id);
       return { ...conv, messages };
-    });
+    }));
     return result;
   }));
 
-  app.get("/api/admin/content-items", (req, res) => adminJson(res, () => {
+  app.delete("/api/admin/records/search-events", (_req, res) => void adminJson(res, async () => {
+    const before = {
+      searchEvents: ((await db.prepare("SELECT COUNT(*) as n FROM search_events").get()) as { n: number }).n,
+      searchClicks: ((await db.prepare("SELECT COUNT(*) as n FROM search_click_events").get()) as { n: number }).n,
+    };
+
+    await runDbTransaction(async () => {
+      await db.prepare("DELETE FROM search_click_events").run();
+      await db.prepare("DELETE FROM search_events").run();
+    });
+
+    return { ok: true, deleted: before };
+  }));
+
+  app.delete("/api/admin/records/ccugpt", (_req, res) => void adminJson(res, async () => {
+    const before = {
+      conversations: ((await db.prepare("SELECT COUNT(*) as n FROM ccugpt_conversations").get()) as { n: number }).n,
+      messages: ((await db.prepare("SELECT COUNT(*) as n FROM ccugpt_messages").get()) as { n: number }).n,
+      requests: ((await db.prepare("SELECT COUNT(*) as n FROM ccugpt_requests").get()) as { n: number }).n,
+      toolCalls: ((await db.prepare("SELECT COUNT(*) as n FROM mcp_tool_call_events").get()) as { n: number }).n,
+    };
+
+    await runDbTransaction(async () => {
+      await db.prepare("DELETE FROM mcp_tool_call_events").run();
+      await db.prepare("DELETE FROM ccugpt_requests").run();
+      await db.prepare("DELETE FROM ccugpt_messages").run();
+      await db.prepare("DELETE FROM ccugpt_conversations").run();
+    });
+
+    return { ok: true, deleted: before };
+  }));
+
+  app.delete("/api/admin/records/content-drafts", (_req, res) => void adminJson(res, async () => {
+    const before = {
+      drafts: ((await db.prepare("SELECT COUNT(*) as n FROM content_drafts").get()) as { n: number }).n,
+    };
+
+    await db.prepare("DELETE FROM content_drafts").run();
+
+    return { ok: true, deleted: before };
+  }));
+
+  app.delete("/api/admin/records/all-usage", (_req, res) => void adminJson(res, async () => {
+    const before = {
+      sessions: ((await db.prepare("SELECT COUNT(*) as n FROM sessions").get()) as { n: number }).n,
+      searchEvents: ((await db.prepare("SELECT COUNT(*) as n FROM search_events").get()) as { n: number }).n,
+      searchClicks: ((await db.prepare("SELECT COUNT(*) as n FROM search_click_events").get()) as { n: number }).n,
+      conversations: ((await db.prepare("SELECT COUNT(*) as n FROM ccugpt_conversations").get()) as { n: number }).n,
+      messages: ((await db.prepare("SELECT COUNT(*) as n FROM ccugpt_messages").get()) as { n: number }).n,
+      requests: ((await db.prepare("SELECT COUNT(*) as n FROM ccugpt_requests").get()) as { n: number }).n,
+      toolCalls: ((await db.prepare("SELECT COUNT(*) as n FROM mcp_tool_call_events").get()) as { n: number }).n,
+      feedback: ((await db.prepare("SELECT COUNT(*) as n FROM feedback_events").get()) as { n: number }).n,
+    };
+
+    await runDbTransaction(async () => {
+      await db.prepare("DELETE FROM mcp_tool_call_events").run();
+      await db.prepare("DELETE FROM ccugpt_requests").run();
+      await db.prepare("DELETE FROM ccugpt_messages").run();
+      await db.prepare("DELETE FROM ccugpt_conversations").run();
+      await db.prepare("DELETE FROM search_click_events").run();
+      await db.prepare("DELETE FROM search_events").run();
+      await db.prepare("DELETE FROM feedback_events").run();
+      await db.prepare("DELETE FROM sessions").run();
+    });
+
+    return { ok: true, deleted: before };
+  }));
+
+  app.post("/api/admin/maintenance/compact", (_req, res) => void adminJson(res, async () => {
+    if (db.dialect === "sqlite") {
+      await db.exec("PRAGMA wal_checkpoint(TRUNCATE)");
+    }
+    await db.exec("VACUUM");
+    return { ok: true };
+  }));
+
+  app.get("/api/admin/content-items", (req, res) => void adminJson(res, () => {
     const query = readString(req.query.query) ?? "";
     return searchContentItems(query);
   }));
 
-  app.get("/api/admin/content-items/:type/:id", (req, res) => adminJson(res, () => {
+  app.get("/api/admin/content-items/:type/:id", (req, res) => void adminJson(res, () => {
     const type = req.params.type as ContentType;
     if (!["office", "department", "task"].includes(type)) {
       res.status(400);
@@ -709,8 +790,8 @@ async function startServer() {
     return item;
   }));
 
-  app.get("/api/admin/content-drafts", (_req, res) => adminJson(res, () => {
-    return db.prepare(
+  app.get("/api/admin/content-drafts", (_req, res) => void adminJson(res, async () => {
+    return await db.prepare(
       [
         "SELECT id, created_at, updated_at, content_type, item_id, item_label, before_json, after_json, status, note",
         "FROM content_drafts ORDER BY created_at DESC LIMIT 100",
@@ -718,7 +799,7 @@ async function startServer() {
     ).all();
   }));
 
-  app.post("/api/admin/content-drafts", express.json({ limit: "2mb" }), (req, res) => adminJson(res, () => {
+  app.post("/api/admin/content-drafts", express.json({ limit: "2mb" }), (req, res) => void adminJson(res, async () => {
     const body = req.body as Record<string, unknown>;
     const type = readString(body.content_type) as ContentType | null;
     const itemId = readString(body.item_id);
@@ -741,7 +822,7 @@ async function startServer() {
       return { error: "after_data is required" };
     }
 
-    const result = db.prepare(
+    const result = await db.prepare(
       [
         "INSERT INTO content_drafts",
         "(content_type, item_id, item_label, before_json, after_json, status, note)",
