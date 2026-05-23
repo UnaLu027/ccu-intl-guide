@@ -412,11 +412,71 @@ function CCUGPTTab({ conversations }: { conversations: Conversation[] }) {
   );
 }
 
+const FIELD_LABELS: Record<string, string> = {
+  id: "系統代號",
+  name_zh: "中文名稱",
+  name_en: "英文名稱",
+  task_name_zh: "中文任務名稱",
+  task_name_en: "英文任務名稱",
+  scenario_zh: "中文情境描述",
+  scenario_en: "英文情境描述",
+  category: "資料類型",
+  category_id: "服務分類代號",
+  service_categories: "服務分類",
+  target_unit_type: "負責單位類型",
+  target_unit_id: "負責單位代號",
+  college_zh: "中文學院",
+  college_en: "英文學院/系所",
+  building_name_zh: "中文建築物名稱",
+  building_name_en: "英文建築物名稱",
+  floor: "樓層",
+  room_zh: "中文辦公室/教室號碼",
+  room_en: "英文辦公室/教室號碼",
+  indoor_location_note_zh: "中文室內位置說明",
+  indoor_location_note_en: "英文室內位置說明",
+  function_desc_zh: "中文功能描述",
+  function_desc_en: "英文功能描述",
+  service_scope_zh: "中文服務範圍",
+  service_scope_en: "英文服務範圍",
+  common_scenarios_zh: "中文常見情境",
+  common_scenarios_en: "英文常見情境",
+  office_hours: "辦公時間",
+  phone: "電話",
+  email: "Email",
+  official_url: "官方網站",
+  source_url: "資料來源網址",
+  google_maps_query: "Google Maps 查詢字",
+  latitude: "緯度",
+  longitude: "經度",
+  use_manual_coordinates: "是否使用手動座標",
+  needs_manual_review: "是否需要人工確認",
+  is_college_office: "是否為學院辦公室",
+  floor_plan_image: "平面圖圖片",
+  entrance_image: "入口圖片",
+  building_entrance_image: "建築入口圖片",
+  required_documents_zh: "中文所需文件",
+  required_documents_en: "英文所需文件",
+  steps: "處理步驟",
+};
+
+function fieldLabel(key: string) {
+  return FIELD_LABELS[key] ?? "其他欄位";
+}
+
+function typeLabel(type: ContentType) {
+  if (type === "office") return "行政單位";
+  if (type === "department") return "系所單位";
+  return "任務流程";
+}
+
 function valueToText(value: unknown) {
   if (Array.isArray(value)) {
     return value
-      .map((item) => (typeof item === "object" && item !== null ? JSON.stringify(item) : String(item)))
-      .join("\n");
+      .map((item) => {
+        if (isZhEnObject(item)) return `中文：${item.zh}\nEnglish：${item.en}`;
+        return typeof item === "object" && item !== null ? JSON.stringify(item, null, 2) : String(item);
+      })
+      .join("\n\n");
   }
   if (typeof value === "object" && value !== null) return JSON.stringify(value, null, 2);
   return value == null ? "" : String(value);
@@ -436,9 +496,170 @@ function textToValue(original: unknown, value: string) {
   return value;
 }
 
+function isZhEnObject(value: unknown): value is { zh: string; en: string } {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    typeof (value as { zh?: unknown }).zh === "string" &&
+    typeof (value as { en?: unknown }).en === "string"
+  );
+}
+
+function isZhEnArray(value: unknown): value is { zh: string; en: string }[] {
+  return Array.isArray(value) && value.every(isZhEnObject);
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === "string");
+}
+
 function diffFields(before: Record<string, unknown>, after: Record<string, unknown>) {
   return Object.keys({ ...before, ...after }).filter(
     (key) => JSON.stringify(before[key]) !== JSON.stringify(after[key])
+  );
+}
+
+function FieldTitle({ name }: { name: string }) {
+  return (
+    <span className="mb-1 flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+      <span>{fieldLabel(name)}</span>
+      <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px]">{name}</code>
+    </span>
+  );
+}
+
+function ZhEnArrayEditor({
+  name,
+  value,
+  onChange,
+}: {
+  name: string;
+  value: unknown;
+  onChange: (next: { zh: string; en: string }[]) => void;
+}) {
+  const items = isZhEnArray(value) ? value : [];
+
+  const updateItem = (index: number, lang: "zh" | "en", nextValue: string) => {
+    onChange(items.map((item, itemIndex) => (itemIndex === index ? { ...item, [lang]: nextValue } : item)));
+  };
+
+  return (
+    <div className="space-y-3 rounded-md border p-3 md:col-span-2">
+      <FieldTitle name={name} />
+      <p className="text-xs text-muted-foreground">每一項會拆成中文與英文，不需要編輯 JSON。</p>
+      {items.map((item, index) => (
+        <div key={index} className="rounded-md border bg-muted/20 p-3">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-sm font-semibold">第 {index + 1} 項</span>
+            <button
+              type="button"
+              onClick={() => onChange(items.filter((_, itemIndex) => itemIndex !== index))}
+              className="text-xs text-red-600 hover:underline"
+            >
+              刪除
+            </button>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            <label>
+              <span className="mb-1 block text-xs font-medium text-muted-foreground">中文 zh</span>
+              <textarea
+                value={item.zh}
+                onChange={(event) => updateItem(index, "zh", event.target.value)}
+                rows={3}
+                className="w-full rounded-md border bg-white px-3 py-2 text-sm"
+              />
+            </label>
+            <label>
+              <span className="mb-1 block text-xs font-medium text-muted-foreground">English en</span>
+              <textarea
+                value={item.en}
+                onChange={(event) => updateItem(index, "en", event.target.value)}
+                rows={3}
+                className="w-full rounded-md border bg-white px-3 py-2 text-sm"
+              />
+            </label>
+          </div>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={() => onChange([...items, { zh: "", en: "" }])}
+        className="rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted"
+      >
+        新增一項
+      </button>
+    </div>
+  );
+}
+
+function StringArrayEditor({
+  name,
+  value,
+  onChange,
+}: {
+  name: string;
+  value: unknown;
+  onChange: (next: string[]) => void;
+}) {
+  const items = isStringArray(value) ? value : [];
+
+  return (
+    <label className="block">
+      <FieldTitle name={name} />
+      <textarea
+        value={items.join("\n")}
+        onChange={(event) => onChange(event.target.value.split("\n").map((line) => line.trim()).filter(Boolean))}
+        rows={5}
+        className="w-full rounded-md border px-3 py-2 text-sm"
+      />
+      <span className="mt-1 block text-xs text-muted-foreground">每行一項</span>
+    </label>
+  );
+}
+
+function FieldEditor({
+  name,
+  original,
+  value,
+  onChange,
+}: {
+  name: string;
+  original: unknown;
+  value: unknown;
+  onChange: (next: unknown) => void;
+}) {
+  if (isZhEnArray(value) || isZhEnArray(original)) {
+    return <ZhEnArrayEditor name={name} value={value} onChange={onChange} />;
+  }
+
+  if (isStringArray(value) || isStringArray(original)) {
+    return <StringArrayEditor name={name} value={value} onChange={onChange} />;
+  }
+
+  if (typeof original === "object" && original !== null) {
+    return (
+      <label className="block md:col-span-2">
+        <FieldTitle name={name} />
+        <textarea
+          value={valueToText(value)}
+          onChange={(event) => onChange(textToValue(original, event.target.value))}
+          rows={6}
+          className="w-full rounded-md border px-3 py-2 font-mono text-sm"
+        />
+        <span className="mt-1 block text-xs text-muted-foreground">進階欄位，以 JSON 格式編輯</span>
+      </label>
+    );
+  }
+
+  return (
+    <label className="block">
+      <FieldTitle name={name} />
+      <input
+        value={valueToText(value)}
+        onChange={(event) => onChange(textToValue(original, event.target.value))}
+        className="w-full rounded-md border px-3 py-2 text-sm"
+      />
+    </label>
   );
 }
 
@@ -537,7 +758,7 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
                 className="w-full rounded-md border p-3 text-left text-sm hover:bg-muted"
               >
                 <div className="mb-1 flex items-center gap-2">
-                  <Badge variant="outline">{item.type}</Badge>
+                  <Badge variant="outline">{typeLabel(item.type)}</Badge>
                   <span className="font-mono text-xs text-muted-foreground">{item.id}</span>
                 </div>
                 <div className="font-medium">{item.label}</div>
@@ -558,33 +779,18 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
             <div className="space-y-5">
               <div className="grid gap-3 md:grid-cols-2">
                 {Object.entries(selected.data).map(([key, original]) => (
-                  <label key={key} className="block">
-                    <span className="mb-1 block text-xs font-semibold text-muted-foreground">{key}</span>
-                    {Array.isArray(original) || (typeof original === "object" && original !== null) ? (
-                      <textarea
-                        value={valueToText(formData[key])}
-                        onChange={(event) =>
-                          setFormData((current) => ({
-                            ...current,
-                            [key]: textToValue(original, event.target.value),
-                          }))
-                        }
-                        rows={Array.isArray(original) ? 4 : 6}
-                        className="w-full rounded-md border px-3 py-2 text-sm"
-                      />
-                    ) : (
-                      <input
-                        value={valueToText(formData[key])}
-                        onChange={(event) =>
-                          setFormData((current) => ({
-                            ...current,
-                            [key]: textToValue(original, event.target.value),
-                          }))
-                        }
-                        className="w-full rounded-md border px-3 py-2 text-sm"
-                      />
-                    )}
-                  </label>
+                  <FieldEditor
+                    key={key}
+                    name={key}
+                    original={original}
+                    value={formData[key]}
+                    onChange={(next) =>
+                      setFormData((current) => ({
+                        ...current,
+                        [key]: next,
+                      }))
+                    }
+                  />
                 ))}
               </div>
 
@@ -597,11 +803,15 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
                     {changedFields.map((key) => (
                       <div key={key} className="grid gap-2 md:grid-cols-2">
                         <div className="rounded bg-red-50 p-3">
-                          <div className="mb-1 text-xs font-semibold text-red-700">原本：{key}</div>
+                          <div className="mb-1 text-xs font-semibold text-red-700">
+                            原本：{fieldLabel(key)} <code>{key}</code>
+                          </div>
                           <pre className="whitespace-pre-wrap text-xs">{valueToText(selected.data[key])}</pre>
                         </div>
                         <div className="rounded bg-green-50 p-3">
-                          <div className="mb-1 text-xs font-semibold text-green-700">修改後：{key}</div>
+                          <div className="mb-1 text-xs font-semibold text-green-700">
+                            修改後：{fieldLabel(key)} <code>{key}</code>
+                          </div>
                           <pre className="whitespace-pre-wrap text-xs">{valueToText(formData[key])}</pre>
                         </div>
                       </div>
