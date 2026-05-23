@@ -121,6 +121,17 @@ function adminJson(res: express.Response, action: () => unknown) {
   }
 }
 
+function runDbTransaction(action: () => void) {
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    action();
+    db.exec("COMMIT");
+  } catch (err) {
+    db.exec("ROLLBACK");
+    throw err;
+  }
+}
+
 const ADMIN_COOKIE_NAME = "ccu_admin_session";
 const ADMIN_SESSION_TTL_SECONDS = 8 * 60 * 60;
 
@@ -686,6 +697,80 @@ async function startServer() {
       return { ...conv, messages };
     });
     return result;
+  }));
+
+  app.delete("/api/admin/records/search-events", (_req, res) => adminJson(res, () => {
+    const before = {
+      searchEvents: (db.prepare("SELECT COUNT(*) as n FROM search_events").get() as { n: number }).n,
+      searchClicks: (db.prepare("SELECT COUNT(*) as n FROM search_click_events").get() as { n: number }).n,
+    };
+
+    runDbTransaction(() => {
+      db.prepare("DELETE FROM search_click_events").run();
+      db.prepare("DELETE FROM search_events").run();
+    });
+
+    return { ok: true, deleted: before };
+  }));
+
+  app.delete("/api/admin/records/ccugpt", (_req, res) => adminJson(res, () => {
+    const before = {
+      conversations: (db.prepare("SELECT COUNT(*) as n FROM ccugpt_conversations").get() as { n: number }).n,
+      messages: (db.prepare("SELECT COUNT(*) as n FROM ccugpt_messages").get() as { n: number }).n,
+      requests: (db.prepare("SELECT COUNT(*) as n FROM ccugpt_requests").get() as { n: number }).n,
+      toolCalls: (db.prepare("SELECT COUNT(*) as n FROM mcp_tool_call_events").get() as { n: number }).n,
+    };
+
+    runDbTransaction(() => {
+      db.prepare("DELETE FROM mcp_tool_call_events").run();
+      db.prepare("DELETE FROM ccugpt_requests").run();
+      db.prepare("DELETE FROM ccugpt_messages").run();
+      db.prepare("DELETE FROM ccugpt_conversations").run();
+    });
+
+    return { ok: true, deleted: before };
+  }));
+
+  app.delete("/api/admin/records/content-drafts", (_req, res) => adminJson(res, () => {
+    const before = {
+      drafts: (db.prepare("SELECT COUNT(*) as n FROM content_drafts").get() as { n: number }).n,
+    };
+
+    db.prepare("DELETE FROM content_drafts").run();
+
+    return { ok: true, deleted: before };
+  }));
+
+  app.delete("/api/admin/records/all-usage", (_req, res) => adminJson(res, () => {
+    const before = {
+      sessions: (db.prepare("SELECT COUNT(*) as n FROM sessions").get() as { n: number }).n,
+      searchEvents: (db.prepare("SELECT COUNT(*) as n FROM search_events").get() as { n: number }).n,
+      searchClicks: (db.prepare("SELECT COUNT(*) as n FROM search_click_events").get() as { n: number }).n,
+      conversations: (db.prepare("SELECT COUNT(*) as n FROM ccugpt_conversations").get() as { n: number }).n,
+      messages: (db.prepare("SELECT COUNT(*) as n FROM ccugpt_messages").get() as { n: number }).n,
+      requests: (db.prepare("SELECT COUNT(*) as n FROM ccugpt_requests").get() as { n: number }).n,
+      toolCalls: (db.prepare("SELECT COUNT(*) as n FROM mcp_tool_call_events").get() as { n: number }).n,
+      feedback: (db.prepare("SELECT COUNT(*) as n FROM feedback_events").get() as { n: number }).n,
+    };
+
+    runDbTransaction(() => {
+      db.prepare("DELETE FROM mcp_tool_call_events").run();
+      db.prepare("DELETE FROM ccugpt_requests").run();
+      db.prepare("DELETE FROM ccugpt_messages").run();
+      db.prepare("DELETE FROM ccugpt_conversations").run();
+      db.prepare("DELETE FROM search_click_events").run();
+      db.prepare("DELETE FROM search_events").run();
+      db.prepare("DELETE FROM feedback_events").run();
+      db.prepare("DELETE FROM sessions").run();
+    });
+
+    return { ok: true, deleted: before };
+  }));
+
+  app.post("/api/admin/maintenance/compact", (_req, res) => adminJson(res, () => {
+    db.exec("PRAGMA wal_checkpoint(TRUNCATE)");
+    db.exec("VACUUM");
+    return { ok: true };
   }));
 
   app.get("/api/admin/content-items", (req, res) => adminJson(res, () => {

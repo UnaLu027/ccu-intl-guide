@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   AlertCircle,
+  Database,
   LockKeyhole,
   LogOut,
   MessageSquare,
   RefreshCw,
   Search,
+  Trash2,
   Users,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -89,6 +91,11 @@ interface ContentDraft {
 }
 
 type ApiError = Error & { status?: number };
+
+interface MaintenanceResult {
+  ok: boolean;
+  deleted?: Record<string, number>;
+}
 
 function fmt(ts: string) {
   return new Date(ts).toLocaleString("zh-TW", { hour12: false });
@@ -878,6 +885,129 @@ function DraftsTab({ drafts }: { drafts: ContentDraft[] }) {
   );
 }
 
+function MaintenanceTab({ onChanged }: { onChanged: () => Promise<void> }) {
+  const [busyKey, setBusyKey] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const actions = [
+    {
+      key: "search",
+      title: "清除搜尋紀錄",
+      description: "刪除 search_events 與搜尋點擊紀錄，CCUGPT 對話與內容草稿會保留。",
+      endpoint: "/api/admin/records/search-events",
+      method: "DELETE",
+      confirmText: "確定要永久清除所有搜尋紀錄嗎？這個動作不能復原。",
+      danger: true,
+    },
+    {
+      key: "ccugpt",
+      title: "清除 CCUGPT 使用紀錄",
+      description: "刪除對話、訊息、請求與工具呼叫紀錄，搜尋紀錄與內容草稿會保留。",
+      endpoint: "/api/admin/records/ccugpt",
+      method: "DELETE",
+      confirmText: "確定要永久清除所有 CCUGPT 使用紀錄嗎？這個動作不能復原。",
+      danger: true,
+    },
+    {
+      key: "drafts",
+      title: "清除內容修改草稿",
+      description: "刪除後台內容維護產生的草稿與修改前後對照，不會影響正式網站資料。",
+      endpoint: "/api/admin/records/content-drafts",
+      method: "DELETE",
+      confirmText: "確定要永久清除所有內容修改草稿嗎？這個動作不能復原。",
+      danger: true,
+    },
+    {
+      key: "all",
+      title: "清除所有使用紀錄",
+      description: "刪除 sessions、搜尋、CCUGPT、回饋等使用紀錄；內容修改草稿會保留。",
+      endpoint: "/api/admin/records/all-usage",
+      method: "DELETE",
+      confirmText: "確定要永久清除所有使用紀錄嗎？內容草稿會保留，但使用分析資料不能復原。",
+      danger: true,
+    },
+    {
+      key: "compact",
+      title: "壓縮整理資料庫",
+      description: "執行 SQLite checkpoint 與 VACUUM，適合大量清除資料後釋放資料庫檔案空間。",
+      endpoint: "/api/admin/maintenance/compact",
+      method: "POST",
+      confirmText: "確定要壓縮整理資料庫嗎？大型資料庫可能需要一些時間。",
+      danger: false,
+    },
+  ];
+
+  const runAction = async (action: (typeof actions)[number]) => {
+    if (!window.confirm(action.confirmText)) return;
+
+    setBusyKey(action.key);
+    setMessage(null);
+    setError(null);
+
+    try {
+      const result = await fetchJson<MaintenanceResult>(action.endpoint, { method: action.method });
+      const deletedText = result.deleted
+        ? Object.entries(result.deleted)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join(", ")
+        : "已完成";
+      setMessage(`${action.title}完成。${deletedText}`);
+      await onChanged();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "操作失敗");
+    } finally {
+      setBusyKey(null);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Database className="h-4 w-4" />
+            資料保存與清除
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            搜尋與 CCUGPT 紀錄會寫入 SQLite，不會因為前端刷新而消失。此區提供管理者定期清除或壓縮資料庫使用。
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {message && <div className="rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">{message}</div>}
+          {error && <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
+
+          <div className="grid gap-3 md:grid-cols-2">
+            {actions.map((action) => (
+              <div key={action.key} className="rounded-lg border p-4">
+                <div className="mb-3 flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="font-semibold">{action.title}</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">{action.description}</p>
+                  </div>
+                  {action.danger ? <Trash2 className="mt-1 h-4 w-4 text-red-500" /> : <Database className="mt-1 h-4 w-4 text-muted-foreground" />}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => void runAction(action)}
+                  disabled={busyKey !== null}
+                  className={`inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60 ${
+                    action.danger
+                      ? "border border-red-200 bg-red-50 text-red-700 hover:bg-red-100"
+                      : "border bg-background hover:bg-muted"
+                  }`}
+                >
+                  {busyKey === action.key ? "處理中..." : action.title}
+                </button>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function Admin() {
   const [auth, setAuth] = useState<AuthStatus | null>(null);
   const [data, setData] = useState<AdminData | null>(null);
@@ -998,6 +1128,7 @@ export default function Admin() {
             <TabsTrigger value="ccugpt">CCUGPT 對話 ({data.conversations.length})</TabsTrigger>
             <TabsTrigger value="content">內容維護</TabsTrigger>
             <TabsTrigger value="drafts">修改紀錄 ({data.drafts.length})</TabsTrigger>
+            <TabsTrigger value="maintenance">資料管理</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -1018,6 +1149,10 @@ export default function Admin() {
 
           <TabsContent value="drafts">
             <DraftsTab drafts={data.drafts} />
+          </TabsContent>
+
+          <TabsContent value="maintenance">
+            <MaintenanceTab onChanged={() => load(true)} />
           </TabsContent>
         </Tabs>
       ) : (
