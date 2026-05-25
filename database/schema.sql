@@ -144,6 +144,7 @@ CREATE TABLE IF NOT EXISTS content_items (
   item_id      TEXT NOT NULL,
   item_label   TEXT NOT NULL,
   data_json    TEXT NOT NULL,
+  status       TEXT NOT NULL DEFAULT 'active',
   UNIQUE(content_type, item_id)
 );
 

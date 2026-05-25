@@ -747,6 +747,7 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
   const [note, setNote] = useState("");
   const [loadingItems, setLoadingItems] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   const searchItems = async () => {
@@ -820,6 +821,34 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
       setMessage(err instanceof Error ? err.message : "內容更新失敗");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const deleteSelectedItem = async () => {
+    if (!selected || selected.isNew) return;
+
+    const confirmed = window.confirm(
+      `確定要刪除這筆資料嗎？\n\n${selected.label}\n\n刪除後網站將不再顯示，但修改紀錄會保留。`
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+    setMessage(null);
+    try {
+      await fetchJson<{ ok: true }>(
+        `/api/admin/content-items/${encodeURIComponent(selected.type)}/${encodeURIComponent(selected.id)}`,
+        { method: "DELETE" }
+      );
+      setMessage("已刪除這筆資料，網站內容會改由 Neon 資料庫的 active 資料呈現。");
+      setSelected(null);
+      setFormData({});
+      setNote("");
+      await onSaved();
+      await searchItems();
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "刪除資料失敗");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -980,14 +1009,27 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
 
               {message && <p className="text-sm text-muted-foreground">{message}</p>}
 
+              <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => void applyContentUpdate()}
-                disabled={saving || changedFields.length === 0}
+                disabled={saving || deleting || changedFields.length === 0}
                 className="rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white hover:bg-navy-light disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {saving ? "處理中..." : selected.isNew ? "新增正式內容" : "更新正式內容"}
               </button>
+
+              {!selected.isNew && (
+                <button
+                  type="button"
+                  onClick={() => void deleteSelectedItem()}
+                  disabled={saving || deleting}
+                  className="rounded-md border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {deleting ? "刪除中..." : "刪除這筆資料"}
+                </button>
+              )}
+              </div>
             </div>
           )}
         </CardContent>

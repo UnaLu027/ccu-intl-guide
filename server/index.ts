@@ -76,7 +76,12 @@ function parseJsonObject(value: string): Record<string, unknown> | null {
 
 async function getStoredContentItems() {
   const rows = await db.prepare(
-    "SELECT content_type, item_id, item_label, data_json FROM content_items ORDER BY content_type, item_id"
+    [
+      "SELECT content_type, item_id, item_label, data_json",
+      "FROM content_items",
+      "WHERE status = 'active'",
+      "ORDER BY content_type, item_id",
+    ].join(" ")
   ).all<{ content_type: ContentType; item_id: string; item_label: string; data_json: string }>();
 
   return rows.flatMap((row) => {
@@ -91,9 +96,17 @@ async function getStoredContentItems() {
   });
 }
 
+async function hasContentItems() {
+  const row = await db.prepare(
+    "SELECT COUNT(*) AS count FROM content_items"
+  ).get<{ count: number }>();
+  return Number(row?.count ?? 0) > 0;
+}
+
 async function getActiveContentItems() {
   const stored = await getStoredContentItems();
-  return stored.length > 0 ? stored : staticContentItems();
+  if (stored.length > 0) return stored;
+  return (await hasContentItems()) ? [] : staticContentItems();
 }
 
 async function seedContentItems() {
@@ -101,12 +114,24 @@ async function seedContentItems() {
     await db.prepare(
       [
         "INSERT INTO content_items",
-        "(content_type, item_id, item_label, data_json)",
-        "VALUES (?, ?, ?, ?)",
+        "(content_type, item_id, item_label, data_json, status)",
+        "VALUES (?, ?, ?, ?, 'active')",
         "ON CONFLICT(content_type, item_id) DO NOTHING",
       ].join(" ")
     ).run(item.type, item.id, item.label, JSON.stringify(item.data));
   }
+}
+
+async function ensureContentItemsSchema() {
+  try {
+    await db.exec("ALTER TABLE content_items ADD COLUMN status TEXT NOT NULL DEFAULT 'active'");
+  } catch (err) {
+    const message = err instanceof Error ? err.message.toLowerCase() : String(err).toLowerCase();
+    if (!message.includes("duplicate column") && !message.includes("already exists")) {
+      throw err;
+    }
+  }
+  await db.exec("CREATE INDEX IF NOT EXISTS idx_content_items_status ON content_items(status)");
 }
 
 async function searchContentItems(query: string) {
@@ -129,10 +154,16 @@ async function searchContentItems(query: string) {
 
 async function findContentItem(type: ContentType, id: string) {
   const stored = await db.prepare(
-    "SELECT item_label, data_json FROM content_items WHERE content_type = ? AND item_id = ? LIMIT 1"
-  ).get<{ item_label: string; data_json: string }>(type, id);
+    [
+      "SELECT item_label, data_json, status",
+      "FROM content_items",
+      "WHERE content_type = ? AND item_id = ?",
+      "LIMIT 1",
+    ].join(" ")
+  ).get<{ item_label: string; data_json: string; status: string }>(type, id);
 
   if (stored) {
+    if (stored.status !== "active") return null;
     const data = parseJsonObject(stored.data_json);
     if (data) {
       return {
@@ -491,6 +522,7 @@ function registerTools(server: McpServer) {
 
 async function startServer() {
   await initDb();
+  await ensureContentItemsSchema();
   await seedContentItems();
 
   const app = express();
@@ -498,7 +530,7 @@ async function startServer() {
 
   app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, mcp-session-id");
     if (req.method === "OPTIONS") {
       res.sendStatus(200);
@@ -874,6 +906,52 @@ async function startServer() {
     return item;
   }));
 
+  app.delete("/api/admin/content-items/:type/:id", (req, res) => void adminJson(res, async () => {
+    const type = req.params.type as ContentType;
+    if (!["office", "department", "task"].includes(type)) {
+      res.status(400);
+      return { error: "Invalid content type" };
+    }
+
+    const item = await findContentItem(type, req.params.id);
+    if (!item) {
+      res.status(404);
+      return { error: "Content item not found" };
+    }
+
+    await runDbTransaction(async () => {
+      await db.prepare(
+        [
+          "INSERT INTO content_items",
+          "(content_type, item_id, item_label, data_json, status)",
+          "VALUES (?, ?, ?, ?, 'deleted')",
+          "ON CONFLICT(content_type, item_id) DO UPDATE SET",
+          "item_label = excluded.item_label,",
+          "data_json = excluded.data_json,",
+          "status = 'deleted',",
+          "updated_at = CURRENT_TIMESTAMP",
+        ].join(" ")
+      ).run(type, item.id, item.label, JSON.stringify(item.data));
+
+      await db.prepare(
+        [
+          "INSERT INTO content_drafts",
+          "(content_type, item_id, item_label, before_json, after_json, status, note)",
+          "VALUES (?, ?, ?, ?, ?, 'deleted', ?)",
+        ].join(" ")
+      ).run(
+        type,
+        item.id,
+        item.label,
+        JSON.stringify(item.data),
+        JSON.stringify({}),
+        "Deleted from admin content maintenance"
+      );
+    });
+
+    return { ok: true };
+  }));
+
   app.get("/api/admin/content-drafts", (_req, res) => void adminJson(res, async () => {
     return await db.prepare(
       [
@@ -920,11 +998,12 @@ async function startServer() {
       await db.prepare(
         [
           "INSERT INTO content_items",
-          "(content_type, item_id, item_label, data_json)",
-          "VALUES (?, ?, ?, ?)",
+          "(content_type, item_id, item_label, data_json, status)",
+          "VALUES (?, ?, ?, ?, 'active')",
           "ON CONFLICT(content_type, item_id) DO UPDATE SET",
           "item_label = excluded.item_label,",
           "data_json = excluded.data_json,",
+          "status = 'active',",
           "updated_at = CURRENT_TIMESTAMP",
         ].join(" ")
       ).run(type, itemId, updatedLabel, JSON.stringify(afterData));
