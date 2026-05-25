@@ -737,6 +737,7 @@ function FieldEditor({
 }
 
 function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
+  const [contentMode, setContentMode] = useState<"edit" | "create">("edit");
   const [query, setQuery] = useState("");
   const [newType, setNewType] = useState<ContentType>("task");
   const [newId, setNewId] = useState("");
@@ -767,6 +768,7 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
   }, []);
 
   const choose = (item: ContentItem) => {
+    setContentMode("edit");
     setSelected(item);
     setFormData(item.data);
     setNote("");
@@ -822,13 +824,30 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
   };
 
   return (
+    <Tabs
+      value={contentMode}
+      onValueChange={(value) => {
+        const nextMode = value as "edit" | "create";
+        setContentMode(nextMode);
+        setSelected(null);
+        setFormData({});
+        setNote("");
+        setMessage(null);
+      }}
+      className="space-y-4"
+    >
+      <TabsList>
+        <TabsTrigger value="edit">修改資料</TabsTrigger>
+        <TabsTrigger value="create">新增資料</TabsTrigger>
+      </TabsList>
+
     <div className="grid gap-4 lg:grid-cols-[360px_1fr]">
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">搜尋要修改的內容</CardTitle>
+          <CardTitle className="text-base">{contentMode === "create" ? "新增資料" : "搜尋要修改的內容"}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="rounded-md border bg-muted/20 p-3">
+          <div className={`rounded-md border bg-muted/20 p-3 ${contentMode === "create" ? "" : "hidden"}`}>
             <div className="mb-2 text-sm font-semibold">新增資料</div>
             <div className="grid gap-2">
               <select
@@ -857,7 +876,7 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
           </div>
 
           <form
-            className="flex gap-2"
+            className={`flex gap-2 ${contentMode === "edit" ? "" : "hidden"}`}
             onSubmit={(event) => {
               event.preventDefault();
               void searchItems();
@@ -874,7 +893,7 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
             </button>
           </form>
 
-          <div className="max-h-[560px] space-y-2 overflow-y-auto">
+          <div className={`max-h-[560px] space-y-2 overflow-y-auto ${contentMode === "edit" ? "" : "hidden"}`}>
             {items.map((item) => (
               <button
                 key={`${item.type}-${item.id}`}
@@ -895,11 +914,14 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">{selected ? `編輯：${selected.label}` : "尚未選擇資料"}</CardTitle>
+          <CardTitle className="text-base">{selected ? `${selected.isNew ? "新增" : "編輯"}：${selected.label}` : contentMode === "create" ? "尚未建立新增表單" : "尚未選擇資料"}</CardTitle>
         </CardHeader>
         <CardContent>
           {!selected ? (
-            <EmptyState title="請先選擇一筆資料" description="左側搜尋並選取行政單位、系所或任務流程後，這裡會產生表單欄位。" />
+            <EmptyState
+              title={contentMode === "create" ? "請先建立新增表單" : "請先選擇一筆資料"}
+              description={contentMode === "create" ? "左側選擇資料類型並輸入唯一 id 後，這裡會產生新增表單欄位。" : "左側搜尋並選取行政單位、系所或任務流程後，這裡會產生表單欄位。"}
+            />
           ) : (
             <div className="space-y-5">
               <div className="grid gap-3 md:grid-cols-2">
@@ -971,6 +993,7 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
         </CardContent>
       </Card>
     </div>
+    </Tabs>
   );
 }
 
