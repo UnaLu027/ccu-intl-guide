@@ -4,7 +4,7 @@
 
 import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { tasks, offices, departments } from "@/data/campusData";
+import { useCampusData } from "@/contexts/CampusDataContext";
 import { getGoogleMapsSearchUrl } from "@/lib/mapTarget";
 import { Link, useParams } from "wouter";
 import {
@@ -71,6 +71,7 @@ function getAutoLinkLabel(
 
 export default function TaskDetail() {
   const { t, lang } = useLanguage();
+  const { tasks, offices, departments } = useCampusData();
   const { id } = useParams<{ id: string }>();
 
   const task = tasks.find((item) => item.id === id);

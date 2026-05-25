@@ -5,6 +5,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { CampusDataProvider } from "./contexts/CampusDataContext";
 import Home from "./pages/Home";
 import SearchResults from "./pages/SearchResults";
 import CategoryResults from "./pages/CategoryResults";
@@ -44,11 +45,13 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
         <LanguageProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Router />
-            <CCUGPTWidget />
-          </TooltipProvider>
+          <CampusDataProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Router />
+              <CCUGPTWidget />
+            </TooltipProvider>
+          </CampusDataProvider>
         </LanguageProvider>
       </ThemeProvider>
     </ErrorBoundary>

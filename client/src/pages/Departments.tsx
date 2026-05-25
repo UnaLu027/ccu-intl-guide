@@ -5,14 +5,15 @@
 import Header from "@/components/Header";
 import { DeptCard } from "@/components/ResultCard";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { departments, getColleges } from "@/data/campusData";
+import { useCampusData } from "@/contexts/CampusDataContext";
 import { Link } from "wouter";
 import { useState, useMemo } from "react";
 import { ArrowLeft, Search, Building2 } from "lucide-react";
 
 export default function Departments() {
   const { t } = useLanguage();
-  const colleges = useMemo(() => getColleges(), []);
+  const { departments, getColleges } = useCampusData();
+  const colleges = useMemo(() => getColleges(), [getColleges]);
   const [search, setSearch] = useState("");
   const [activeCollege, setActiveCollege] = useState<string | "all">("all");
 

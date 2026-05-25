@@ -5,7 +5,8 @@
 import Header from "@/components/Header";
 import { OfficeCard, DeptCard } from "@/components/ResultCard";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { filterByCategory, serviceCategories, type Task } from "@/data/campusData";
+import { useCampusData } from "@/contexts/CampusDataContext";
+import type { Task } from "@/data/campusData";
 import { Link, useParams } from "wouter";
 import { useMemo } from "react";
 import {
@@ -44,6 +45,7 @@ function TaskMiniCard({ task }: { task: Task }) {
 
 export default function CategoryResults() {
   const { t } = useLanguage();
+  const { filterByCategory, serviceCategories } = useCampusData();
   const { id } = useParams<{ id: string }>();
 
   const category = useMemo(() => serviceCategories.find(c => c.id === id), [id]);

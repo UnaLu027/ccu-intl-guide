@@ -5,7 +5,8 @@
 
 import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { tasks, offices, departments, type Task } from "@/data/campusData";
+import { useCampusData } from "@/contexts/CampusDataContext";
+import type { Task } from "@/data/campusData";
 import { Link } from "wouter";
 import { useMemo, useState } from "react";
 import {
@@ -68,6 +69,7 @@ function taskMatchesQuery(task: Task, query: string) {
 
 export default function Tasks() {
   const { t, lang } = useLanguage();
+  const { tasks, offices, departments } = useCampusData();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 

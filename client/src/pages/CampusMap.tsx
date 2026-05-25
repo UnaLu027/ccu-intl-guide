@@ -12,7 +12,7 @@
 
 import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { offices, departments } from "@/data/campusData";
+import { useCampusData } from "@/contexts/CampusDataContext";
 import { MapView } from "@/components/Map";
 import {
   getGoogleMapsSearchUrlFromPosition,
@@ -78,45 +78,6 @@ const markerColors: Record<MarkerType, string> = {
   department: "#7A9E7E",
 };
 
-const allItems: MapItem[] = [
-  ...offices.map(o => ({
-    id: o.id,
-    type: "office" as MarkerType,
-    name_en: o.name_en,
-    name_zh: o.name_zh,
-    building_en: o.building_name_en,
-    building_zh: o.building_name_zh,
-    floor: o.floor,
-    room_en: o.room_en,
-    room_zh: o.room_zh,
-    detail_en: o.function_desc_en,
-    detail_zh: o.function_desc_zh,
-    google_maps_query: o.google_maps_query,
-    latitude: o.latitude,
-    longitude: o.longitude,
-    use_manual_coordinates: o.use_manual_coordinates,
-    navLink: `/navigate/office/${o.id}`,
-  })),
-  ...departments.map(d => ({
-    id: d.id,
-    type: "department" as MarkerType,
-    name_en: d.name_en,
-    name_zh: d.name_zh,
-    building_en: d.building_name_en,
-    building_zh: d.building_name_zh,
-    floor: d.floor,
-    room_en: d.room_en,
-    room_zh: d.room_zh,
-    detail_en: d.function_desc_en,
-    detail_zh: d.function_desc_zh,
-    google_maps_query: d.google_maps_query,
-    latitude: d.latitude,
-    longitude: d.longitude,
-    use_manual_coordinates: d.use_manual_coordinates,
-    navLink: `/navigate/dept/${d.id}`,
-  })),
-];
-
 function getGroupingKey(item: MapItem) {
   return shouldUseManualCoordinates(item)
     ? `manual:${item.latitude},${item.longitude}`
@@ -176,6 +137,7 @@ function matchesSearch(item: MapItem, query: string) {
 
 export default function CampusMap() {
   const { t } = useLanguage();
+  const { offices, departments } = useCampusData();
   const [filter, setFilter] = useState<MarkerType | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState<SelectedItem | null>(null);
@@ -186,6 +148,45 @@ export default function CampusMap() {
   const filterRef = useRef<MarkerType | "all">("all");
   const searchQueryRef = useRef("");
   const userLocationMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
+
+  const allItems: MapItem[] = useMemo(() => [
+    ...offices.map(o => ({
+      id: o.id,
+      type: "office" as MarkerType,
+      name_en: o.name_en,
+      name_zh: o.name_zh,
+      building_en: o.building_name_en,
+      building_zh: o.building_name_zh,
+      floor: o.floor,
+      room_en: o.room_en,
+      room_zh: o.room_zh,
+      detail_en: o.function_desc_en,
+      detail_zh: o.function_desc_zh,
+      google_maps_query: o.google_maps_query,
+      latitude: o.latitude,
+      longitude: o.longitude,
+      use_manual_coordinates: o.use_manual_coordinates,
+      navLink: `/navigate/office/${o.id}`,
+    })),
+    ...departments.map(d => ({
+      id: d.id,
+      type: "department" as MarkerType,
+      name_en: d.name_en,
+      name_zh: d.name_zh,
+      building_en: d.building_name_en,
+      building_zh: d.building_name_zh,
+      floor: d.floor,
+      room_en: d.room_en,
+      room_zh: d.room_zh,
+      detail_en: d.function_desc_en,
+      detail_zh: d.function_desc_zh,
+      google_maps_query: d.google_maps_query,
+      latitude: d.latitude,
+      longitude: d.longitude,
+      use_manual_coordinates: d.use_manual_coordinates,
+      navLink: `/navigate/dept/${d.id}`,
+    })),
+  ], [departments, offices]);
 
   const matchedItems = useMemo(() => {
     return allItems.filter(item =>

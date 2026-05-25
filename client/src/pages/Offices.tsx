@@ -5,13 +5,14 @@
 import Header from "@/components/Header";
 import { OfficeCard } from "@/components/ResultCard";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { offices } from "@/data/campusData";
+import { useCampusData } from "@/contexts/CampusDataContext";
 import { Link } from "wouter";
 import { useState, useMemo } from "react";
 import { ArrowLeft, Search, Briefcase } from "lucide-react";
 
 export default function Offices() {
   const { t } = useLanguage();
+  const { offices } = useCampusData();
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {

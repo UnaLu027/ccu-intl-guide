@@ -117,6 +117,17 @@ CREATE TABLE IF NOT EXISTS content_drafts (
   note         TEXT
 );
 
+CREATE TABLE IF NOT EXISTS content_items (
+  id           SERIAL PRIMARY KEY,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  content_type TEXT NOT NULL,
+  item_id      TEXT NOT NULL,
+  item_label   TEXT NOT NULL,
+  data_json    TEXT NOT NULL,
+  UNIQUE(content_type, item_id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_search_events_created_at       ON search_events(created_at);
 CREATE INDEX IF NOT EXISTS idx_search_events_query            ON search_events(query);
 CREATE INDEX IF NOT EXISTS idx_search_events_normalized_query ON search_events(normalized_query);
@@ -132,3 +143,4 @@ CREATE INDEX IF NOT EXISTS idx_mcp_tool_conversation_id       ON mcp_tool_call_e
 CREATE INDEX IF NOT EXISTS idx_feedback_session_id            ON feedback_events(session_id);
 CREATE INDEX IF NOT EXISTS idx_content_drafts_created_at      ON content_drafts(created_at);
 CREATE INDEX IF NOT EXISTS idx_content_drafts_item            ON content_drafts(content_type, item_id);
+CREATE INDEX IF NOT EXISTS idx_content_items_item             ON content_items(content_type, item_id);

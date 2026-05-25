@@ -5,8 +5,9 @@
 import Header from "@/components/Header";
 import { OfficeCard, DeptCard } from "@/components/ResultCard";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCampusData } from "@/contexts/CampusDataContext";
 import { getPageMetadata } from "@/lib/analytics";
-import { searchByNeed, tasks, type Task } from "@/data/campusData";
+import type { Task } from "@/data/campusData";
 import { Link, useSearch, useLocation } from "wouter";
 import { useEffect, useState, useMemo } from "react";
 import { Search, ArrowLeft, ClipboardList, ChevronRight, Building2, Briefcase, AlertCircle } from "lucide-react";
@@ -36,6 +37,7 @@ function TaskMiniCard({ task }: { task: Task }) {
 
 export default function SearchResults() {
   const { t, lang } = useLanguage();
+  const { searchByNeed } = useCampusData();
   const [, navigate] = useLocation();
   const searchParams = useSearch();
   const params = new URLSearchParams(searchParams);

@@ -39,15 +39,7 @@ function getContentCollection(type: ContentType) {
   return tasks;
 }
 
-function contentLabel(type: ContentType, item: Record<string, unknown>) {
-  if (type === "task") {
-    return `${readString(item.task_name_zh) ?? item.id} / ${readString(item.task_name_en) ?? ""}`;
-  }
-  return `${readString(item.name_zh) ?? item.id} / ${readString(item.name_en) ?? ""}`;
-}
-
-function searchContentItems(query: string) {
-  const q = normalizeQuery(query);
+function staticContentItems() {
   const collections: Array<[ContentType, Array<Record<string, unknown>>]> = [
     ["office", offices as unknown as Array<Record<string, unknown>>],
     ["department", departments as unknown as Array<Record<string, unknown>>],
@@ -55,22 +47,103 @@ function searchContentItems(query: string) {
   ];
 
   return collections.flatMap(([type, items]) =>
-    items
-      .filter((item) => {
-        if (!q) return true;
-        return normalizeQuery(JSON.stringify(item)).includes(q);
-      })
-      .slice(0, q ? 50 : 15)
-      .map((item) => ({
-        type,
-        id: String(item.id),
-        label: contentLabel(type, item),
-        data: item,
-      }))
+    items.map((item) => ({
+      type,
+      id: String(item.id),
+      label: contentLabel(type, item),
+      data: item,
+    }))
   );
 }
 
-function findContentItem(type: ContentType, id: string) {
+function contentLabel(type: ContentType, item: Record<string, unknown>) {
+  if (type === "task") {
+    return `${readString(item.task_name_zh) ?? item.id} / ${readString(item.task_name_en) ?? ""}`;
+  }
+  return `${readString(item.name_zh) ?? item.id} / ${readString(item.name_en) ?? ""}`;
+}
+
+function parseJsonObject(value: string): Record<string, unknown> | null {
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? parsed as Record<string, unknown>
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+async function getStoredContentItems() {
+  const rows = await db.prepare(
+    "SELECT content_type, item_id, item_label, data_json FROM content_items ORDER BY content_type, item_id"
+  ).all<{ content_type: ContentType; item_id: string; item_label: string; data_json: string }>();
+
+  return rows.flatMap((row) => {
+    const data = parseJsonObject(row.data_json);
+    if (!data) return [];
+    return {
+      type: row.content_type,
+      id: row.item_id,
+      label: row.item_label,
+      data,
+    };
+  });
+}
+
+async function getActiveContentItems() {
+  const stored = await getStoredContentItems();
+  return stored.length > 0 ? stored : staticContentItems();
+}
+
+async function seedContentItems() {
+  for (const item of staticContentItems()) {
+    await db.prepare(
+      [
+        "INSERT INTO content_items",
+        "(content_type, item_id, item_label, data_json)",
+        "VALUES (?, ?, ?, ?)",
+        "ON CONFLICT(content_type, item_id) DO NOTHING",
+      ].join(" ")
+    ).run(item.type, item.id, item.label, JSON.stringify(item.data));
+  }
+}
+
+async function searchContentItems(query: string) {
+  const q = normalizeQuery(query);
+  const items = await getActiveContentItems();
+
+  return items
+      .filter((item) => {
+        if (!q) return true;
+        return normalizeQuery(JSON.stringify(item.data)).includes(q);
+      })
+      .slice(0, q ? 50 : 15)
+      .map((item) => ({
+        type: item.type,
+        id: item.id,
+        label: item.label,
+        data: item.data,
+      }));
+}
+
+async function findContentItem(type: ContentType, id: string) {
+  const stored = await db.prepare(
+    "SELECT item_label, data_json FROM content_items WHERE content_type = ? AND item_id = ? LIMIT 1"
+  ).get<{ item_label: string; data_json: string }>(type, id);
+
+  if (stored) {
+    const data = parseJsonObject(stored.data_json);
+    if (data) {
+      return {
+        type,
+        id,
+        label: stored.item_label,
+        data,
+      };
+    }
+  }
+
   const item = (getContentCollection(type) as Array<{ id: string }>).find((entry) => entry.id === id);
   if (!item) return null;
   return {
@@ -418,6 +491,7 @@ function registerTools(server: McpServer) {
 
 async function startServer() {
   await initDb();
+  await seedContentItems();
 
   const app = express();
   const server = createServer(app);
@@ -499,6 +573,16 @@ async function startServer() {
       res.status(500).json({ error: "Failed to record search event" });
     }
   });
+
+  app.get("/api/content-data", (_req, res) => void adminJson(res, async () => {
+    const items = await getActiveContentItems();
+    return {
+      serviceCategories,
+      offices: items.filter((item) => item.type === "office").map((item) => item.data),
+      departments: items.filter((item) => item.type === "department").map((item) => item.data),
+      tasks: items.filter((item) => item.type === "task").map((item) => item.data),
+    };
+  }));
 
   app.post("/api/chat", express.json(), async (req, res) => {
     let conversationId: number | null = null;
@@ -769,19 +853,19 @@ async function startServer() {
     return { ok: true };
   }));
 
-  app.get("/api/admin/content-items", (req, res) => void adminJson(res, () => {
+  app.get("/api/admin/content-items", (req, res) => void adminJson(res, async () => {
     const query = readString(req.query.query) ?? "";
-    return searchContentItems(query);
+    return await searchContentItems(query);
   }));
 
-  app.get("/api/admin/content-items/:type/:id", (req, res) => void adminJson(res, () => {
+  app.get("/api/admin/content-items/:type/:id", (req, res) => void adminJson(res, async () => {
     const type = req.params.type as ContentType;
     if (!["office", "department", "task"].includes(type)) {
       res.status(400);
       return { error: "Invalid content type" };
     }
 
-    const item = findContentItem(type, req.params.id);
+    const item = await findContentItem(type, req.params.id);
     if (!item) {
       res.status(404);
       return { error: "Content item not found" };
@@ -810,7 +894,7 @@ async function startServer() {
       return { error: "content_type and item_id are required" };
     }
 
-    const original = findContentItem(type, itemId);
+    const original = await findContentItem(type, itemId);
     if (!original) {
       res.status(404);
       return { error: "Content item not found" };
@@ -822,22 +906,38 @@ async function startServer() {
       return { error: "after_data is required" };
     }
 
-    const result = await db.prepare(
-      [
-        "INSERT INTO content_drafts",
-        "(content_type, item_id, item_label, before_json, after_json, status, note)",
-        "VALUES (?, ?, ?, ?, ?, 'draft', ?)",
-      ].join(" ")
-    ).run(
-      type,
-      itemId,
-      original.label,
-      JSON.stringify(original.data),
-      JSON.stringify(after),
-      note
-    );
+    const updatedLabel = contentLabel(type, after as Record<string, unknown>);
 
-    return { ok: true, id: Number(result.lastInsertRowid) };
+    await runDbTransaction(async () => {
+      await db.prepare(
+        [
+          "INSERT INTO content_items",
+          "(content_type, item_id, item_label, data_json)",
+          "VALUES (?, ?, ?, ?)",
+          "ON CONFLICT(content_type, item_id) DO UPDATE SET",
+          "item_label = excluded.item_label,",
+          "data_json = excluded.data_json,",
+          "updated_at = CURRENT_TIMESTAMP",
+        ].join(" ")
+      ).run(type, itemId, updatedLabel, JSON.stringify(after));
+
+      await db.prepare(
+        [
+          "INSERT INTO content_drafts",
+          "(content_type, item_id, item_label, before_json, after_json, status, note)",
+          "VALUES (?, ?, ?, ?, ?, 'applied', ?)",
+        ].join(" ")
+      ).run(
+        type,
+        itemId,
+        updatedLabel,
+        JSON.stringify(original.data),
+        JSON.stringify(after),
+        note
+      );
+    });
+
+    return { ok: true };
   }));
 
   // ── Static / SPA ─────────────────────────────────────────────────────────────

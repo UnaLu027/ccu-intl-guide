@@ -5,7 +5,7 @@
  */
 import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { serviceCategories, tasks } from "@/data/campusData";
+import { useCampusData } from "@/contexts/CampusDataContext";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import {
@@ -32,6 +32,7 @@ const searchExamples = [
 
 export default function Home() {
   const { t, lang } = useLanguage();
+  const { serviceCategories, tasks } = useCampusData();
   const [, navigate] = useLocation();
   const [query, setQuery] = useState("");
 

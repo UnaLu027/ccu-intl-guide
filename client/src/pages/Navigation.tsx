@@ -5,7 +5,7 @@
 
 import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { offices, departments, tasks } from "@/data/campusData";
+import { useCampusData } from "@/contexts/CampusDataContext";
 import { MapView } from "@/components/Map";
 import { getGoogleMapsSearchUrl, resolveMapPosition } from "@/lib/mapTarget";
 import { Link, useParams } from "wouter";
@@ -27,6 +27,7 @@ import {
 
 export default function Navigation() {
   const { t, lang } = useLanguage();
+  const { offices, departments, tasks } = useCampusData();
   const { type, id } = useParams<{ type: string; id: string }>();
 
   const item = useMemo(() => {

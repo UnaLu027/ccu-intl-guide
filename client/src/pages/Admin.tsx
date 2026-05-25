@@ -707,12 +707,12 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
 
   const changedFields = selected ? diffFields(selected.data, formData) : [];
 
-  const saveDraft = async () => {
+  const applyContentUpdate = async () => {
     if (!selected) return;
     setSaving(true);
     setMessage(null);
     try {
-      await fetchJson<{ ok: true; id: number }>("/api/admin/content-drafts", {
+      await fetchJson<{ ok: true }>("/api/admin/content-drafts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -722,10 +722,10 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
           note,
         }),
       });
-      setMessage("已儲存為修改草稿。正式套用前，網站資料不會被覆蓋。");
+      setMessage("已更新正式內容，網站重新整理後會讀取 Neon 中的新資料。");
       await onSaved();
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : "儲存草稿失敗");
+      setMessage(err instanceof Error ? err.message : "內容更新失敗");
     } finally {
       setSaving(false);
     }
@@ -842,11 +842,11 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
 
               <button
                 type="button"
-                onClick={() => void saveDraft()}
+                onClick={() => void applyContentUpdate()}
                 disabled={saving || changedFields.length === 0}
                 className="rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white hover:bg-navy-light disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {saving ? "儲存中..." : "儲存修改草稿"}
+                {saving ? "更新中..." : "更新正式內容"}
               </button>
             </div>
           )}
@@ -858,7 +858,7 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
 
 function DraftsTab({ drafts }: { drafts: ContentDraft[] }) {
   if (drafts.length === 0) {
-    return <EmptyState title="目前尚無修改紀錄" description="內容維護儲存草稿後，修改前後 JSON 會保留在這裡。" />;
+    return <EmptyState title="目前尚無修改紀錄" description="內容維護更新正式內容後，修改前後 JSON 會保留在這裡。" />;
   }
 
   return (
