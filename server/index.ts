@@ -888,16 +888,11 @@ async function startServer() {
     const type = readString(body.content_type) as ContentType | null;
     const itemId = readString(body.item_id);
     const note = readString(body.note);
+    const isNew = body.is_new === true;
 
     if (!type || !["office", "department", "task"].includes(type) || !itemId) {
       res.status(400);
       return { error: "content_type and item_id are required" };
-    }
-
-    const original = await findContentItem(type, itemId);
-    if (!original) {
-      res.status(404);
-      return { error: "Content item not found" };
     }
 
     const after = body.after_data;
@@ -906,7 +901,20 @@ async function startServer() {
       return { error: "after_data is required" };
     }
 
-    const updatedLabel = contentLabel(type, after as Record<string, unknown>);
+    const afterData = { ...(after as Record<string, unknown>), id: itemId };
+    const original = await findContentItem(type, itemId);
+
+    if (isNew && original) {
+      res.status(409);
+      return { error: "Content item id already exists" };
+    }
+
+    if (!isNew && !original) {
+      res.status(404);
+      return { error: "Content item not found" };
+    }
+
+    const updatedLabel = contentLabel(type, afterData);
 
     await runDbTransaction(async () => {
       await db.prepare(
@@ -919,7 +927,7 @@ async function startServer() {
           "data_json = excluded.data_json,",
           "updated_at = CURRENT_TIMESTAMP",
         ].join(" ")
-      ).run(type, itemId, updatedLabel, JSON.stringify(after));
+      ).run(type, itemId, updatedLabel, JSON.stringify(afterData));
 
       await db.prepare(
         [
@@ -931,8 +939,8 @@ async function startServer() {
         type,
         itemId,
         updatedLabel,
-        JSON.stringify(original.data),
-        JSON.stringify(after),
+        JSON.stringify(original?.data ?? {}),
+        JSON.stringify(afterData),
         note
       );
     });

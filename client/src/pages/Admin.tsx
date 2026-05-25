@@ -75,6 +75,7 @@ interface ContentItem {
   id: string;
   label: string;
   data: Record<string, unknown>;
+  isNew?: boolean;
 }
 
 interface ContentDraft {
@@ -476,6 +477,71 @@ function typeLabel(type: ContentType) {
   return "任務流程";
 }
 
+function makeContentTemplate(type: ContentType, id: string): Record<string, unknown> {
+  if (type === "task") {
+    return {
+      id,
+      task_name_zh: "",
+      task_name_en: "",
+      scenario_zh: "",
+      scenario_en: "",
+      target_unit_type: "office",
+      target_unit_id: "",
+      category_id: "",
+      required_documents_zh: [""],
+      required_documents_en: [""],
+      steps: [{ zh: "", en: "" }],
+    };
+  }
+
+  const common = {
+    id,
+    name_zh: "",
+    name_en: "",
+    category: type,
+    service_categories: [""],
+    building_name_zh: "",
+    building_name_en: "",
+    floor: "",
+    room_zh: "",
+    room_en: "",
+    indoor_location_note_zh: "",
+    indoor_location_note_en: "",
+    function_desc_zh: "",
+    function_desc_en: "",
+    service_scope_zh: "",
+    service_scope_en: "",
+    official_url: "",
+    google_maps_query: "",
+    latitude: 0,
+    longitude: 0,
+    use_manual_coordinates: false,
+    source_url: "",
+    needs_manual_review: true,
+    entrance_image: "",
+    floor_plan_image: "",
+    building_entrance_image: "",
+  };
+
+  if (type === "department") {
+    return {
+      ...common,
+      college_zh: "",
+      college_en: "",
+      is_college_office: false,
+    };
+  }
+
+  return {
+    ...common,
+    office_hours: "",
+    phone: "",
+    email: "",
+    common_scenarios_zh: "",
+    common_scenarios_en: "",
+  };
+}
+
 function valueToText(value: unknown) {
   if (Array.isArray(value)) {
     return value
@@ -672,6 +738,8 @@ function FieldEditor({
 
 function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
   const [query, setQuery] = useState("");
+  const [newType, setNewType] = useState<ContentType>("task");
+  const [newId, setNewId] = useState("");
   const [items, setItems] = useState<ContentItem[]>([]);
   const [selected, setSelected] = useState<ContentItem | null>(null);
   const [formData, setFormData] = useState<Record<string, unknown>>({});
@@ -705,7 +773,27 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
     setMessage(null);
   };
 
-  const changedFields = selected ? diffFields(selected.data, formData) : [];
+  const startNewItem = () => {
+    const id = newId.trim();
+    if (!id) {
+      setMessage("請先輸入新資料的 id。");
+      return;
+    }
+
+    const data = makeContentTemplate(newType, id);
+    setSelected({
+      type: newType,
+      id,
+      label: `新增 ${typeLabel(newType)} / ${id}`,
+      data,
+      isNew: true,
+    });
+    setFormData(data);
+    setNote("");
+    setMessage(null);
+  };
+
+  const changedFields = selected ? (selected.isNew ? Object.keys(formData) : diffFields(selected.data, formData)) : [];
 
   const applyContentUpdate = async () => {
     if (!selected) return;
@@ -720,10 +808,12 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
           item_id: selected.id,
           after_data: formData,
           note,
+          is_new: selected.isNew === true,
         }),
       });
-      setMessage("已更新正式內容，網站重新整理後會讀取 Neon 中的新資料。");
+      setMessage(selected.isNew ? "已新增正式內容，網站重新整理後會讀取 Neon 中的新資料。" : "已更新正式內容，網站重新整理後會讀取 Neon 中的新資料。");
       await onSaved();
+      await searchItems();
     } catch (err) {
       setMessage(err instanceof Error ? err.message : "內容更新失敗");
     } finally {
@@ -738,6 +828,34 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
           <CardTitle className="text-base">搜尋要修改的內容</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
+          <div className="rounded-md border bg-muted/20 p-3">
+            <div className="mb-2 text-sm font-semibold">新增資料</div>
+            <div className="grid gap-2">
+              <select
+                value={newType}
+                onChange={(event) => setNewType(event.target.value as ContentType)}
+                className="rounded-md border bg-background px-3 py-2 text-sm"
+              >
+                <option value="task">任務流程 Task</option>
+                <option value="office">行政單位 Office</option>
+                <option value="department">系所單位 Department</option>
+              </select>
+              <input
+                value={newId}
+                onChange={(event) => setNewId(event.target.value)}
+                placeholder="new_unique_id"
+                className="rounded-md border px-3 py-2 text-sm font-mono"
+              />
+              <button
+                type="button"
+                onClick={startNewItem}
+                className="rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted"
+              >
+                建立新增表單
+              </button>
+            </div>
+          </div>
+
           <form
             className="flex gap-2"
             onSubmit={(event) => {
@@ -846,7 +964,7 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
                 disabled={saving || changedFields.length === 0}
                 className="rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white hover:bg-navy-light disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {saving ? "更新中..." : "更新正式內容"}
+                {saving ? "處理中..." : selected.isNew ? "新增正式內容" : "更新正式內容"}
               </button>
             </div>
           )}
