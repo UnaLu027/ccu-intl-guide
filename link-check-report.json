@@ -304,6 +304,14 @@
     "error": "fetch failed"
   },
   {
+    "url": "https://docs.google.com/forms/d/e/1FAIpQLScTAvImpj1fn3-JH2CFd290tC5FfLD-dHF24AZ7R5eongvOLw/viewform",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
     "url": "https://dsw.ccu.edu.tw/",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
@@ -936,6 +944,22 @@
     "error": "fetch failed"
   },
   {
+    "url": "https://www.mvdis.gov.tw/m3-emv-eng/",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.mvdis.gov.tw/m3-simulator-drv/index",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
     "url": "https://www.nhi.gov.tw/en/mp-2.html",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
@@ -945,6 +969,14 @@
   },
   {
     "url": "https://www.route.com.tw/maintain.php",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.thb.gov.tw/en//cl.aspx?n=825",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
     "method": "GET",

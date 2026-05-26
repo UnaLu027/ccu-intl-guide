@@ -2,7 +2,21 @@ import { DatabaseSync } from "node:sqlite";
 import { mkdirSync, readFileSync } from "fs";
 import { createRequire } from "module";
 import path from "path";
-import type { Pool as PgPool, PoolClient } from "pg";
+
+type PgQueryResult = {
+  rows: Record<string, unknown>[];
+  rowCount: number | null;
+};
+
+type PoolClient = {
+  query: (sql: string, params?: QueryParam[]) => Promise<PgQueryResult>;
+  release: () => void;
+};
+
+type PgPool = {
+  query: (sql: string, params?: QueryParam[]) => Promise<PgQueryResult>;
+  connect: () => Promise<PoolClient>;
+};
 
 const _require = createRequire(import.meta.url);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -124,7 +138,7 @@ class PostgresDatabaseAdapter {
         const result = await query(toPostgresSql(withReturningId(sql)), params);
         return {
           changes: result.rowCount ?? 0,
-          lastInsertRowid: result.rows[0]?.id,
+          lastInsertRowid: result.rows[0]?.id as string | number | undefined,
         };
       },
     };

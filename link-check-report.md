@@ -1,12 +1,12 @@
 # Link Check Report
 
-Generated at: 2026-05-26T16:57:22.911Z
+Generated at: 2026-05-26T19:06:29.824Z
 
 ## Summary
 
 | Status | Count |
 | --- | ---: |
-| NEEDS_MANUAL_CHECK | 126 |
+| NEEDS_MANUAL_CHECK | 130 |
 
 ## Non-OK Links
 
@@ -50,6 +50,7 @@ Generated at: 2026-05-26T16:57:22.911Z
 | NEEDS_MANUAL_CHECK |  | GET | https://deptime.ccu.edu.tw/ | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://deptlaw.ccu.edu.tw/ | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://deptphi.ccu.edu.tw/ | fetch failed |
+| NEEDS_MANUAL_CHECK |  | GET | https://docs.google.com/forms/d/e/1FAIpQLScTAvImpj1fn3-JH2CFd290tC5FfLD-dHF24AZ7R5eongvOLw/viewform | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://dsw.ccu.edu.tw/ | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://econ.ccu.edu.tw/ | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://ecourse2.ccu.edu.tw/ | fetch failed |
@@ -129,8 +130,11 @@ Generated at: 2026-05-26T16:57:22.911Z
 | NEEDS_MANUAL_CHECK |  | GET | https://www.facebook.com/onlychiayi/?locale=zh_TW | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.facebook.com/tw.alerts/ | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.google.com/maps/search/?api=1&query=%E7%A7%BB%E6%B0%91%E7%BD%B2%E5%98%89%E7%BE%A9%E5%B8%82%E6%9C%8D%E5%8B%99%E7%AB%99 | fetch failed |
+| NEEDS_MANUAL_CHECK |  | GET | https://www.mvdis.gov.tw/m3-emv-eng/ | fetch failed |
+| NEEDS_MANUAL_CHECK |  | GET | https://www.mvdis.gov.tw/m3-simulator-drv/index | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.nhi.gov.tw/en/mp-2.html | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.route.com.tw/maintain.php | fetch failed |
+| NEEDS_MANUAL_CHECK |  | GET | https://www.thb.gov.tw/en//cl.aspx?n=825 | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.youtube.com/watch?v=ggWsB4jjwCs | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www026168.ccu.edu.tw/ | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www026186.ccu.edu.tw/dormapply/ | fetch failed |
@@ -181,6 +185,7 @@ Generated at: 2026-05-26T16:57:22.911Z
 | NEEDS_MANUAL_CHECK |  | GET | https://deptime.ccu.edu.tw/ |
 | NEEDS_MANUAL_CHECK |  | GET | https://deptlaw.ccu.edu.tw/ |
 | NEEDS_MANUAL_CHECK |  | GET | https://deptphi.ccu.edu.tw/ |
+| NEEDS_MANUAL_CHECK |  | GET | https://docs.google.com/forms/d/e/1FAIpQLScTAvImpj1fn3-JH2CFd290tC5FfLD-dHF24AZ7R5eongvOLw/viewform |
 | NEEDS_MANUAL_CHECK |  | GET | https://dsw.ccu.edu.tw/ |
 | NEEDS_MANUAL_CHECK |  | GET | https://econ.ccu.edu.tw/ |
 | NEEDS_MANUAL_CHECK |  | GET | https://ecourse2.ccu.edu.tw/ |
@@ -260,8 +265,11 @@ Generated at: 2026-05-26T16:57:22.911Z
 | NEEDS_MANUAL_CHECK |  | GET | https://www.facebook.com/onlychiayi/?locale=zh_TW |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.facebook.com/tw.alerts/ |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.google.com/maps/search/?api=1&query=%E7%A7%BB%E6%B0%91%E7%BD%B2%E5%98%89%E7%BE%A9%E5%B8%82%E6%9C%8D%E5%8B%99%E7%AB%99 |
+| NEEDS_MANUAL_CHECK |  | GET | https://www.mvdis.gov.tw/m3-emv-eng/ |
+| NEEDS_MANUAL_CHECK |  | GET | https://www.mvdis.gov.tw/m3-simulator-drv/index |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.nhi.gov.tw/en/mp-2.html |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.route.com.tw/maintain.php |
+| NEEDS_MANUAL_CHECK |  | GET | https://www.thb.gov.tw/en//cl.aspx?n=825 |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.youtube.com/watch?v=ggWsB4jjwCs |
 | NEEDS_MANUAL_CHECK |  | GET | https://www026168.ccu.edu.tw/ |
 | NEEDS_MANUAL_CHECK |  | GET | https://www026186.ccu.edu.tw/dormapply/ |

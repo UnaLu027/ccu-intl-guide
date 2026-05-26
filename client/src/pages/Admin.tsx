@@ -68,7 +68,7 @@ interface AuthStatus {
   passwordConfigured: boolean;
 }
 
-type ContentType = "office" | "department" | "task";
+type ContentType = "office" | "department" | "task" | "student_guide_section";
 
 interface ContentItem {
   type: ContentType;
@@ -465,6 +465,18 @@ const FIELD_LABELS: Record<string, string> = {
   required_documents_zh: "中文所需文件",
   required_documents_en: "英文所需文件",
   steps: "處理步驟",
+  guide_id: "指南類型",
+  title_zh: "中文章節標題",
+  title_en: "英文章節標題",
+  categoryId: "章節分類",
+  tags_zh: "中文標籤",
+  tags_en: "英文標籤",
+  summary_zh: "中文摘要",
+  summary_en: "英文摘要",
+  sourceReferences: "資料來源",
+  relatedTaskIds: "相關任務指引",
+  blocks: "章節內容區塊",
+  order_index: "顯示順序",
 };
 
 function fieldLabel(key: string) {
@@ -474,10 +486,35 @@ function fieldLabel(key: string) {
 function typeLabel(type: ContentType) {
   if (type === "office") return "行政單位";
   if (type === "department") return "系所單位";
+  if (type === "student_guide_section") return "新生指南章節";
   return "任務流程";
 }
 
 function makeContentTemplate(type: ContentType, id: string): Record<string, unknown> {
+  if (type === "student_guide_section") {
+    return {
+      id,
+      guide_id: "degree",
+      title_zh: "",
+      title_en: "",
+      categoryId: "before_arrival",
+      tags_zh: [""],
+      tags_en: [""],
+      summary_zh: "",
+      summary_en: "",
+      sourceReferences: [],
+      relatedTaskIds: [],
+      blocks: [
+        {
+          type: "paragraph",
+          content_zh: "",
+          content_en: "",
+        },
+      ],
+      order_index: 999,
+    };
+  }
+
   if (type === "task") {
     return {
       id,
@@ -736,6 +773,552 @@ function FieldEditor({
   );
 }
 
+type GuideBlock = Record<string, unknown>;
+type GuideBlockType = "paragraph" | "note" | "checklist" | "timeline" | "table" | "links" | "contact";
+
+const guideCategoryOptions = [
+  { id: "before_arrival", label: "抵達前 / Before Arrival" },
+  { id: "before_departure", label: "出發前 / Before Departure" },
+  { id: "visa_arc", label: "簽證與 ARC / Visa & ARC" },
+  { id: "visa_insurance", label: "簽證與保險 / Visa & Insurance" },
+  { id: "registration", label: "註冊 / Registration" },
+  { id: "payment_fees", label: "繳費與費用 / Payment & Fees" },
+  { id: "accommodation", label: "住宿 / Accommodation" },
+  { id: "health_insurance", label: "健康與保險 / Health & Insurance" },
+  { id: "campus_life", label: "校園生活 / Campus Life" },
+  { id: "postal_account", label: "郵局帳戶 / Postal Savings Account" },
+  { id: "safety_regulations", label: "安全與法規 / Safety & Regulations" },
+  { id: "anti_fraud", label: "防詐騙 / Anti-Fraud" },
+  { id: "anti_sexual_harassment", label: "反性騷擾 / Anti-Sexual Harassment" },
+  { id: "orientation", label: "報到與說明會 / Orientation" },
+  { id: "course_selection", label: "選課 / Course Selection" },
+  { id: "arc", label: "ARC" },
+  { id: "end_exchange", label: "離校程序 / End of Exchange" },
+];
+
+function readAdminString(value: unknown) {
+  return typeof value === "string" ? value : "";
+}
+
+function readAdminNumber(value: unknown, fallback = 0) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return fallback;
+}
+
+function readRecordArray(value: unknown): Record<string, unknown>[] {
+  return Array.isArray(value) ? value.filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null && !Array.isArray(item)) : [];
+}
+
+function readStringList(value: unknown) {
+  return Array.isArray(value) ? value.map((item) => String(item ?? "")) : [];
+}
+
+function updateRecordListItem(
+  items: Record<string, unknown>[],
+  index: number,
+  key: string,
+  value: unknown
+) {
+  return items.map((item, itemIndex) => (itemIndex === index ? { ...item, [key]: value } : item));
+}
+
+function moveArrayItem<T>(items: T[], index: number, direction: -1 | 1) {
+  const nextIndex = index + direction;
+  if (nextIndex < 0 || nextIndex >= items.length) return items;
+  const next = [...items];
+  const [item] = next.splice(index, 1);
+  next.splice(nextIndex, 0, item);
+  return next;
+}
+
+function FieldInput({
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+}: {
+  label: string;
+  value: string | number;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  type?: string;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-xs font-semibold text-muted-foreground">{label}</span>
+      <input
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        onChange={(event) => onChange(event.target.value)}
+        className="w-full rounded-md border px-3 py-2 text-sm"
+      />
+    </label>
+  );
+}
+
+function FieldTextarea({
+  label,
+  value,
+  onChange,
+  rows = 3,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  rows?: number;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-xs font-semibold text-muted-foreground">{label}</span>
+      <textarea
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        rows={rows}
+        className="w-full rounded-md border px-3 py-2 text-sm"
+      />
+    </label>
+  );
+}
+
+function StringListEditor({
+  title,
+  placeholder,
+  value,
+  onChange,
+}: {
+  title: string;
+  placeholder?: string;
+  value: unknown;
+  onChange: (next: string[]) => void;
+}) {
+  const items = readStringList(value);
+  return (
+    <div className="space-y-2">
+      <div className="text-sm font-semibold">{title}</div>
+      {items.map((item, index) => (
+        <div key={index} className="flex gap-2">
+          <input
+            value={item}
+            placeholder={placeholder}
+            onChange={(event) => onChange(items.map((entry, itemIndex) => (itemIndex === index ? event.target.value : entry)))}
+            className="min-w-0 flex-1 rounded-md border px-3 py-2 text-sm"
+          />
+          <button type="button" onClick={() => onChange(items.filter((_, itemIndex) => itemIndex !== index))} className="rounded-md border px-3 py-2 text-sm text-red-700 hover:bg-red-50">
+            刪除
+          </button>
+        </div>
+      ))}
+      <button type="button" onClick={() => onChange([...items, ""])} className="rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted">
+        新增
+      </button>
+    </div>
+  );
+}
+
+function SourceReferencesEditor({
+  value,
+  onChange,
+}: {
+  value: unknown;
+  onChange: (next: Record<string, unknown>[]) => void;
+}) {
+  const items = readRecordArray(value);
+  return (
+    <div className="space-y-3">
+      {items.map((item, index) => (
+        <div key={index} className="rounded-md border bg-muted/20 p-3">
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-sm font-semibold">來源 {index + 1}</span>
+            <button type="button" onClick={() => onChange(items.filter((_, itemIndex) => itemIndex !== index))} className="text-xs font-semibold text-red-700 hover:underline">
+              刪除來源
+            </button>
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            <FieldInput label="中文文件名稱" value={readAdminString(item.documentTitle_zh)} onChange={(next) => onChange(updateRecordListItem(items, index, "documentTitle_zh", next))} />
+            <FieldInput label="英文文件名稱" value={readAdminString(item.documentTitle_en)} onChange={(next) => onChange(updateRecordListItem(items, index, "documentTitle_en", next))} />
+            <FieldInput label="頁數" value={readAdminString(item.pages)} placeholder="p.19-p.20" onChange={(next) => onChange(updateRecordListItem(items, index, "pages", next))} />
+          </div>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={() => onChange([...items, { documentTitle_zh: "國際學生手冊", documentTitle_en: "International Students Handbook", pages: "" }])}
+        className="rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted"
+      >
+        新增來源
+      </button>
+    </div>
+  );
+}
+
+function createBlock(type: GuideBlockType): GuideBlock {
+  if (type === "note") return { type, tone: "info", content_zh: "", content_en: "" };
+  if (type === "checklist") return { type, items: [{ zh: "", en: "" }] };
+  if (type === "timeline") return { type, items: [{ date: "", event_zh: "", event_en: "" }] };
+  if (type === "table") {
+    return {
+      type,
+      columns: [
+        { key: "item", label_zh: "項目", label_en: "Item" },
+        { key: "detail", label_zh: "說明", label_en: "Detail" },
+      ],
+      rows: [{ item: { zh: "", en: "" }, detail: { zh: "", en: "" } }],
+    };
+  }
+  if (type === "links") return { type, links: [{ url: "", label_zh: "", label_en: "" }] };
+  if (type === "contact") return { type, name_zh: "", name_en: "", email: "", phone: "", location_zh: "", location_en: "", links: [] };
+  return { type: "paragraph", content_zh: "", content_en: "" };
+}
+
+function LinksListEditor({
+  value,
+  onChange,
+}: {
+  value: unknown;
+  onChange: (next: Record<string, unknown>[]) => void;
+}) {
+  const links = readRecordArray(value);
+  return (
+    <div className="space-y-3">
+      {links.map((link, index) => (
+        <div key={index} className="rounded-md border bg-white p-3">
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-sm font-semibold">連結 {index + 1}</span>
+            <button type="button" onClick={() => onChange(links.filter((_, itemIndex) => itemIndex !== index))} className="text-xs font-semibold text-red-700 hover:underline">
+              刪除連結
+            </button>
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            <FieldInput label="URL" value={readAdminString(link.url)} onChange={(next) => onChange(updateRecordListItem(links, index, "url", next))} />
+            <FieldInput label="中文按鈕名稱" value={readAdminString(link.label_zh)} onChange={(next) => onChange(updateRecordListItem(links, index, "label_zh", next))} />
+            <FieldInput label="英文按鈕名稱" value={readAdminString(link.label_en)} onChange={(next) => onChange(updateRecordListItem(links, index, "label_en", next))} />
+          </div>
+        </div>
+      ))}
+      <button type="button" onClick={() => onChange([...links, { url: "", label_zh: "", label_en: "" }])} className="rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted">
+        新增連結
+      </button>
+    </div>
+  );
+}
+
+function JsonTextareaField({
+  label,
+  value,
+  onApply,
+  rows = 6,
+}: {
+  label: string;
+  value: unknown;
+  onApply: (next: unknown) => void;
+  rows?: number;
+}) {
+  const [text, setText] = useState(() => JSON.stringify(value ?? [], null, 2));
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setText(JSON.stringify(value ?? [], null, 2));
+  }, [value]);
+
+  return (
+    <div className="space-y-2">
+      <FieldTextarea label={label} value={text} onChange={setText} rows={rows} />
+      {error && <p className="text-xs text-red-700">{error}</p>}
+      <button
+        type="button"
+        onClick={() => {
+          try {
+            onApply(JSON.parse(text));
+            setError(null);
+          } catch (err) {
+            setError(err instanceof Error ? err.message : "JSON 格式錯誤");
+          }
+        }}
+        className="rounded-md border px-3 py-2 text-xs font-medium hover:bg-muted"
+      >
+        套用 {label}
+      </button>
+    </div>
+  );
+}
+
+function BlockEditor({
+  block,
+  onChange,
+}: {
+  block: GuideBlock;
+  onChange: (next: GuideBlock) => void;
+}) {
+  const type = readAdminString(block.type) as GuideBlockType;
+
+  if (type === "note") {
+    return (
+      <div className="space-y-3">
+        <label className="block">
+          <span className="mb-1 block text-xs font-semibold text-muted-foreground">提醒層級</span>
+          <select value={readAdminString(block.tone) || "info"} onChange={(event) => onChange({ ...block, tone: event.target.value })} className="w-full rounded-md border px-3 py-2 text-sm">
+            <option value="info">info</option>
+            <option value="warning">warning</option>
+            <option value="danger">danger</option>
+          </select>
+        </label>
+        <FieldTextarea label="中文提醒" value={readAdminString(block.content_zh)} onChange={(next) => onChange({ ...block, content_zh: next })} />
+        <FieldTextarea label="英文提醒" value={readAdminString(block.content_en)} onChange={(next) => onChange({ ...block, content_en: next })} />
+      </div>
+    );
+  }
+
+  if (type === "checklist") {
+    const items = readRecordArray(block.items);
+    return (
+      <div className="space-y-3">
+        {items.map((item, index) => (
+          <div key={index} className="rounded-md border bg-white p-3">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <span className="text-sm font-semibold">項目 {index + 1}</span>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => onChange({ ...block, items: moveArrayItem(items, index, -1) })} className="text-xs hover:underline">上移</button>
+                <button type="button" onClick={() => onChange({ ...block, items: moveArrayItem(items, index, 1) })} className="text-xs hover:underline">下移</button>
+                <button type="button" onClick={() => onChange({ ...block, items: items.filter((_, itemIndex) => itemIndex !== index) })} className="text-xs text-red-700 hover:underline">刪除</button>
+              </div>
+            </div>
+            <div className="grid gap-3 md:grid-cols-2">
+              <FieldTextarea label="中文項目" value={readAdminString(item.zh)} onChange={(next) => onChange({ ...block, items: updateRecordListItem(items, index, "zh", next) })} rows={2} />
+              <FieldTextarea label="英文項目" value={readAdminString(item.en)} onChange={(next) => onChange({ ...block, items: updateRecordListItem(items, index, "en", next) })} rows={2} />
+            </div>
+          </div>
+        ))}
+        <button type="button" onClick={() => onChange({ ...block, items: [...items, { zh: "", en: "" }] })} className="rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted">新增項目</button>
+      </div>
+    );
+  }
+
+  if (type === "timeline") {
+    const items = readRecordArray(block.items);
+    return (
+      <div className="space-y-3">
+        {items.map((item, index) => (
+          <div key={index} className="rounded-md border bg-white p-3">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <span className="text-sm font-semibold">事件 {index + 1}</span>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => onChange({ ...block, items: moveArrayItem(items, index, -1) })} className="text-xs hover:underline">上移</button>
+                <button type="button" onClick={() => onChange({ ...block, items: moveArrayItem(items, index, 1) })} className="text-xs hover:underline">下移</button>
+                <button type="button" onClick={() => onChange({ ...block, items: items.filter((_, itemIndex) => itemIndex !== index) })} className="text-xs text-red-700 hover:underline">刪除</button>
+              </div>
+            </div>
+            <div className="grid gap-3 md:grid-cols-[180px_1fr_1fr]">
+              <FieldInput label="日期" value={readAdminString(item.date)} onChange={(next) => onChange({ ...block, items: updateRecordListItem(items, index, "date", next) })} />
+              <FieldTextarea label="中文事件" value={readAdminString(item.event_zh)} onChange={(next) => onChange({ ...block, items: updateRecordListItem(items, index, "event_zh", next) })} rows={2} />
+              <FieldTextarea label="英文事件" value={readAdminString(item.event_en)} onChange={(next) => onChange({ ...block, items: updateRecordListItem(items, index, "event_en", next) })} rows={2} />
+            </div>
+          </div>
+        ))}
+        <button type="button" onClick={() => onChange({ ...block, items: [...items, { date: "", event_zh: "", event_en: "" }] })} className="rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted">新增事件</button>
+      </div>
+    );
+  }
+
+  if (type === "table") {
+    return (
+      <div className="space-y-3">
+        <p className="rounded-md bg-muted p-3 text-xs text-muted-foreground">表格較複雜，目前請以 JSON 格式編輯。</p>
+        <JsonTextareaField label="columns JSON" value={block.columns ?? []} onApply={(next) => onChange({ ...block, columns: next })} rows={6} />
+        <JsonTextareaField label="rows JSON" value={block.rows ?? []} onApply={(next) => onChange({ ...block, rows: next })} rows={8} />
+      </div>
+    );
+  }
+
+  if (type === "links") {
+    return <LinksListEditor value={block.links} onChange={(next) => onChange({ ...block, links: next })} />;
+  }
+
+  if (type === "contact") {
+    return (
+      <div className="space-y-3">
+        <div className="grid gap-3 md:grid-cols-2">
+          <FieldInput label="中文名稱" value={readAdminString(block.name_zh)} onChange={(next) => onChange({ ...block, name_zh: next })} />
+          <FieldInput label="英文名稱" value={readAdminString(block.name_en)} onChange={(next) => onChange({ ...block, name_en: next })} />
+          <FieldInput label="Email" value={readAdminString(block.email)} onChange={(next) => onChange({ ...block, email: next })} />
+          <FieldInput label="電話" value={readAdminString(block.phone)} onChange={(next) => onChange({ ...block, phone: next })} />
+          <FieldInput label="中文地點" value={readAdminString(block.location_zh)} onChange={(next) => onChange({ ...block, location_zh: next })} />
+          <FieldInput label="英文地點" value={readAdminString(block.location_en)} onChange={(next) => onChange({ ...block, location_en: next })} />
+        </div>
+        <div className="rounded-md border bg-muted/20 p-3">
+          <div className="mb-2 text-sm font-semibold">聯絡卡連結</div>
+          <LinksListEditor value={block.links} onChange={(next) => onChange({ ...block, links: next })} />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-3 md:grid-cols-2">
+      <FieldTextarea label="中文內容" value={readAdminString(block.content_zh)} onChange={(next) => onChange({ ...block, content_zh: next })} />
+      <FieldTextarea label="英文內容" value={readAdminString(block.content_en)} onChange={(next) => onChange({ ...block, content_en: next })} />
+    </div>
+  );
+}
+
+function BlocksEditor({
+  value,
+  onChange,
+}: {
+  value: unknown;
+  onChange: (next: GuideBlock[]) => void;
+}) {
+  const blocks = readRecordArray(value);
+  const [newBlockType, setNewBlockType] = useState<GuideBlockType>("paragraph");
+
+  return (
+    <div className="space-y-4">
+      {blocks.map((block, index) => {
+        const type = readAdminString(block.type) || "paragraph";
+        return (
+          <details key={index} open className="rounded-md border bg-muted/20 p-3">
+            <summary className="cursor-pointer list-none">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <Badge variant="outline">{type}</Badge>
+                  <span className="ml-2 text-sm font-semibold">區塊 {index + 1}</span>
+                </div>
+                <div className="flex gap-2">
+                  <button type="button" onClick={(event) => { event.preventDefault(); onChange(moveArrayItem(blocks, index, -1)); }} className="rounded-md border px-2 py-1 text-xs hover:bg-white">上移</button>
+                  <button type="button" onClick={(event) => { event.preventDefault(); onChange(moveArrayItem(blocks, index, 1)); }} className="rounded-md border px-2 py-1 text-xs hover:bg-white">下移</button>
+                  <button type="button" onClick={(event) => { event.preventDefault(); onChange(blocks.filter((_, itemIndex) => itemIndex !== index)); }} className="rounded-md border border-red-300 px-2 py-1 text-xs text-red-700 hover:bg-red-50">刪除</button>
+                </div>
+              </div>
+            </summary>
+            <div className="mt-4">
+              <BlockEditor
+                block={block}
+                onChange={(next) => onChange(blocks.map((entry, itemIndex) => (itemIndex === index ? next : entry)))}
+              />
+            </div>
+          </details>
+        );
+      })}
+      <div className="flex flex-wrap gap-2 rounded-md border p-3">
+        <select value={newBlockType} onChange={(event) => setNewBlockType(event.target.value as GuideBlockType)} className="rounded-md border px-3 py-2 text-sm">
+          <option value="paragraph">paragraph</option>
+          <option value="note">note</option>
+          <option value="checklist">checklist</option>
+          <option value="timeline">timeline</option>
+          <option value="table">table</option>
+          <option value="links">links</option>
+          <option value="contact">contact</option>
+        </select>
+        <button type="button" onClick={() => onChange([...blocks, createBlock(newBlockType)])} className="rounded-md bg-navy px-3 py-2 text-sm font-semibold text-white hover:bg-navy-light">
+          新增區塊
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function StudentGuideSectionEditor({
+  value,
+  onChange,
+}: {
+  value: Record<string, unknown>;
+  onChange: (next: Record<string, unknown>) => void;
+}) {
+  const [jsonText, setJsonText] = useState(() => JSON.stringify(value, null, 2));
+  const [jsonError, setJsonError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setJsonText(JSON.stringify(value, null, 2));
+  }, [value]);
+
+  const update = (key: string, nextValue: unknown) => {
+    onChange({ ...value, [key]: nextValue });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-md border p-4">
+        <h3 className="mb-3 font-semibold">基本資料</h3>
+        <div className="grid gap-3 md:grid-cols-2">
+          <label className="block">
+            <span className="mb-1 block text-xs font-semibold text-muted-foreground">指南類型</span>
+            <select value={readAdminString(value.guide_id) || "degree"} onChange={(event) => update("guide_id", event.target.value)} className="w-full rounded-md border px-3 py-2 text-sm">
+              <option value="degree">學位生新生指南</option>
+              <option value="exchange">交換生新生指南</option>
+            </select>
+          </label>
+          <FieldInput label="顯示順序" type="number" value={readAdminNumber(value.order_index, 999)} onChange={(next) => update("order_index", Number(next))} />
+          <FieldInput label="中文章節標題" value={readAdminString(value.title_zh)} onChange={(next) => update("title_zh", next)} />
+          <FieldInput label="英文章節標題" value={readAdminString(value.title_en)} onChange={(next) => update("title_en", next)} />
+          <label className="block md:col-span-2">
+            <span className="mb-1 block text-xs font-semibold text-muted-foreground">章節分類</span>
+            <select value={readAdminString(value.categoryId) || "before_arrival"} onChange={(event) => update("categoryId", event.target.value)} className="w-full rounded-md border px-3 py-2 text-sm">
+              {guideCategoryOptions.map((option) => (
+                <option key={option.id} value={option.id}>{option.label}</option>
+              ))}
+            </select>
+          </label>
+          <FieldTextarea label="中文摘要" value={readAdminString(value.summary_zh)} onChange={(next) => update("summary_zh", next)} />
+          <FieldTextarea label="英文摘要" value={readAdminString(value.summary_en)} onChange={(next) => update("summary_en", next)} />
+        </div>
+      </div>
+
+      <div className="rounded-md border p-4">
+        <h3 className="mb-3 font-semibold">標籤</h3>
+        <div className="grid gap-4 md:grid-cols-2">
+          <StringListEditor title="中文標籤" value={value.tags_zh} onChange={(next) => update("tags_zh", next)} />
+          <StringListEditor title="英文標籤" value={value.tags_en} onChange={(next) => update("tags_en", next)} />
+        </div>
+      </div>
+
+      <div className="rounded-md border p-4">
+        <h3 className="mb-3 font-semibold">來源與相關任務</h3>
+        <div className="space-y-4">
+          <SourceReferencesEditor value={value.sourceReferences} onChange={(next) => update("sourceReferences", next)} />
+          <StringListEditor title="相關任務 ID" placeholder="arc_resident_visa" value={value.relatedTaskIds} onChange={(next) => update("relatedTaskIds", next)} />
+        </div>
+      </div>
+
+      <div className="rounded-md border p-4">
+        <h3 className="mb-3 font-semibold">章節內容區塊</h3>
+        <BlocksEditor value={value.blocks} onChange={(next) => update("blocks", next)} />
+      </div>
+
+      <details className="rounded-md border p-4">
+        <summary className="cursor-pointer font-semibold">進階 JSON 編輯</summary>
+        <div className="mt-3 space-y-3">
+          <textarea value={jsonText} onChange={(event) => setJsonText(event.target.value)} rows={14} className="w-full rounded-md border px-3 py-2 font-mono text-xs" />
+          {jsonError && <p className="text-sm text-red-700">{jsonError}</p>}
+          <button
+            type="button"
+            onClick={() => {
+              try {
+                const parsed = JSON.parse(jsonText) as unknown;
+                if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+                  setJsonError("JSON 必須是一個物件。");
+                  return;
+                }
+                setJsonError(null);
+                onChange(parsed as Record<string, unknown>);
+              } catch (err) {
+                setJsonError(err instanceof Error ? err.message : "JSON 格式錯誤");
+              }
+            }}
+            className="rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted"
+          >
+            套用 JSON
+          </button>
+        </div>
+      </details>
+    </div>
+  );
+}
+
 function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
   const [contentMode, setContentMode] = useState<"edit" | "create">("edit");
   const [query, setQuery] = useState("");
@@ -887,6 +1470,7 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
                 <option value="task">任務流程 Task</option>
                 <option value="office">行政單位 Office</option>
                 <option value="department">系所單位 Department</option>
+                <option value="student_guide_section">新生指南章節 Student Guide Section</option>
               </select>
               <input
                 value={newId}
@@ -953,22 +1537,26 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
             />
           ) : (
             <div className="space-y-5">
-              <div className="grid gap-3 md:grid-cols-2">
-                {Object.entries(selected.data).map(([key, original]) => (
-                  <FieldEditor
-                    key={key}
-                    name={key}
-                    original={original}
-                    value={formData[key]}
-                    onChange={(next) =>
-                      setFormData((current) => ({
-                        ...current,
-                        [key]: next,
-                      }))
-                    }
-                  />
-                ))}
-              </div>
+              {selected.type === "student_guide_section" ? (
+                <StudentGuideSectionEditor value={formData} onChange={setFormData} />
+              ) : (
+                <div className="grid gap-3 md:grid-cols-2">
+                  {Object.entries(selected.data).map(([key, original]) => (
+                    <FieldEditor
+                      key={key}
+                      name={key}
+                      original={original}
+                      value={formData[key]}
+                      onChange={(next) =>
+                        setFormData((current) => ({
+                          ...current,
+                          [key]: next,
+                        }))
+                      }
+                    />
+                  ))}
+                </div>
+              )}
 
               <div className="rounded-md border p-4">
                 <div className="mb-3 font-semibold">修改前後對照</div>

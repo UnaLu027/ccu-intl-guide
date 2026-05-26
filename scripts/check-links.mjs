@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 const SOURCE_FILES = [
   "client/src/data/campusData.ts",
   "shared/campusData.ts",
-  "client/src/data/studentGuideData.ts",
+  "shared/studentGuideData.ts",
 ];
 const JSON_REPORT = "link-check-report.json";
 const MD_REPORT = "link-check-report.md";

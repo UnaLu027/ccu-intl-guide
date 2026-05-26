@@ -7,6 +7,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { z } from "zod";
 import { departments, offices, serviceCategories, tasks } from "../shared/campusData.js";
+import { studentGuides, type StudentGuide, type StudentGuideSection } from "../shared/studentGuideData.js";
 import {
   searchCampusServices,
   resolveOffice,
@@ -31,12 +32,33 @@ type AnalyticsSessionInput = {
   userAgent?: unknown;
 };
 
-type ContentType = "office" | "department" | "task";
+type ContentType = "office" | "department" | "task" | "student_guide_section";
+const contentTypes: ContentType[] = ["office", "department", "task", "student_guide_section"];
 
 function getContentCollection(type: ContentType) {
   if (type === "office") return offices;
   if (type === "department") return departments;
+  if (type === "student_guide_section") return flattenStudentGuideSections().map((item) => item.data);
   return tasks;
+}
+
+function flattenStudentGuideSections() {
+  return studentGuides.flatMap((guide) =>
+    guide.sections.map((section, index) => {
+      const data = {
+        ...section,
+        guide_id: guide.id,
+        order_index: index,
+      } as Record<string, unknown>;
+
+      return {
+        type: "student_guide_section" as const,
+        id: String(section.id),
+        label: contentLabel("student_guide_section", data),
+        data,
+      };
+    })
+  );
 }
 
 function staticContentItems() {
@@ -46,7 +68,7 @@ function staticContentItems() {
     ["task", tasks as unknown as Array<Record<string, unknown>>],
   ];
 
-  return collections.flatMap(([type, items]) =>
+  const campusItems = collections.flatMap(([type, items]) =>
     items.map((item) => ({
       type,
       id: String(item.id),
@@ -54,9 +76,14 @@ function staticContentItems() {
       data: item,
     }))
   );
+
+  return [...campusItems, ...flattenStudentGuideSections()];
 }
 
 function contentLabel(type: ContentType, item: Record<string, unknown>) {
+  if (type === "student_guide_section") {
+    return `${readString(item.title_zh) ?? item.id} / ${readString(item.title_en) ?? ""}`;
+  }
   if (type === "task") {
     return `${readString(item.task_name_zh) ?? item.id} / ${readString(item.task_name_en) ?? ""}`;
   }
@@ -107,6 +134,91 @@ async function getActiveContentItems() {
   const stored = await getStoredContentItems();
   if (stored.length > 0) return stored;
   return (await hasContentItems()) ? [] : staticContentItems();
+}
+
+function cloneStudentGuides() {
+  return JSON.parse(JSON.stringify(studentGuides)) as StudentGuide[];
+}
+
+function readGuideId(value: unknown): "degree" | "exchange" | null {
+  return value === "degree" || value === "exchange" ? value : null;
+}
+
+function readOrderIndex(value: unknown, fallback: number) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return fallback;
+}
+
+async function getStudentGuidesFromContentItems() {
+  const rows = await db.prepare(
+    [
+      "SELECT item_id, data_json, status",
+      "FROM content_items",
+      "WHERE content_type = 'student_guide_section'",
+      "ORDER BY item_id",
+    ].join(" ")
+  ).all<{ item_id: string; data_json: string; status: string }>();
+
+  if (rows.length === 0) return cloneStudentGuides();
+
+  const guides = cloneStudentGuides();
+  const guideMap = new Map(guides.map((guide) => [guide.id, guide]));
+  const staticGuideBySectionId = new Map<string, "degree" | "exchange">();
+  const originalOrder = new Map<string, number>();
+
+  for (const guide of guides) {
+    guide.sections.forEach((section, index) => {
+      staticGuideBySectionId.set(section.id, guide.id);
+      originalOrder.set(`${guide.id}:${section.id}`, index);
+    });
+  }
+
+  for (const row of rows) {
+    const parsed = parseJsonObject(row.data_json);
+    const guideId = readGuideId(parsed?.guide_id) ?? staticGuideBySectionId.get(row.item_id) ?? null;
+    if (!guideId) continue;
+
+    const guide = guideMap.get(guideId);
+    if (!guide) continue;
+
+    if (row.status === "deleted") {
+      guide.sections = guide.sections.filter((section) => section.id !== row.item_id);
+      continue;
+    }
+
+    if (row.status !== "active" || !parsed) continue;
+
+    const { guide_id: _guideId, order_index: _orderIndex, ...sectionData } = parsed;
+    const nextSection = {
+      ...sectionData,
+      id: row.item_id,
+    } as unknown as StudentGuideSection;
+
+    const existingIndex = guide.sections.findIndex((section) => section.id === row.item_id);
+    if (existingIndex >= 0) {
+      guide.sections[existingIndex] = nextSection;
+    } else {
+      guide.sections.push(nextSection);
+    }
+  }
+
+  for (const guide of guides) {
+    guide.sections.sort((a, b) => {
+      const aSource = rows.find((row) => row.item_id === a.id && row.status === "active");
+      const bSource = rows.find((row) => row.item_id === b.id && row.status === "active");
+      const aData = aSource ? parseJsonObject(aSource.data_json) : null;
+      const bData = bSource ? parseJsonObject(bSource.data_json) : null;
+      const aOrder = readOrderIndex(aData?.order_index, originalOrder.get(`${guide.id}:${a.id}`) ?? 999);
+      const bOrder = readOrderIndex(bData?.order_index, originalOrder.get(`${guide.id}:${b.id}`) ?? 999);
+      return aOrder - bOrder;
+    });
+  }
+
+  return guides;
 }
 
 async function seedContentItems() {
@@ -792,6 +904,12 @@ async function startServer() {
     };
   }));
 
+  app.get("/api/student-guides", (_req, res) => void adminJson(res, async () => {
+    return {
+      studentGuides: await getStudentGuidesFromContentItems(),
+    };
+  }));
+
   app.post("/api/chat", express.json(), async (req, res) => {
     let conversationId: number | null = null;
     let sessionId: string | null = null;
@@ -1068,7 +1186,7 @@ async function startServer() {
 
   app.get("/api/admin/content-items/:type/:id", (req, res) => void adminJson(res, async () => {
     const type = req.params.type as ContentType;
-    if (!["office", "department", "task"].includes(type)) {
+    if (!contentTypes.includes(type)) {
       res.status(400);
       return { error: "Invalid content type" };
     }
@@ -1084,7 +1202,7 @@ async function startServer() {
 
   app.delete("/api/admin/content-items/:type/:id", (req, res) => void adminJson(res, async () => {
     const type = req.params.type as ContentType;
-    if (!["office", "department", "task"].includes(type)) {
+    if (!contentTypes.includes(type)) {
       res.status(400);
       return { error: "Invalid content type" };
     }
@@ -1144,7 +1262,7 @@ async function startServer() {
     const note = readString(body.note);
     const isNew = body.is_new === true;
 
-    if (!type || !["office", "department", "task"].includes(type) || !itemId) {
+    if (!type || !contentTypes.includes(type) || !itemId) {
       res.status(400);
       return { error: "content_type and item_id are required" };
     }

@@ -3,7 +3,7 @@ import { useCampusData } from "@/contexts/CampusDataContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   getCategoryName,
-  getStudentGuideById,
+  studentGuides as staticStudentGuides,
   type HandbookBlock,
   type LocalizedTableValue,
   type StudentGuide,
@@ -79,9 +79,10 @@ function GuideBlockView({ block }: { block: HandbookBlock }) {
 
   if (block.type === "note") {
     const isWarning = block.tone === "warning";
+    const isDanger = block.tone === "danger";
     return (
-      <div className={`flex gap-3 rounded-lg border p-4 text-sm leading-6 ${isWarning ? "border-amber/40 bg-amber/10 text-navy" : "border-navy/15 bg-navy/[0.04] text-foreground/85"}`}>
-        <AlertCircle className={`mt-0.5 h-4 w-4 shrink-0 ${isWarning ? "text-amber" : "text-navy"}`} />
+      <div className={`flex gap-3 rounded-lg border p-4 text-sm leading-6 ${isDanger ? "border-red-300 bg-red-50 text-red-950" : isWarning ? "border-amber/40 bg-amber/10 text-navy" : "border-navy/15 bg-navy/[0.04] text-foreground/85"}`}>
+        <AlertCircle className={`mt-0.5 h-4 w-4 shrink-0 ${isDanger ? "text-red-700" : isWarning ? "text-amber" : "text-navy"}`} />
         <p>{t(block.content_en, block.content_zh)}</p>
       </div>
     );
@@ -290,17 +291,46 @@ function GuideArticle({
 export default function StudentGuidePage() {
   const { t } = useLanguage();
   const { guideId } = useParams<{ guideId: string }>();
-  const guide = getStudentGuideById(guideId);
+  const [guides, setGuides] = useState<StudentGuide[]>(staticStudentGuides);
+  const [loadingGuides, setLoadingGuides] = useState(false);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<FilterId>("all");
   const [activeId, setActiveId] = useState("");
   const [progress, setProgress] = useState(0);
+  const guide = guides.find((item) => item.id === guideId);
 
   const filteredSections = useMemo(
     () => (guide ? guide.sections.filter((section) => sectionMatches(section, query, filter)) : []),
     [guide, query, filter]
   );
   const showContents = filter === "all";
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingGuides(true);
+    fetch("/api/student-guides", { credentials: "same-origin" })
+      .then((res) => {
+        if (!res.ok) throw new Error(`student guides returned ${res.status}`);
+        return res.json() as Promise<{ studentGuides?: StudentGuide[] } | StudentGuide[]>;
+      })
+      .then((result) => {
+        if (cancelled) return;
+        const nextGuides = Array.isArray(result) ? result : result.studentGuides;
+        if (Array.isArray(nextGuides) && nextGuides.length > 0) {
+          setGuides(nextGuides);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setGuides(staticStudentGuides);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingGuides(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     setFilter("all");
@@ -361,9 +391,11 @@ export default function StudentGuidePage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="sticky top-14 z-40 h-1 bg-muted md:top-16">
-        <div className="h-full bg-amber transition-all" style={{ width: `${progress}%` }} />
-      </div>
+      {showContents && (
+        <div className="sticky top-14 z-40 h-1 bg-muted md:top-16">
+          <div className="h-full bg-amber transition-all" style={{ width: `${progress}%` }} />
+        </div>
+      )}
 
       <main className="container py-8 md:py-10">
         <nav className="mb-5 flex flex-wrap items-center gap-2 text-sm font-semibold text-muted-foreground">
@@ -381,6 +413,9 @@ export default function StudentGuidePage() {
           <p className="mt-3 max-w-4xl text-sm leading-7 text-muted-foreground md:text-base">
             {t(guide.description_en, guide.description_zh)}
           </p>
+          {loadingGuides && (
+            <p className="mt-2 text-xs text-muted-foreground">{t("Loading latest guide content...", "正在載入最新指南內容...")}</p>
+          )}
         </section>
 
         <section className="mb-6 space-y-4">
