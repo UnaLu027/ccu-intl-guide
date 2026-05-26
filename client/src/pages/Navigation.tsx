@@ -4,6 +4,7 @@
  */
 
 import Header from "@/components/Header";
+import TaskStepContent from "@/components/TaskStepContent";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCampusData } from "@/contexts/CampusDataContext";
 import { MapView } from "@/components/Map";
@@ -270,9 +271,10 @@ export default function Navigation() {
                                 </span>
                               </div>
 
-                              <p className="text-xs text-foreground/70 leading-relaxed">
-                                {t(step.en, step.zh)}
-                              </p>
+                              <TaskStepContent
+                                step={step}
+                                textClassName="text-xs text-foreground/70 leading-relaxed"
+                              />
                             </div>
                           ))}
                         </div>

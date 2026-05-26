@@ -1,0 +1,802 @@
+[
+  {
+    "url": "https://advising.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://advising.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://aimhi.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://aimhi.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://ait.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://ait.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://alum.ccu.edu.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://alum.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://busadm.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://busadm.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://career.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://career.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://career.ccu.edu.tw/p/412-1038-244.php?Lang=zh-tw",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://career.ccu.edu.tw/p/412-1038-244.php?Lang=zh-tw",
+    "error": ""
+  },
+  {
+    "url": "https://cdn.gamma.app/m7bhp5q4xrar3i8/4bade826d004445fa87ca5b00d019599/original/How-to-get-the-payment-receipt.pdf.pdf",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://cdn.gamma.app/m7bhp5q4xrar3i8/4bade826d004445fa87ca5b00d019599/original/How-to-get-the-payment-receipt.pdf.pdf",
+    "error": ""
+  },
+  {
+    "url": "https://che.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://che.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://cls.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://cls.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=en",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=en",
+    "error": ""
+  },
+  {
+    "url": "https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=zh",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=zh",
+    "error": ""
+  },
+  {
+    "url": "https://coe.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://coe.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://cogsci.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://cogsci.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://coledu.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://coledu.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://colliber.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://colliber.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://colmgt.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://colmgt.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://colsoc.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://colsoc.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://comm.ccu.edu.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://comm.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://cross-school.ccu.edu.tw/index.php?language=c",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://cross-school.ccu.edu.tw/index.php?language=c",
+    "error": ""
+  },
+  {
+    "url": "https://cross-school.ccu.edu.tw/index.php?language=e",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://cross-school.ccu.edu.tw/index.php?language=e",
+    "error": ""
+  },
+  {
+    "url": "https://cs.ccu.edu.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://cs.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://ctr.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://ctr.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://cyiaace.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://cyiaace.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://das-sle.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://das-sle.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://deptche.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://deptche.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://deptclaw.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://deptclaw.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://deptcrm.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://deptcrm.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://deptedu.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://deptedu.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://deptfin.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://deptfin.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://deptflaw.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://deptflaw.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://depthis.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://depthis.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://deptids.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://deptids.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://deptime.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://deptime.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://deptlaw.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://deptlaw.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://deptphi.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://deptphi.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://dsw.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://dsw.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://econ.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://econ.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://ecourse2.ccu.edu.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://ecourse2.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://ee.ccu.edu.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://ee.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://eq.ccu.edu.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://eq.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://extra.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://extra.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://ezworktaiwan.wda.gov.tw/Content_List.aspx?n=90B5EEEBE3049C9B",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://ezworktaiwan.wda.gov.tw/Content_List.aspx?n=90B5EEEBE3049C9B",
+    "error": ""
+  },
+  {
+    "url": "https://ezwp.wda.gov.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://ezwp.wda.gov.tw/wcfonline/",
+    "error": ""
+  },
+  {
+    "url": "https://ezwp.wda.gov.tw/wcfonline/wSite/Control?function=RunAction&_action=pr0000/pr0000_qp.xml",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://ezwp.wda.gov.tw/wcfonline/wSite/Control?function=RunAction&_action=pr0000/pr0000_qp.xml",
+    "error": ""
+  },
+  {
+    "url": "https://fllcccu.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://fllcccu.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://gitlci.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://gitlci.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://health.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://health.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://imf.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://imf.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://isia.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://isia.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://it.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://it.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://it.ccu.edu.tw/p/426-1009-18.php?Lang=zh-tw",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://it.ccu.edu.tw/p/426-1009-18.php?Lang=zh-tw",
+    "error": ""
+  },
+  {
+    "url": "https://it.ccu.edu.tw/p/426-1009-36.php?Lang=zh-tw",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://it.ccu.edu.tw/p/426-1009-36.php?Lang=zh-tw",
+    "error": ""
+  },
+  {
+    "url": "https://it.ccu.edu.tw/var/file/9/1009/img/1404/609499594.pdf",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://it.ccu.edu.tw/var/file/9/1009/img/1404/609499594.pdf",
+    "error": ""
+  },
+  {
+    "url": "https://kiki.ccu.edu.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://kiki.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://labor.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://labor.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://lib.ccu.edu.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://lib.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://linguist.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://linguist.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://litera.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://litera.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://math.ccu.edu.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://math.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://mft.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://mft.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://mis.ccu.edu.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://mis.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://oaa.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://oaa.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://oaa.ccu.edu.tw/p/406-1004-14288,r1960.php?Lang=zh-tw",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://oaa.ccu.edu.tw/p/406-1004-14288,r1960.php?Lang=zh-tw",
+    "error": ""
+  },
+  {
+    "url": "https://ocac.events.104.com.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://ocac.events.104.com.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://oga.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://oga.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://oga.ccu.edu.tw/p/404-1006-11703.php?Lang=zh-tw",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://oga.ccu.edu.tw/p/404-1006-11703.php?Lang=zh-tw",
+    "error": ""
+  },
+  {
+    "url": "https://oia.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://oia.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://oia.ccu.edu.tw/p/412-1008-3967.php?Lang=en",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://oia.ccu.edu.tw/p/412-1008-3967.php?Lang=en",
+    "error": ""
+  },
+  {
+    "url": "https://oia.ccu.edu.tw/p/412-1008-3967.php?Lang=zh-tw",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://oia.ccu.edu.tw/p/412-1008-3967.php?Lang=zh-tw",
+    "error": ""
+  },
+  {
+    "url": "https://person.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://person.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://physics.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://physics.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://polsci.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://polsci.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://portal.ccu.edu.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://portal.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://portal.ccu.edu.tw/sso_index.php",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://portal.ccu.edu.tw/sso_index.php",
+    "error": ""
+  },
+  {
+    "url": "https://psy.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://psy.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://resttc.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://resttc.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://school.bot.com.tw/newTwbank/mobile/login.aspx",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://school.bot.com.tw/newTwbank/mobile/login.aspx",
+    "error": ""
+  },
+  {
+    "url": "https://science.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://science.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://secretar.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://secretar.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://security.ccu.edu.tw/?Lang=zh-tw",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://security.ccu.edu.tw/?Lang=zh-tw",
+    "error": ""
+  },
+  {
+    "url": "https://servicestation.immigration.gov.tw/5880/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://servicestation.immigration.gov.tw/5880/",
+    "error": ""
+  },
+  {
+    "url": "https://sites.google.com/view/ccueahcrc/%E9%A6%96%E9%A0%81?authuser=0",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://sites.google.com/view/ccueahcrc/%E9%A6%96%E9%A0%81?authuser=0",
+    "error": ""
+  },
+  {
+    "url": "https://software.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://it.ccu.edu.tw/p/426-1009-36.php?Lang=zh-tw",
+    "error": ""
+  },
+  {
+    "url": "https://stemphd.ccu.edu.tw",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://stemphd.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://stemphd.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://stemphd.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://studaffairs.ccu.edu.tw/p/412-1005-349.php?Lang=zh-tw",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://studaffairs.ccu.edu.tw/p/412-1005-349.php?Lang=zh-tw",
+    "error": ""
+  },
+  {
+    "url": "https://studentlife.ccu.edu.tw/",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://studentlife.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://studentlife.ccu.edu.tw/p/404103420790.php?Lang=zhtw",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://studentlife.ccu.edu.tw/p/404103420790.php?Lang=zhtw",
+    "error": ""
+  },
+  {
+    "url": "https://studentlife.ccu.edu.tw/p/404103420791.php?Lang=zhtw",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://studentlife.ccu.edu.tw/p/404103420791.php?Lang=zhtw",
+    "error": ""
+  },
+  {
+    "url": "https://talent.nat.gov.tw/zh/employers/category/foreignstudentsstudyingintaiwan",
+    "status": "PROTECTED_BUT_EXISTS",
+    "httpStatus": 403,
+    "method": "HEAD",
+    "finalUrl": "https://talent.nat.gov.tw/zh/employers/category/foreignstudentsstudyingintaiwan",
+    "error": ""
+  },
+  {
+    "url": "https://telecom.ccu.edu.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://telecom.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://visawebapp.boca.gov.tw",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://visawebapp.boca.gov.tw/BOCA_EVISA/",
+    "error": ""
+  },
+  {
+    "url": "https://webmail.ccu.edu.tw",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://webmail.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://www.boca.gov.tw/cp-166-283-c4da3-2.html",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://www.boca.gov.tw/cp-166-283-c4da3-2.html",
+    "error": ""
+  },
+  {
+    "url": "https://www.boca.gov.tw/cp-166-284-6f5f7-2.html",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://www.boca.gov.tw/cp-166-284-6f5f7-2.html",
+    "error": ""
+  },
+  {
+    "url": "https://www.boca.gov.tw/cp-396-32-4a369-1.html",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://www.boca.gov.tw/cp-396-32-4a369-1.html",
+    "error": ""
+  },
+  {
+    "url": "https://www.google.com/maps/search/?api=1&query=%E7%A7%BB%E6%B0%91%E7%BD%B2%E5%98%89%E7%BE%A9%E5%B8%82%E6%9C%8D%E5%8B%99%E7%AB%99",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://www.google.com/maps/search/?api=1&query=%E7%A7%BB%E6%B0%91%E7%BD%B2%E5%98%89%E7%BE%A9%E5%B8%82%E6%9C%8D%E5%8B%99%E7%AB%99",
+    "error": ""
+  },
+  {
+    "url": "https://www026168.ccu.edu.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://www026168.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://www026198.ccu.edu.tw/academic/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://www026198.ccu.edu.tw/academic/",
+    "error": ""
+  }
+]

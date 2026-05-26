@@ -4,6 +4,7 @@
  */
 
 import Header from "@/components/Header";
+import TaskStepContent from "@/components/TaskStepContent";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCampusData } from "@/contexts/CampusDataContext";
 import type { Task } from "@/data/campusData";
@@ -308,9 +309,7 @@ export default function Tasks() {
                                 </span>
                               </div>
 
-                              <p className="text-sm text-foreground/80 leading-relaxed pt-0.5">
-                                {t(step.en, step.zh)}
-                              </p>
+                              <TaskStepContent step={step} />
                             </div>
                           ))}
                         </div>

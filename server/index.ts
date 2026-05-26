@@ -145,11 +145,55 @@ const knownContentTextReplacements: Array<[string, string]> = [
   ],
   [
     "https://it.ccu.edu.tw/p/426100930.php",
+    "https://it.ccu.edu.tw/p/426-1009-36.php?Lang=zh-tw",
+  ],
+  [
     "https://it.ccu.edu.tw/p/426-1009-30.php?Lang=zh-tw",
+    "https://it.ccu.edu.tw/p/426-1009-36.php?Lang=zh-tw",
   ],
   [
     "https://it.ccu.edu.tw/p/426100918.php",
     "https://it.ccu.edu.tw/p/426-1009-18.php?Lang=zh-tw",
+  ],
+  [
+    "https://servicestation.immigration.gov.tw/5880/#",
+    "https://servicestation.immigration.gov.tw/5880/",
+  ],
+  [
+    "https://reurl.cc/M2M8GW",
+    "https://www.google.com/maps/search/?api=1&query=%E7%A7%BB%E6%B0%91%E7%BD%B2%E5%98%89%E7%BE%A9%E5%B8%82%E6%9C%8D%E5%8B%99%E7%AB%99",
+  ],
+  [
+    "https://www.boca.gov.tw/fp-9-185-35222-1.html",
+    "https://visawebapp.boca.gov.tw",
+  ],
+  [
+    "https://www.boca.gov.tw/cp-402-186-c060a-1.html",
+    "https://visawebapp.boca.gov.tw",
+  ],
+  [
+    "https://www.boca.gov.tw/cp-400-4336-94cdb-1.html",
+    "https://visawebapp.boca.gov.tw",
+  ],
+  [
+    "Fill out the application form online, then print and sign it: https://www.boca.gov.tw/cp-158-4342-a78b4-2.html",
+    "Fill out the application form online, then print and sign it: https://visawebapp.boca.gov.tw",
+  ],
+  [
+    "application fees: https://www.boca.gov.tw/cp-158-4342-a78b4-2.html",
+    "Application fees: https://www.boca.gov.tw/cp-396-32-4a369-1.html",
+  ],
+  [
+    "https://www026182.ccu.edu.tw/hZhUp6Fqyr8lLbHHA",
+    "https://portal.ccu.edu.tw/",
+  ],
+  [
+    "https://www.lib.ccu.edu.tw/",
+    "https://lib.ccu.edu.tw/",
+  ],
+  [
+    "https://lc.ccu.edu.tw/",
+    "https://cls.ccu.edu.tw/",
   ],
   [
     "https://oga.ccu.edu.tw/p/404100611703.php?Lang=zhtw",

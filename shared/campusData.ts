@@ -87,6 +87,13 @@ export interface Department {
 export interface TaskStep {
   zh: string;
   en: string;
+  links?: TaskStepLink[];
+}
+
+export interface TaskStepLink {
+  url: string;
+  label_zh: string;
+  label_en: string;
 }
 
 export interface Task {
@@ -1048,11 +1055,11 @@ export const offices: Office[] = [
     "office_hours": "Weekdays (Mon–Fri)\n08:10 – 21:30\nWeekends (Sat–Sun)\n09:00 – 17:00\nNational Holidays\nClosed on national holidays",
     "phone": "05-2720411 ext 15113",
     "email": "cculibsys@ccu.edu.tw",
-    "official_url": "https://www.lib.ccu.edu.tw/",
+    "official_url": "https://lib.ccu.edu.tw/",
     "google_maps_query": "國立中正大學圖書館",
     "latitude": 23.5646,
     "longitude": 120.4728,
-    "source_url": "https://www.lib.ccu.edu.tw/",
+    "source_url": "https://lib.ccu.edu.tw/",
     "needs_manual_review": false,
     "entrance_image": "/images/offices/library/entrance.jpg"
   },
@@ -1085,7 +1092,7 @@ export const offices: Office[] = [
     "google_maps_query": "國立中正大學圖書資訊大樓",
     "latitude": 23.563286792578907,
     "longitude": 120.4745612917533,
-    "source_url": "https://lc.ccu.edu.tw/",
+    "source_url": "https://cls.ccu.edu.tw/",
     "needs_manual_review": false,
     "entrance_image": "/images/offices/language_center/entrance.jpg",
     "use_manual_coordinates": true
@@ -3121,12 +3128,12 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "離學校最近的移民署為嘉義市移民署服務站：https://servicestation.immigration.gov.tw/5880/#",
-        "en": "The nearest NIA is the NIA Chiayi City Service Center: https://servicestation.immigration.gov.tw/5880/#"
+        "zh": "離學校最近的移民署為嘉義市移民署服務站：https://servicestation.immigration.gov.tw/5880/",
+        "en": "The nearest NIA is the NIA Chiayi City Service Center: https://servicestation.immigration.gov.tw/5880/"
       },
       {
-        "zh": "根據Google地圖指示前往目的地：https://reurl.cc/M2M8GW",
-        "en": "Follow the directions on Google Maps to reach your destination: https://reurl.cc/M2M8GW"
+        "zh": "根據Google地圖指示前往目的地：https://www.google.com/maps/search/?api=1&query=%E7%A7%BB%E6%B0%91%E7%BD%B2%E5%98%89%E7%BE%A9%E5%B8%82%E6%9C%8D%E5%8B%99%E7%AB%99",
+        "en": "Follow the directions on Google Maps to reach your destination: https://www.google.com/maps/search/?api=1&query=%E7%A7%BB%E6%B0%91%E7%BD%B2%E5%98%89%E7%BE%A9%E5%B8%82%E6%9C%8D%E5%8B%99%E7%AB%99"
       },
       {
         "zh": "服務時間：星期一至星期五 08:00 - 17:00",
@@ -3171,7 +3178,7 @@ export const tasks: Task[] = [
     ],
     "steps": [
       {
-        "zh": "線上填寫申請表並列印簽名：https://www.boca.gov.tw/fp-9-185-35222-1.html",
+        "zh": "線上填寫申請表並列印簽名：https://visawebapp.boca.gov.tw",
         "en": "Fill out the application form online, then print and sign it: https://www.boca.gov.tw/cp-166-283-c4da3-2.html"
       },
       {
@@ -3217,7 +3224,7 @@ export const tasks: Task[] = [
     ],
     "steps": [
       {
-        "zh": "線上填寫申請表並列印簽名：https://www.boca.gov.tw/cp-402-186-c060a-1.html",
+        "zh": "線上填寫申請表並列印簽名：https://visawebapp.boca.gov.tw",
         "en": "Fill out the application form online, then print and sign it: https://www.boca.gov.tw/cp-166-284-6f5f7-2.html"
       },
       {
@@ -3261,8 +3268,8 @@ export const tasks: Task[] = [
     ],
     "steps": [
       {
-        "zh": "線上填寫申請表並列印簽名：https://www.boca.gov.tw/cp-400-4336-94cdb-1.html",
-        "en": "Fill out the application form online, then print and sign it: https://www.boca.gov.tw/cp-158-4342-a78b4-2.html"
+        "zh": "線上填寫申請表並列印簽名：https://visawebapp.boca.gov.tw",
+        "en": "Fill out the application form online, then print and sign it: https://visawebapp.boca.gov.tw"
       },
       {
         "zh": "準備文件（含正影本）：申請表、2吋大頭照x2、護照、大專校院核准函、就讀學校入學許可/通知、國外就讀學校之在學證明",
@@ -3270,7 +3277,7 @@ export const tasks: Task[] = [
       },
       {
         "zh": "費用： https://www.boca.gov.tw/cp-396-32-4a369-1.html",
-        "en": "application fees: https://www.boca.gov.tw/cp-158-4342-a78b4-2.html"
+        "en": "Application fees: https://www.boca.gov.tw/cp-396-32-4a369-1.html"
       },
       {
         "zh": "提交上述文件至中華民國駐外館處申請",
@@ -3497,8 +3504,8 @@ export const tasks: Task[] = [
         "en": "Download the Application Form for Suspension from the Office of Academic Affairs website and read the attached procedures: https://oaa.ccu.edu.tw/p/406-1004-14288,r1960.php?Lang=zh-tw"
       },
       {
-        "zh": "至SSO網路離校系統辦理離校手續：https://www026182.ccu.edu.tw/hZhUp6Fqyr8lLbHHA",
-        "en": "Complete the departure clearance via the Online Leave System in SSO: https://www026182.ccu.edu.tw/hZhUp6Fqyr8lLbHHA"
+        "zh": "至SSO網路離校系統辦理離校手續：https://portal.ccu.edu.tw/",
+        "en": "Complete the departure clearance via the Online Leave System in SSO: https://portal.ccu.edu.tw/"
       },
       {
         "zh": "等待各單位網路審核通過（若有單位審核未通過，則需親自到該單位詢問）",
@@ -4183,8 +4190,8 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "連接校內網路（若在校外可以使用 VPN）參考網站：https://it.ccu.edu.tw/p/426-1009-30.php?Lang=zh-tw；VPN 使用說明 PDF：https://it.ccu.edu.tw/var/file/9/1009/img/1404/609499594.pdf",
-        "en": "Connect to the campus network (if off campus, use VPN). Reference: https://it.ccu.edu.tw/p/426-1009-30.php?Lang=zh-tw. VPN PDF guide: https://it.ccu.edu.tw/var/file/9/1009/img/1404/609499594.pdf"
+        "zh": "連接校內網路（若在校外可以使用 VPN）參考網站：https://it.ccu.edu.tw/p/426-1009-36.php?Lang=zh-tw；VPN 使用說明 PDF：https://it.ccu.edu.tw/var/file/9/1009/img/1404/609499594.pdf",
+        "en": "Connect to the campus network (if off campus, use VPN). Reference: https://it.ccu.edu.tw/p/426-1009-36.php?Lang=zh-tw. VPN PDF guide: https://it.ccu.edu.tw/var/file/9/1009/img/1404/609499594.pdf"
       },
       {
         "zh": "前往 https://software.ccu.edu.tw/",

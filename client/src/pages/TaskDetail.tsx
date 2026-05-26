@@ -3,6 +3,7 @@
  */
 
 import Header from "@/components/Header";
+import TaskStepContent from "@/components/TaskStepContent";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCampusData } from "@/contexts/CampusDataContext";
 import { getGoogleMapsSearchUrl } from "@/lib/mapTarget";
@@ -21,134 +22,6 @@ import {
   Navigation as NavIcon,
   Phone,
 } from "lucide-react";
-
-function extractUrlsFromText(text: string) {
-  const markdownUrlRegex = /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g;
-  const urlRegex = /https?:\/\/[^\s<>"']+/g;
-  const urls: string[] = [];
-  const seen = new Set<string>();
-
-  const cleanUrl = (url: string) =>
-    url.replace(/[)\]}.，。；;、]+$/g, "");
-
-  const addUrl = (url: string) => {
-    const cleaned = cleanUrl(url);
-    if (!seen.has(cleaned)) {
-      seen.add(cleaned);
-      urls.push(cleaned);
-    }
-  };
-
-  let cleanedText = text.replace(markdownUrlRegex, (_match, label: string, url: string) => {
-    addUrl(url);
-    return /^https?:\/\//i.test(label) ? "" : label;
-  });
-
-  const matches = cleanedText.match(urlRegex) || [];
-  matches.forEach(addUrl);
-
-  cleanedText = cleanedText
-    .replace(urlRegex, "")
-    .replace(/\s*(?:\u548c|and|or)\s*$/i, "")
-    .replace(/[:：,，。；;\s]+$/g, "")
-    .replace(/\s{2,}/g, " ")
-    .trim();
-
-  return {
-    cleanedText,
-    urls,
-  };
-}
-
-function getAutoLinkLabel(
-  url: string,
-  index: number,
-  t: (en: string, zh: string) => string
-) {
-  const lowerUrl = url.toLowerCase();
-
-  if (lowerUrl.includes("portal.ccu.edu.tw")) {
-    return t("Open CCU Portal", "開啟中正大學單一入口");
-  }
-
-  if (lowerUrl.includes("ecourse2.ccu.edu.tw")) {
-    return t("Open eCourse2", "開啟 eCourse2");
-  }
-
-  if (lowerUrl.includes("software.ccu.edu.tw")) {
-    return t("Open Software Download Platform", "開啟校園授權軟體平台");
-  }
-
-  if (lowerUrl.includes("it.ccu.edu.tw/p/426-1009-30") || lowerUrl.includes("it.ccu.edu.tw/p/426100930")) {
-    return t("Open VPN Service Page", "開啟 VPN 服務頁");
-  }
-
-  if (lowerUrl.includes("it.ccu.edu.tw/p/426-1009-18") || lowerUrl.includes("it.ccu.edu.tw/p/426100918")) {
-    return t("Open Software Activation Guide", "開啟軟體認證教學");
-  }
-
-  if (lowerUrl.includes("www026168.ccu.edu.tw")) {
-    return t("Open Intercollegiate Student System", "開啟校際生學籍系統");
-  }
-
-  if (lowerUrl.includes("www026198.ccu.edu.tw/academic")) {
-    return t("Open Academic Record System", "開啟學籍資料登錄系統");
-  }
-
-  if (lowerUrl.includes("school.bot.com.tw")) {
-    return t("Open Payment System", "開啟繳費系統");
-  }
-
-  if (lowerUrl.includes("oga.ccu.edu.tw")) {
-    return t("Open Graduation Gown Information", "開啟學位服借用說明");
-  }
-
-  if (lowerUrl.includes("career.ccu.edu.tw")) {
-    return t("Open Internship Information", "開啟實習資訊頁");
-  }
-
-  if (lowerUrl.includes("library.ccu.edu.tw") || lowerUrl.includes("lib.ccu.edu.tw")) {
-    return t("Open Library Page", "開啟圖書館頁面");
-  }
-
-  if (lowerUrl.includes("sportplacerent.ccu.edu.tw")) {
-    return t("Open Sports Facility Reservation", "開啟體育場地借用系統");
-  }
-
-  if (lowerUrl.includes("sport.ccu.edu.tw")) {
-    return t("Open Sports Office Page", "開啟體育室頁面");
-  }
-
-  if (lowerUrl.includes("chineselanguagecenter.ccu.edu.tw")) {
-    return t("Open Chinese Language Center Page", "開啟華語中心頁面");
-  }
-
-  if (lowerUrl.includes("webmail.ccu.edu.tw")) {
-    return t("Open CCU Webmail", "開啟中正大學 Webmail");
-  }
-
-  if (lowerUrl.includes("alum.ccu.edu.tw")) {
-    return t("Open Alumni Email System", "開啟校友信箱系統");
-  }
-
-  if (lowerUrl.includes("cross-school.ccu.edu.tw")) {
-    return t("Open Intercollegiate Course System", "開啟校際選課系統");
-  }
-
-  if (lowerUrl.includes("kiki.ccu.edu.tw")) {
-    return t("Open Academic Affairs System", "開啟教務系統");
-  }
-
-  if (lowerUrl.includes(".pdf")) {
-    return t("Open PDF Guide", "開啟 PDF 教學");
-  }
-
-  if (lowerUrl.includes("ccu.edu.tw")) {
-    return t("Open CCU Page", "開啟中正大學頁面");
-  }
-
-  return `${t("Open Link", "開啟連結")} ${index + 1}`;
-}
 
 export default function TaskDetail() {
   const { t, lang } = useLanguage();
@@ -287,45 +160,17 @@ export default function TaskDetail() {
                 </p>
 
                 <div className="space-y-2">
-                  {task.steps.map((step, index) => {
-                    const stepText = t(step.en, step.zh);
-                    const { cleanedText, urls } = extractUrlsFromText(stepText);
-
-                    return (
-                      <div key={index} className="flex items-start gap-2.5">
-                        <div className="w-6 h-6 rounded-full bg-navy/10 flex items-center justify-center shrink-0 mt-0.5">
-                          <span className="text-xs font-bold text-navy">
-                            {index + 1}
-                          </span>
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-foreground/80 leading-relaxed pt-0.5">
-                            {cleanedText || stepText}
-                          </p>
-
-                          {urls.length > 0 && (
-                            <div className="mt-2 flex flex-wrap gap-2">
-                              {urls.map((url, linkIndex) => (
-                                <a
-                                  key={linkIndex}
-                                  href={url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex max-w-full min-h-9 min-w-0 items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-left text-xs font-semibold leading-snug text-navy transition-colors hover:bg-muted"
-                                >
-                                  <ExternalLink className="h-3.5 w-3.5 shrink-0" />
-                                  <span className="min-w-0 break-words">
-                                    {getAutoLinkLabel(url, linkIndex, t)}
-                                  </span>
-                                </a>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                  {task.steps.map((step, index) => (
+                    <div key={index} className="flex items-start gap-2.5">
+                      <div className="w-6 h-6 rounded-full bg-navy/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="text-xs font-bold text-navy">
+                          {index + 1}
+                        </span>
                       </div>
-                    );
-                  })}
+
+                      <TaskStepContent step={step} />
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
