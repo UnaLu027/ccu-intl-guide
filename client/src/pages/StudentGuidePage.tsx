@@ -69,25 +69,6 @@ function scrollToSection(id: string) {
   window.history.replaceState(null, "", `#${id}`);
 }
 
-function SourceBadge({ section }: { section: StudentGuideSection }) {
-  const { lang } = useLanguage();
-  if (!section.sourceReferences?.length) return null;
-
-  const label =
-    lang === "en"
-      ? `Source: ${section.sourceReferences
-          .map((source) => `${source.documentTitle_en}, ${source.pages}`)
-          .join("; ")}`
-      : `來源：${section.sourceReferences
-          .map((source) => `${source.documentTitle_zh}，${source.pages}`)
-          .join("；")}`;
-
-  return (
-    <span className="inline-flex items-center rounded-full border border-border bg-muted/50 px-2.5 py-1 text-xs font-semibold text-muted-foreground">
-      {label}
-    </span>
-  );
-}
 
 function GuideBlockView({ block }: { block: HandbookBlock }) {
   const { lang, t } = useLanguage();
@@ -249,7 +230,6 @@ function GuideArticle({
     <article id={section.id} className="min-w-0 scroll-mt-28 rounded-xl border border-border bg-card p-5 shadow-sm md:p-7">
       <div className="mb-5">
         <div className="flex flex-wrap gap-2">
-          <SourceBadge section={section} />
           {category && (
             <span className="rounded-full border border-amber/40 bg-amber/10 px-2.5 py-1 text-xs font-bold text-navy">
               {t(category.name_en, category.name_zh)}
