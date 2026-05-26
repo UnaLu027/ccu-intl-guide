@@ -593,6 +593,208 @@ export const studentGuides: StudentGuide[] = [
         ],
       },
       {
+        id: "degree_computer_wifi",
+        title_en: "Computer Classrooms and Campus Wi-Fi",
+        title_zh: "電腦教室與校園 Wi-Fi",
+        categoryId: "campus_life",
+        tags_en: ["computer classroom", "wifi", "account", "password"],
+        tags_zh: ["電腦教室", "無線網路", "帳號", "密碼"],
+        summary_en: "Computer classroom opening hours, campus Wi-Fi login, and default account rules for new students.",
+        summary_zh: "說明電腦教室開放時間、校園 Wi-Fi 登入方式，以及新生帳號與預設密碼規則。",
+        sourceReferences: [{ ...degreeSources.handbook, pages: "p.26-p.35" }],
+        relatedTaskIds: ["campus_wifi_or_computer_room", "ecourse_account"],
+        blocks: [
+          {
+            type: "table",
+            columns: [
+              { key: "item", label_en: "Item", label_zh: "項目" },
+              { key: "detail", label_en: "Detail", label_zh: "說明" },
+            ],
+            rows: [
+              {
+                item: { en: "Computer classroom opening hours", zh: "電腦教室開放時間" },
+                detail: {
+                  en: "Monday to Friday, 08:00–21:00. During winter and summer vacations, 09:00–17:00.",
+                  zh: "週一至週五 08:00–21:00；寒暑假期間為 09:00–17:00。",
+                },
+              },
+              {
+                item: { en: "Campus Wi-Fi login", zh: "校園 Wi-Fi 登入" },
+                detail: {
+                  en: "Use your CCU student email account and password to log in.",
+                  zh: "使用中正大學學生信箱帳號與密碼登入。",
+                },
+              },
+              {
+                item: { en: "Default password for degree-seeking students", zh: "學位生預設密碼" },
+                detail: {
+                  en: "Edu$ + the last 5 digits of your ID number.",
+                  zh: "Edu$ 加上身分證明文件號碼後五碼。",
+                },
+              },
+              {
+                item: { en: "Default password for exchange students", zh: "交換生預設密碼" },
+                detail: {
+                  en: "Edu$ + the last 5 numerals of your passport number.",
+                  zh: "Edu$ 加上護照號碼最後五個數字。",
+                },
+              },
+            ],
+          },
+          {
+            type: "checklist",
+            items: [
+              {
+                en: "For new student account conversion, 4 is converted to u, 6 to g, 5 to s, and 8 to d.",
+                zh: "新生帳號轉碼規則：4 轉為 u、6 轉為 g、5 轉為 s、8 轉為 d。",
+              },
+              {
+                en: "If you cannot log in, confirm whether your registration and account activation have been completed.",
+                zh: "若無法登入，請先確認是否已完成註冊與帳號開通。",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: "degree_drivers_license",
+        title_en: "Driver's License and Traffic Reminders",
+        title_zh: "駕照與交通提醒",
+        categoryId: "safety_regulations",
+        tags_en: ["driver license", "scooter", "traffic", "motor vehicle"],
+        tags_zh: ["駕照", "機車", "交通", "監理"],
+        summary_en: "International students must have a valid license before driving a scooter or car in Taiwan.",
+        summary_zh: "國際學生在臺灣騎乘機車或駕駛汽車前，須持有有效駕照。",
+        sourceReferences: [{ ...degreeSources.handbook, pages: "p.26-p.35" }],
+        blocks: [
+          {
+            type: "note",
+            tone: "warning",
+            content_en:
+              "Driving without a valid license is illegal in Taiwan and may result in fines, vehicle impoundment, or other legal consequences.",
+            content_zh:
+              "在臺灣無照駕駛屬違法行為，可能面臨罰鍰、車輛扣留或其他法律責任。",
+          },
+          {
+            type: "checklist",
+            items: [
+              {
+                en: "Taiwan uses left-hand drive vehicles and traffic rules may differ from your home country.",
+                zh: "臺灣車輛為左駕，交通規則可能與你的國家不同。",
+              },
+              {
+                en: "You may apply for a Taiwanese driver's license or convert a valid foreign license if eligible.",
+                zh: "符合資格者可考取臺灣駕照，或依規定換發臺灣駕照。",
+              },
+              {
+                en: "For motorcycle license tests, prepare required identity documents, ARC, health check certificate, photos, and fees.",
+                zh: "報考機車駕照時，通常需準備身分文件、ARC、體檢證明、照片與規費。",
+              },
+              {
+                en: "Check official test questions and practice tests before taking the written examination.",
+                zh: "參加筆試前，請先查閱官方題庫並使用模擬測驗練習。",
+              },
+            ],
+          },
+          {
+            type: "links",
+            links: [
+              {
+                url: "https://www.mvdis.gov.tw/m3-emv-eng/",
+                label_en: "Open Motor Vehicle Driver Information Service",
+                label_zh: "開啟監理服務英文網站",
+              },
+              {
+                url: "https://www.thb.gov.tw/en//cl.aspx?n=825",
+                label_en: "Open English Driver's License Test Questions",
+                label_zh: "開啟英文駕照筆試題庫",
+              },
+              {
+                url: "https://www.mvdis.gov.tw/m3-simulator-drv/index",
+                label_en: "Open Driver's License Practice Test",
+                label_zh: "開啟駕照模擬測驗",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: "degree_oia_service_request",
+        title_en: "OIA Service Request",
+        title_zh: "國際處服務需求表",
+        categoryId: "campus_life",
+        tags_en: ["oia", "service request", "support", "contact"],
+        tags_zh: ["國際處", "服務需求", "協助", "聯絡方式"],
+        summary_en: "Students may use the OIA service request form when they need assistance from the Office of International Affairs.",
+        summary_zh: "國際學生若需要國際處協助，可填寫國際處服務需求表。",
+        sourceReferences: [{ ...degreeSources.handbook, pages: "p.36-p.44" }],
+        relatedTaskIds: ["international_student_support"],
+        blocks: [
+          {
+            type: "paragraph",
+            content_en:
+              "If you have questions about registration, ARC, campus life, or other international student matters, you may contact OIA or submit the OIA service request form.",
+            content_zh:
+              "若你在註冊、ARC、校園生活或其他國際學生相關事項上需要協助，可聯絡國際處或填寫服務需求表。",
+          },
+          {
+            type: "contact",
+            name_en: "Office of International Affairs",
+            name_zh: "國際事務處",
+            email: "ccuoiais@ccu.edu.tw",
+            phone: "05-2720411 ext. 17600–17619",
+            location_en: "2nd floor above the CCU Supermarket, next to the graduate student dormitory.",
+            location_zh: "研究生宿舍旁超市樓上二樓。",
+            links: [
+              {
+                url: "https://docs.google.com/forms/d/e/1FAIpQLScTAvImpj1fn3-JH2CFd290tC5FfLD-dHF24AZ7R5eongvOLw/viewform",
+                label_en: "Open OIA Service Request Form",
+                label_zh: "開啟國際處服務需求表",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: "degree_alert_assistance_mechanism",
+        title_en: "Alert and Assistance Mechanism",
+        title_zh: "預警與協助機制",
+        categoryId: "campus_life",
+        tags_en: ["alert", "self-assessment", "support", "referral"],
+        tags_zh: ["預警", "自我評估", "協助", "轉介"],
+        summary_en: "When international students face serious life, language, or learning difficulties, OIA may coordinate assistance and referrals.",
+        summary_zh: "當國際學生面臨生活、語言或學習重大困難時，國際處可協調相關單位提供協助與轉介。",
+        sourceReferences: [{ ...degreeSources.handbook, pages: "p.36-p.44" }],
+        relatedTaskIds: ["international_student_support"],
+        blocks: [
+          {
+            type: "note",
+            tone: "warning",
+            content_en:
+              "If you are experiencing serious difficulties in daily life, language communication, learning, or mental adjustment, please seek help early.",
+            content_zh:
+              "若你在生活、語言溝通、學習或心理適應上遇到重大困難，請及早尋求協助。",
+          },
+          {
+            type: "checklist",
+            items: [
+              {
+                en: "Students may contact OIA directly or complete a self-assessment form when they need support.",
+                zh: "學生若需要協助，可直接聯絡國際處，或填寫自我評估表。",
+              },
+              {
+                en: "Departments, teachers, or staff may submit an alert form when they notice that an international student may need help.",
+                zh: "系所、教師或行政人員若發現國際學生可能需要協助，可填寫預警表。",
+              },
+              {
+                en: "OIA may coordinate with related campus units for follow-up support or referral.",
+                zh: "國際處可協調校內相關單位進行後續協助或轉介。",
+              },
+            ],
+          },
+        ],
+      },
+      {
         id: "degree_campus_life",
         title_en: "Campus Life",
         title_zh: "校園生活",
@@ -730,23 +932,106 @@ export const studentGuides: StudentGuide[] = [
         ],
       },
       {
-        id: "degree_taiwan_regulations",
-        title_en: "Important Regulations in Taiwan",
-        title_zh: "台灣重要法規",
+        id: "degree_important_laws",
+        title_en: "Important Regulations in Taiwan — General Law",
+        title_zh: "台灣重要法規：一般法律",
         categoryId: "safety_regulations",
-        tags_en: ["law", "traffic", "work", "bank account"],
-        tags_zh: ["法規", "交通", "工作", "帳戶"],
-        summary_en: "Important reminders on traffic, accounts, work, drugs, documents, and overstay.",
-        summary_zh: "交通、帳戶、工作、毒品、證件與逾期停留等重要提醒。",
-        sourceReferences: [{ ...degreeSources.quick, pages: "p.24-p.31" }],
+        tags_en: ["law", "fraud", "bank account", "drugs", "overstay"],
+        tags_zh: ["法規", "詐騙", "帳戶", "毒品", "逾期停留"],
+        summary_en: "Important legal reminders on DUI, theft, fraud, bank accounts, drugs, work, false documents, and visa overstay.",
+        summary_zh: "提醒酒駕、竊盜、詐騙、帳戶、毒品、工作、假證件與逾期停留等重要法律規定。",
+        sourceReferences: [{ ...degreeSources.quick, pages: "p.24-p.28" }],
+        relatedTaskIds: ["work_permit", "scam_help"],
         blocks: [
           {
             type: "checklist",
             items: [
-              { en: "Do not drink and drive or drive without a valid license.", zh: "不要酒駕，也不要無照駕駛。" },
-              { en: "Do not lend or sell bank accounts, ATM cards, SIM cards, or identity documents.", zh: "不要出借或販售帳戶、金融卡、SIM 卡或身分證件。" },
-              { en: "Do not work without a valid work permit.", zh: "未取得有效工作許可前不得工作。" },
-              { en: "Do not overstay your visa or ARC.", zh: "不要逾期停留或讓簽證、ARC 過期。" },
+              {
+                en: "Do not drive after drinking alcohol, including bicycles, electric bicycles, motorcycles, and cars.",
+                zh: "飲酒後不得駕駛，包括自行車、電動自行車、機車與汽車。",
+              },
+              {
+                en: "Do not take others' property. Found lost items should be handed to the proper authority.",
+                zh: "不得拿取他人物品；拾得遺失物應交給相關單位，不可自行占有。",
+              },
+              {
+                en: "Do not keep or use items belonging to others without permission. Borrowing and not returning may also cause legal issues.",
+                zh: "不得未經同意保留或使用他人物品；借用不還也可能產生法律問題。",
+              },
+              {
+                en: "Do not sell, lend, or hand over your bank account, ATM card, passbook, or PIN.",
+                zh: "不要販售、出借或交付自己的銀行帳戶、金融卡、存摺或密碼。",
+              },
+              {
+                en: "Do not help unknown people withdraw, transfer, receive, or deliver money. You may become a fraud accomplice or money mule.",
+                zh: "不要協助不明人士提領、轉帳、收款或交付金錢，否則可能成為詐騙共犯或車手。",
+              },
+              {
+                en: "Do not share your SIM card, phone number, identity documents, or personal data for unknown purposes.",
+                zh: "不要將 SIM 卡、電話門號、身分證件或個人資料提供給不明人士使用。",
+              },
+              {
+                en: "Illegal drugs, including marijuana, are strictly prohibited in Taiwan.",
+                zh: "臺灣嚴禁持有、使用或販售毒品，包含大麻。",
+              },
+              {
+                en: "Do not work without a valid work permit, including online jobs, freelance work, or paid activities.",
+                zh: "未取得有效工作許可前，不得工作，包含線上工作、接案或其他有給付活動。",
+              },
+              {
+                en: "Do not use fake documents or another person's identity documents.",
+                zh: "不得使用假文件或借用他人身分證件。",
+              },
+              {
+                en: "Do not overstay your visa or ARC, even by one day.",
+                zh: "不要讓簽證或 ARC 逾期，即使只逾期一天也可能違規。",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: "degree_transportation_regulations",
+        title_en: "Important Regulations in Taiwan — Transportation",
+        title_zh: "台灣重要法規：交通",
+        categoryId: "safety_regulations",
+        tags_en: ["traffic", "driver license", "scooter", "insurance"],
+        tags_zh: ["交通", "駕照", "機車", "強制險"],
+        summary_en: "Transportation reminders on license, vehicle registration, fuel tax, emission inspection, compulsory insurance, ownership transfer, and inspection.",
+        summary_zh: "提醒駕照、車輛登記、燃料稅、排氣檢驗、強制險、過戶與驗車等交通規定。",
+        sourceReferences: [{ ...degreeSources.quick, pages: "p.29-p.31" }],
+        blocks: [
+          {
+            type: "checklist",
+            items: [
+              {
+                en: "Driving a car or motorcycle requires a valid Taiwanese license or a recognized international driving permit with a valid home country license.",
+                zh: "駕駛汽車或機車須持有有效臺灣駕照，或符合規定的國際駕照與原國駕照。",
+              },
+              {
+                en: "Unregistered vehicles or vehicles without legal license plates may lead to fines or impoundment.",
+                zh: "未完成登記或未懸掛合法牌照的車輛，可能面臨罰鍰或扣車。",
+              },
+              {
+                en: "Vehicle owners must pay fuel usage fees and license taxes on time.",
+                zh: "車主須按時繳納燃料使用費與牌照稅。",
+              },
+              {
+                en: "Scooters and cars may need regular emission inspections, especially older vehicles.",
+                zh: "機車與汽車可能需定期接受排氣檢驗，尤其是較舊車輛。",
+              },
+              {
+                en: "All motor vehicles must have valid Compulsory Motor Vehicle Liability Insurance.",
+                zh: "所有汽機車都必須投保有效的強制汽車責任保險。",
+              },
+              {
+                en: "When buying or selling a vehicle, ownership transfer must be completed at the motor vehicle office.",
+                zh: "買賣車輛時，雙方須至監理機關完成過戶。",
+              },
+              {
+                en: "Some vehicles must pass regular safety inspections depending on vehicle type and age.",
+                zh: "部分車輛需依車種與車齡完成定期安全檢驗。",
+              },
             ],
           },
         ],
@@ -815,6 +1100,53 @@ export const studentGuides: StudentGuide[] = [
               { en: "Call 113 or 110 if there is danger or urgent need.", zh: "若有危險或緊急需求，可撥打 113 或 110。" },
               { en: "Preserve evidence and seek help from school units.", zh: "保存相關證據，並向校內單位尋求協助。" },
               { en: "Do not touch, joke, spread sexual content, or pressure others without consent.", zh: "未經同意，不要觸碰他人、開性玩笑、散布性內容或造成壓迫。" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "degree_gender_incident_regulations",
+        title_en: "Sexual Assault, Sexual Harassment, and Sexual Bullying Prevention Regulations",
+        title_zh: "性侵害、性騷擾與性霸凌防治規定",
+        categoryId: "anti_sexual_harassment",
+        tags_en: ["gender equity", "sexual harassment", "sexual assault", "sexual bullying"],
+        tags_zh: ["性別平等", "性騷擾", "性侵害", "性霸凌"],
+        summary_en: "A summary of formal reporting, confidentiality, and handling principles for campus gender-related incidents.",
+        summary_zh: "整理校園性別事件的正式通報、保密與處理原則。",
+        sourceReferences: [{ ...degreeSources.handbook, pages: "p.67-p.70" }],
+        relatedTaskIds: ["gender_equity_case_or_form_inquiry"],
+        blocks: [
+          {
+            type: "note",
+            tone: "warning",
+            content_en:
+              "If you experience or witness sexual assault, sexual harassment, or sexual bullying, seek help as early as possible and preserve relevant evidence.",
+            content_zh:
+              "若你遭遇或目睹性侵害、性騷擾或性霸凌事件，請及早尋求協助並保存相關證據。",
+          },
+          {
+            type: "checklist",
+            items: [
+              {
+                en: "Reports or applications may be submitted in writing, orally, or by email, depending on the school procedure.",
+                zh: "可依學校程序以書面、口頭或電子郵件方式提出申請或通報。",
+              },
+              {
+                en: "The university should protect the privacy of the applicant, reporter, and involved parties.",
+                zh: "學校應保護申請人、通報人與當事人的隱私。",
+              },
+              {
+                en: "Faculty and staff who become aware of suspected campus gender incidents may have reporting responsibilities.",
+                zh: "教職員若知悉疑似校園性別事件，可能負有依法通報責任。",
+              },
+              {
+                en: "The Gender Equity Education Committee handles investigation and follow-up according to relevant regulations.",
+                zh: "性別平等教育委員會會依相關規定進行調查與後續處理。",
+              },
+              {
+                en: "In urgent danger, call 110 or 113 immediately.",
+                zh: "若有立即危險，請立刻撥打 110 或 113。",
+              },
             ],
           },
         ],
@@ -902,6 +1234,116 @@ export const studentGuides: StudentGuide[] = [
               { en: "Apply for the correct visa according to your exchange period.", zh: "依交換期間申請正確簽證。" },
               { en: "Purchase overseas travel insurance.", zh: "購買海外旅遊保險。" },
               { en: "Send required scanned documents to OIA by the announced deadline.", zh: "依期限將指定文件掃描檔寄給國際處。" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "exchange_document_submission",
+        title_en: "Required Document Submission Before Arrival",
+        title_zh: "抵達前指定文件繳交",
+        categoryId: "before_arrival",
+        tags_en: ["documents", "email", "medical examination", "visa", "insurance"],
+        tags_zh: ["文件", "電子郵件", "醫療檢查", "簽證", "保險"],
+        summary_en: "Exchange and visiting students must send designated scanned documents to OIA before the announced deadline.",
+        summary_zh: "交換生與訪問學生須於指定期限前將相關文件掃描檔寄給國際處。",
+        sourceReferences: [{ ...exchangeSource, pages: "p.6" }],
+        blocks: [
+          {
+            type: "note",
+            tone: "warning",
+            content_en:
+              "After completing the required pre-departure procedures, send scanned copies of the designated documents to OIA by the announced deadline.",
+            content_zh:
+              "完成出發前必要程序後，請於公告期限前將指定文件掃描檔寄給國際處。",
+          },
+          {
+            type: "checklist",
+            items: [
+              { en: "Certificate of medical examination.", zh: "醫療檢查證明。" },
+              { en: "Visa.", zh: "簽證。" },
+              { en: "Flight ticket.", zh: "機票。" },
+              { en: "Insurance certificate.", zh: "保險證明。" },
+            ],
+          },
+          {
+            type: "contact",
+            name_en: "OIA Exchange Student Contact",
+            name_zh: "國際處交換生窗口",
+            email: "astevelyn@ccu.edu.tw",
+            links: [
+              {
+                url: "mailto:ciacoop@ccu.edu.tw",
+                label_en: "Email OIA Cooperation Division",
+                label_zh: "寄信給國際處交流組",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: "exchange_boarding_checklist",
+        title_en: "Boarding Checklist and Customs Reminder",
+        title_zh: "登機準備清單與入境提醒",
+        categoryId: "before_arrival",
+        tags_en: ["boarding", "customs", "cash", "meat products"],
+        tags_zh: ["登機", "海關", "現金", "肉製品"],
+        summary_en: "Prepare essential documents and avoid bringing restricted meat products into Taiwan.",
+        summary_zh: "準備必要文件與初期現金，並避免攜帶受限制肉製品入境臺灣。",
+        sourceReferences: [{ ...exchangeSource, pages: "p.6-p.7" }],
+        blocks: [
+          {
+            type: "checklist",
+            items: [
+              { en: "Passport and visa.", zh: "護照與簽證。" },
+              { en: "Flight ticket.", zh: "機票。" },
+              {
+                en: "At least NTD 10,000 cash for SIM card, transportation, bedding, and first-arrival expenses.",
+                zh: "至少準備新臺幣 10,000 元現金，用於 SIM 卡、交通、寢具與初抵臺生活開銷。",
+              },
+              {
+                en: "If your flight is cancelled, inform CCU immediately so OIA can notify the Dormitory Service Center.",
+                zh: "若航班取消，請立即通知中正大學，以便國際處轉知宿舍服務中心。",
+              },
+            ],
+          },
+          {
+            type: "note",
+            tone: "warning",
+            content_en:
+              "Do not bring processed meat or meat products into Taiwan. Violations may result in fines of NTD 200,000 to NTD 1,000,000.",
+            content_zh:
+              "請勿攜帶肉類加工品或肉製品入境臺灣，違規可能面臨新臺幣 200,000 元至 1,000,000 元罰鍰。",
+          },
+        ],
+      },
+      {
+        id: "exchange_sim_card",
+        title_en: "Buying a SIM Card Upon Arrival",
+        title_zh: "抵臺後購買 SIM 卡",
+        categoryId: "before_arrival",
+        tags_en: ["sim card", "airport", "phone", "arrival"],
+        tags_zh: ["SIM 卡", "機場", "手機", "抵達"],
+        summary_en: "Exchange students may buy a local SIM card at the airport upon arrival in Taiwan.",
+        summary_zh: "交換生抵達臺灣後，可在機場購買臺灣當地 SIM 卡。",
+        sourceReferences: [{ ...exchangeSource, pages: "p.7" }],
+        blocks: [
+          {
+            type: "checklist",
+            items: [
+              { en: "Prepare your passport and boarding pass.", zh: "準備護照與登機證。" },
+              {
+                en: "Prepare cash or credit card, around NTD 1,000 for a 30-day plan.",
+                zh: "準備現金或信用卡，約新臺幣 1,000 元可購買 30 天方案。",
+              },
+              {
+                en: "Make sure the SIM card includes enough data for at least your first 10 days in Taiwan.",
+                zh: "請確認 SIM 卡流量足以支援抵臺後至少前 10 天使用。",
+              },
+              {
+                en: "Students under 18 years old may need a parental consent letter.",
+                zh: "未滿 18 歲學生可能需要家長同意書。",
+              },
             ],
           },
         ],
@@ -1170,6 +1612,65 @@ export const studentGuides: StudentGuide[] = [
             content_zh: "手冊提醒，教務處收到選課表後，通常才會開通 eCourse 使用權限。",
           },
           { type: "links", links: [{ url: "https://ecourse2.ccu.edu.tw/index.php", label_en: "Open eCourse2", label_zh: "開啟 eCourse2" }] },
+        ],
+      },
+      {
+        id: "exchange_course_types",
+        title_en: "Types of Courses Available to Exchange Students",
+        title_zh: "交換生可選課程類型",
+        categoryId: "course_selection",
+        tags_en: ["courses", "academic courses", "chinese courses", "general education"],
+        tags_zh: ["課程", "系所課程", "華語課程", "通識課程"],
+        summary_en: "Exchange and visiting students may choose academic courses, Chinese training courses, and selected language-related programs, but general education courses are not guaranteed.",
+        summary_zh: "交換生與訪問學生可選系所課程、華語課程與語言相關學程，但通識課程通常無法保證名額。",
+        sourceReferences: [{ ...exchangeSource, pages: "p.11-p.12" }],
+        relatedTaskIds: ["exchange_course_registration"],
+        blocks: [
+          {
+            type: "checklist",
+            items: [
+              {
+                en: "Academic courses are offered by departments and may be taught in Chinese or English.",
+                zh: "系所課程由各系所開設，可能以中文或英文授課。",
+              },
+              {
+                en: "English-taught courses are usually marked in the course list.",
+                zh: "英語授課課程通常會在課程清單中標示。",
+              },
+              {
+                en: "Chinese training courses are provided by the Center for Language Studies and are credit-loaded.",
+                zh: "華語課程由語言中心提供，屬於有學分課程。",
+              },
+              {
+                en: "The Certificate Program of Applied Language Studies may require a placement test.",
+                zh: "應用語言學程可能需要參加分級測驗。",
+              },
+              {
+                en: "General education courses are not guaranteed because they are usually limited by enrollment quota.",
+                zh: "通識課程通常有名額限制，因此不保證交換生一定能選上。",
+              },
+            ],
+          },
+          {
+            type: "links",
+            links: [
+              {
+                url: "https://kiki.ccu.edu.tw/~ccmisp06/Course/index_e.html",
+                label_en: "Open Academic Course List",
+                label_zh: "開啟課程查詢系統",
+              },
+              {
+                url: "https://kiki.ccu.edu.tw/~ccmisp06//Course/all_english.html",
+                label_en: "Open English-Taught Course List",
+                label_zh: "開啟英語授課課程清單",
+              },
+              {
+                url: "https://kiki.ccu.edu.tw/~ccmisp06/Course/Z121_e.html",
+                label_en: "Open Chinese Training Course List",
+                label_zh: "開啟華語課程清單",
+              },
+            ],
+          },
         ],
       },
       {
