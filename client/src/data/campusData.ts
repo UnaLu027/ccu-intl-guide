@@ -4418,12 +4418,12 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "校內急難救助：https://studentlife.ccu.edu.tw/p/404103420790.php?Lang=zhtw",
-        "en": "Oncampus emergency aid: https://studentlife.ccu.edu.tw/p/404103420790.php?Lang=zhtw"
+        "zh": "校內急難救助：https://studentlife.ccu.edu.tw/p/404-1034-20790.php?Lang=zh-tw",
+        "en": "On-campus emergency aid: https://studentlife.ccu.edu.tw/p/404-1034-20790.php?Lang=zh-tw"
       },
       {
-        "zh": "校外急難救助：https://studentlife.ccu.edu.tw/p/404103420791.php?Lang=zhtw",
-        "en": "Offcampus emergency aid: https://studentlife.ccu.edu.tw/p/404103420791.php?Lang=zhtw"
+        "zh": "校外急難救助：https://studentlife.ccu.edu.tw/p/404-1034-20791.php?Lang=zh-tw",
+        "en": "Off-campus emergency aid: https://studentlife.ccu.edu.tw/p/404-1034-20791.php?Lang=zh-tw"
       }
     ]
   },

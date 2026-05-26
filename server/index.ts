@@ -196,6 +196,22 @@ const knownContentTextReplacements: Array<[string, string]> = [
     "https://cls.ccu.edu.tw/",
   ],
   [
+    "https://studentlife.ccu.edu.tw/p/404103420790.php?Lang=zhtw",
+    "https://studentlife.ccu.edu.tw/p/404-1034-20790.php?Lang=zh-tw",
+  ],
+  [
+    "https://studentlife.ccu.edu.tw/p/404103420791.php?Lang=zhtw",
+    "https://studentlife.ccu.edu.tw/p/404-1034-20791.php?Lang=zh-tw",
+  ],
+  [
+    "Oncampus emergency aid",
+    "On-campus emergency aid",
+  ],
+  [
+    "Offcampus emergency aid",
+    "Off-campus emergency aid",
+  ],
+  [
     "https://oga.ccu.edu.tw/p/404100611703.php?Lang=zhtw",
     "https://oga.ccu.edu.tw/p/404-1006-11703.php?Lang=zh-tw",
   ],

@@ -15,6 +15,8 @@ const zh = {
   vpnPdf: "\u958b\u555f VPN PDF \u6559\u5b78",
   vpnService: "\u958b\u555f VPN \u670d\u52d9\u9801",
   softwareActivation: "\u958b\u555f\u8edf\u9ad4\u8a8d\u8b49\u6559\u5b78",
+  onCampusEmergencyAid: "\u958b\u555f\u6821\u5167\u6025\u96e3\u6551\u52a9",
+  offCampusEmergencyAid: "\u958b\u555f\u6821\u5916\u6025\u96e3\u6551\u52a9",
   studentApplication: "\u958b\u555f\u5b78\u751f\u7dda\u4e0a\u7533\u8fa6\u7cfb\u7d71",
   niaChiayi: "\u958b\u555f\u5609\u7fa9\u5e02\u79fb\u6c11\u7f72\u670d\u52d9\u7ad9\u9801\u9762",
   maps: "\u958b\u555f Google Maps \u5c0e\u822a",
@@ -113,6 +115,14 @@ export function getTaskLinkLabel(
 
   if (lowerUrl.includes("it.ccu.edu.tw/p/426-1009-18") || lowerUrl.includes("it.ccu.edu.tw/p/426100918")) {
     return t("Open Software Activation Guide", zh.softwareActivation);
+  }
+
+  if (lowerUrl.includes("studentlife.ccu.edu.tw/p/404-1034-20790")) {
+    return t("Open On-campus Emergency Aid", zh.onCampusEmergencyAid);
+  }
+
+  if (lowerUrl.includes("studentlife.ccu.edu.tw/p/404-1034-20791")) {
+    return t("Open Off-campus Emergency Aid", zh.offCampusEmergencyAid);
   }
 
   if (lowerUrl.includes("coa.immigration.gov.tw/coa-frontend/student/entry")) {
