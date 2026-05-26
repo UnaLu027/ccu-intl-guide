@@ -72,6 +72,14 @@
     "error": ""
   },
   {
+    "url": "https://chineselanguagecenter.ccu.edu.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://chineselanguagecenter.ccu.edu.tw/",
+    "error": ""
+  },
+  {
     "url": "https://cls.ccu.edu.tw/",
     "status": "OK",
     "httpStatus": 200,
@@ -672,6 +680,22 @@
     "error": ""
   },
   {
+    "url": "https://sport.ccu.edu.tw/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://sport.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://sportplacerent.ccu.edu.tw/apply_v2.php",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://sportplacerent.ccu.edu.tw/apply_v2.php",
+    "error": ""
+  },
+  {
     "url": "https://stemphd.ccu.edu.tw",
     "status": "OK",
     "httpStatus": 200,
@@ -720,6 +744,14 @@
     "error": ""
   },
   {
+    "url": "https://taiwanhelper.com/bus/CYI",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://taiwanhelper.com/bus/CYI",
+    "error": ""
+  },
+  {
     "url": "https://talent.nat.gov.tw/zh/employers/category/foreignstudentsstudyingintaiwan",
     "status": "PROTECTED_BUT_EXISTS",
     "httpStatus": 403,
@@ -736,7 +768,7 @@
     "error": ""
   },
   {
-    "url": "https://visawebapp.boca.gov.tw",
+    "url": "https://visawebapp.boca.gov.tw/",
     "status": "OK",
     "httpStatus": 200,
     "method": "HEAD",
@@ -776,6 +808,30 @@
     "error": ""
   },
   {
+    "url": "https://www.ccu.edu.tw/p/404-1000-25665.php?Lang=zh-tw",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://www.ccu.edu.tw/p/404-1000-25665.php?Lang=zh-tw",
+    "error": ""
+  },
+  {
+    "url": "https://www.facebook.com/onlychiayi/?locale=zh_TW",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://www.facebook.com/onlychiayi/?locale=zh_TW",
+    "error": ""
+  },
+  {
+    "url": "https://www.facebook.com/tw.alerts/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://www.facebook.com/tw.alerts/",
+    "error": ""
+  },
+  {
     "url": "https://www.google.com/maps/search/?api=1&query=%E7%A7%BB%E6%B0%91%E7%BD%B2%E5%98%89%E7%BE%A9%E5%B8%82%E6%9C%8D%E5%8B%99%E7%AB%99",
     "status": "OK",
     "httpStatus": 200,
@@ -784,11 +840,35 @@
     "error": ""
   },
   {
+    "url": "https://www.route.com.tw/maintain.php",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://www.route.com.tw/maintain.php",
+    "error": ""
+  },
+  {
     "url": "https://www026168.ccu.edu.tw/",
     "status": "OK",
     "httpStatus": 200,
     "method": "HEAD",
     "finalUrl": "https://www026168.ccu.edu.tw/",
+    "error": ""
+  },
+  {
+    "url": "https://www026186.ccu.edu.tw/dormapply/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://www026186.ccu.edu.tw/dormapply/",
+    "error": ""
+  },
+  {
+    "url": "https://www026186.ccu.edu.tw/graddorm/",
+    "status": "OK",
+    "httpStatus": 200,
+    "method": "HEAD",
+    "finalUrl": "https://www026186.ccu.edu.tw/graddorm/",
     "error": ""
   },
   {

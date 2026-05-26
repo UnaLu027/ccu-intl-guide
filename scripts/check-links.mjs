@@ -1,7 +1,7 @@
 import { writeFile } from "node:fs/promises";
 import { readFileSync } from "node:fs";
 
-const SOURCE_FILE = "client/src/data/campusData.ts";
+const SOURCE_FILES = ["client/src/data/campusData.ts", "shared/campusData.ts"];
 const JSON_REPORT = "link-check-report.json";
 const MD_REPORT = "link-check-report.md";
 const TIMEOUT_MS = 10_000;
@@ -15,12 +15,14 @@ function cleanUrl(url) {
 }
 
 function extractUrls() {
-  const source = readFileSync(SOURCE_FILE, "utf8");
   const urls = new Set();
 
-  for (const match of source.match(urlRegex) ?? []) {
-    const url = cleanUrl(match);
-    if (url) urls.add(url);
+  for (const sourceFile of SOURCE_FILES) {
+    const source = readFileSync(sourceFile, "utf8");
+    for (const match of source.match(urlRegex) ?? []) {
+      const url = cleanUrl(match);
+      if (url) urls.add(url);
+    }
   }
 
   return [...urls].sort((a, b) => a.localeCompare(b));
@@ -165,7 +167,7 @@ function markdownReport(results) {
 }
 
 const urls = extractUrls();
-console.log(`Checking ${urls.length} unique links from ${SOURCE_FILE}`);
+console.log(`Checking ${urls.length} unique links from ${SOURCE_FILES.join(", ")}`);
 
 const results = await mapWithConcurrency(urls, checkUrl);
 await writeFile(JSON_REPORT, `${JSON.stringify(results, null, 2)}\n`);

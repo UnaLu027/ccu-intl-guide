@@ -29,13 +29,15 @@ const zh = {
   gown: "\u958b\u555f\u5b78\u4f4d\u670d\u501f\u7528\u8aaa\u660e",
   internship: "\u958b\u555f\u6821\u5916\u5be6\u7fd2\u8cc7\u8a0a",
   workPermit: "\u958b\u555f\u5de5\u4f5c\u8a31\u53ef\u7533\u8fa6\u7db2",
+  workPermitStatus: "\u958b\u555f\u5de5\u4f5c\u8a31\u53ef\u6848\u4ef6\u67e5\u8a62",
+  suspensionGuide: "\u958b\u555f\u4f11\u5b78\u7533\u8acb\u8aaa\u660e",
   intercollegiateStudent: "\u958b\u555f\u6821\u969b\u751f\u5b78\u7c4d\u7cfb\u7d71",
   academicRecord: "\u958b\u555f\u5b78\u7c4d\u8cc7\u6599\u767b\u9304\u7cfb\u7d71",
   payment: "\u958b\u555f\u7e73\u8cbb\u7cfb\u7d71",
   career: "\u958b\u555f\u8077\u6daf\u4e2d\u5fc3\u9801\u9762",
   library: "\u958b\u555f\u5716\u66f8\u9928\u9801\u9762",
   sportsReservation: "\u958b\u555f\u9ad4\u80b2\u5834\u5730\u501f\u7528\u7cfb\u7d71",
-  sportsOffice: "\u958b\u555f\u9ad4\u80b2\u5ba4\u9801\u9762",
+  sportsOffice: "\u958b\u555f\u9ad4\u80b2\u4e2d\u5fc3\u9801\u9762",
   chineseLanguageCenter: "\u958b\u555f\u83ef\u8a9e\u4e2d\u5fc3\u9801\u9762",
   webmail: "\u958b\u555f\u4e2d\u6b63\u5927\u5b78 Webmail",
   alumniEmail: "\u958b\u555f\u6821\u53cb\u4fe1\u7bb1\u7cfb\u7d71",
@@ -161,12 +163,20 @@ export function getTaskLinkLabel(
     return t("Open OIA Scholarships Page", zh.oiaScholarships);
   }
 
+  if (lowerUrl.includes("oaa.ccu.edu.tw") && lowerUrl.includes("14288")) {
+    return t("Open Suspension Application Guide", zh.suspensionGuide);
+  }
+
   if (lowerUrl.includes("oga.ccu.edu.tw") && lowerUrl.includes("11703")) {
     return t("Open Graduation Gown Borrowing Information", zh.gown);
   }
 
   if (lowerUrl.includes("career.ccu.edu.tw") && lowerUrl.includes("244")) {
     return t("Open Off-Campus Internship Information", zh.internship);
+  }
+
+  if (lowerUrl.includes("ezwp.wda.gov.tw/wcfonline/wsite/control")) {
+    return t("Open Work Permit Status Inquiry", zh.workPermitStatus);
   }
 
   if (lowerUrl.includes("ezwp.wda.gov.tw")) {
@@ -198,7 +208,7 @@ export function getTaskLinkLabel(
   }
 
   if (lowerUrl.includes("sport.ccu.edu.tw")) {
-    return t("Open Sports Office Page", zh.sportsOffice);
+    return t("Open Sports Center Page", zh.sportsOffice);
   }
 
   if (lowerUrl.includes("chineselanguagecenter.ccu.edu.tw")) {

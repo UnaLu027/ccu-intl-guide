@@ -3006,8 +3006,20 @@ export const tasks: Task[] = [
     ],
     "steps": [
       {
-        "zh": "使用線上申辦系統：https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=zh",
-        "en": "Using Students Online Application System: https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=en"
+        "zh": "使用學生線上申辦系統辦理申請。",
+        "en": "Use the Students Online Application System to submit the application.",
+        "links": [
+          {
+            "url": "https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=zh",
+            "label_zh": "開啟學生線上申辦系統",
+            "label_en": "Open Students Online Application System"
+          },
+          {
+            "url": "https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=en",
+            "label_zh": "開啟學生線上申辦系統（英文）",
+            "label_en": "Open Students Online Application System (English)"
+          }
+        ]
       },
       {
         "zh": "進入網站註冊帳號",
@@ -3054,8 +3066,20 @@ export const tasks: Task[] = [
     ],
     "steps": [
       {
-        "zh": "使用線上申辦系統：https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=zh",
-        "en": "Using Students Online Application System: https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=en"
+        "zh": "使用學生線上申辦系統辦理申請。",
+        "en": "Use the Students Online Application System to submit the application.",
+        "links": [
+          {
+            "url": "https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=zh",
+            "label_zh": "開啟學生線上申辦系統",
+            "label_en": "Open Students Online Application System"
+          },
+          {
+            "url": "https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=en",
+            "label_zh": "開啟學生線上申辦系統（英文）",
+            "label_en": "Open Students Online Application System (English)"
+          }
+        ]
       },
       {
         "zh": "進入網站註冊帳號",
@@ -3098,8 +3122,20 @@ export const tasks: Task[] = [
     ],
     "steps": [
       {
-        "zh": "使用線上申辦系統：https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=zh",
-        "en": "Using Students Online Application System: https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=en"
+        "zh": "使用學生線上申辦系統辦理申請。",
+        "en": "Use the Students Online Application System to submit the application.",
+        "links": [
+          {
+            "url": "https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=zh",
+            "label_zh": "開啟學生線上申辦系統",
+            "label_en": "Open Students Online Application System"
+          },
+          {
+            "url": "https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=en",
+            "label_zh": "開啟學生線上申辦系統（英文）",
+            "label_en": "Open Students Online Application System (English)"
+          }
+        ]
       },
       {
         "zh": "填寫資料並上傳檔案：2吋大頭照、護照、居留證、在學或註冊證明",
@@ -3128,12 +3164,26 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "離學校最近的移民署為嘉義市移民署服務站：https://servicestation.immigration.gov.tw/5880/",
-        "en": "The nearest NIA is the NIA Chiayi City Service Center: https://servicestation.immigration.gov.tw/5880/"
+        "zh": "離學校最近的移民署為嘉義市移民署服務站。",
+        "en": "The nearest NIA office is the NIA Chiayi City Service Center.",
+        "links": [
+          {
+            "url": "https://servicestation.immigration.gov.tw/5880/",
+            "label_zh": "開啟嘉義市移民署服務站頁面",
+            "label_en": "Open NIA Chiayi City Service Center Page"
+          }
+        ]
       },
       {
-        "zh": "根據Google地圖指示前往目的地：https://www.google.com/maps/search/?api=1&query=%E7%A7%BB%E6%B0%91%E7%BD%B2%E5%98%89%E7%BE%A9%E5%B8%82%E6%9C%8D%E5%8B%99%E7%AB%99",
-        "en": "Follow the directions on Google Maps to reach your destination: https://www.google.com/maps/search/?api=1&query=%E7%A7%BB%E6%B0%91%E7%BD%B2%E5%98%89%E7%BE%A9%E5%B8%82%E6%9C%8D%E5%8B%99%E7%AB%99"
+        "zh": "根據 Google Maps 指示前往目的地。",
+        "en": "Follow Google Maps directions to reach your destination.",
+        "links": [
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=%E7%A7%BB%E6%B0%91%E7%BD%B2%E5%98%89%E7%BE%A9%E5%B8%82%E6%9C%8D%E5%8B%99%E7%AB%99",
+            "label_zh": "開啟 Google Maps 導航",
+            "label_en": "Open Google Maps Directions"
+          }
+        ]
       },
       {
         "zh": "服務時間：星期一至星期五 08:00 - 17:00",
@@ -3178,16 +3228,35 @@ export const tasks: Task[] = [
     ],
     "steps": [
       {
-        "zh": "線上填寫申請表並列印簽名：https://visawebapp.boca.gov.tw",
-        "en": "Fill out the application form online, then print and sign it: https://www.boca.gov.tw/cp-166-283-c4da3-2.html"
+        "zh": "線上填寫申請表並列印簽名，並參考學位生居留簽證說明。",
+        "en": "Complete the online visa application form, print and sign it, and review the resident visa guide for foreign students.",
+        "links": [
+          {
+            "url": "https://visawebapp.boca.gov.tw/",
+            "label_zh": "開啟簽證線上填表系統",
+            "label_en": "Open Online Visa Application Form"
+          },
+          {
+            "url": "https://www.boca.gov.tw/cp-166-283-c4da3-2.html",
+            "label_zh": "開啟學位生居留簽證說明",
+            "label_en": "Open Resident Visa Guide for Foreign Students"
+          }
+        ]
       },
       {
         "zh": "準備文件（含正影本）：申請表、2吋大頭照x2、護照、健康檢查合格證明、入學許可或通知、最高學歷畢業證書與歷年成績單、財力證明",
         "en": "Prepare the required documents(original and photocopy): application form, two-inch photo x2, passport, health certificate, admission permit, highest education diploma and transcripts, proof of financial support"
       },
       {
-        "zh": "費用： https://www.boca.gov.tw/cp-396-32-4a369-1.html",
-        "en": "application fees: https://www.boca.gov.tw/cp-396-32-4a369-1.html"
+        "zh": "確認簽證規費。",
+        "en": "Check the visa fee information.",
+        "links": [
+          {
+            "url": "https://www.boca.gov.tw/cp-396-32-4a369-1.html",
+            "label_zh": "開啟簽證規費說明",
+            "label_en": "Open Visa Fee Information"
+          }
+        ]
       },
       {
         "zh": "提交上述文件至中華民國駐外館處申請",
@@ -3224,16 +3293,35 @@ export const tasks: Task[] = [
     ],
     "steps": [
       {
-        "zh": "線上填寫申請表並列印簽名：https://visawebapp.boca.gov.tw",
-        "en": "Fill out the application form online, then print and sign it: https://www.boca.gov.tw/cp-166-284-6f5f7-2.html"
+        "zh": "線上填寫申請表並列印簽名，並參考交換生居留簽證說明。",
+        "en": "Complete the online visa application form, print and sign it, and review the resident visa guide for exchange students.",
+        "links": [
+          {
+            "url": "https://visawebapp.boca.gov.tw/",
+            "label_zh": "開啟簽證線上填表系統",
+            "label_en": "Open Online Visa Application Form"
+          },
+          {
+            "url": "https://www.boca.gov.tw/cp-166-284-6f5f7-2.html",
+            "label_zh": "開啟交換生居留簽證說明",
+            "label_en": "Open Resident Visa Guide for Exchange Students"
+          }
+        ]
       },
       {
         "zh": "準備文件（含正影本）：申請表、2吋大頭照x2、護照、健康檢查合格證明、大專校院核准函、就讀學校入學許可/通知、國外就讀學校之在學證明",
         "en": "Prepare the required documents(original and photocopy): application form, two-inch photo x2, passport, health certificate, letter of approval issued by university, admission permit, overseas school’s record of enrollment"
       },
       {
-        "zh": "費用： https://www.boca.gov.tw/cp-396-32-4a369-1.html",
-        "en": "application fees: https://www.boca.gov.tw/cp-396-32-4a369-1.html"
+        "zh": "確認簽證規費。",
+        "en": "Check the visa fee information.",
+        "links": [
+          {
+            "url": "https://www.boca.gov.tw/cp-396-32-4a369-1.html",
+            "label_zh": "開啟簽證規費說明",
+            "label_en": "Open Visa Fee Information"
+          }
+        ]
       },
       {
         "zh": "提交上述文件至中華民國駐外館處申請",
@@ -3268,16 +3356,30 @@ export const tasks: Task[] = [
     ],
     "steps": [
       {
-        "zh": "線上填寫申請表並列印簽名：https://visawebapp.boca.gov.tw",
-        "en": "Fill out the application form online, then print and sign it: https://visawebapp.boca.gov.tw"
+        "zh": "線上填寫申請表並列印簽名。",
+        "en": "Complete the online visa application form, then print and sign it.",
+        "links": [
+          {
+            "url": "https://visawebapp.boca.gov.tw/",
+            "label_zh": "開啟簽證線上填表系統",
+            "label_en": "Open Online Visa Application Form"
+          }
+        ]
       },
       {
         "zh": "準備文件（含正影本）：申請表、2吋大頭照x2、護照、大專校院核准函、就讀學校入學許可/通知、國外就讀學校之在學證明",
         "en": "Prepare the required documents(original and photocopy): application form, two-inch photo x2, passport, letter of approval issued by university, admission permit, overseas school’s record of enrollment"
       },
       {
-        "zh": "費用： https://www.boca.gov.tw/cp-396-32-4a369-1.html",
-        "en": "Application fees: https://www.boca.gov.tw/cp-396-32-4a369-1.html"
+        "zh": "確認簽證規費。",
+        "en": "Check the visa fee information.",
+        "links": [
+          {
+            "url": "https://www.boca.gov.tw/cp-396-32-4a369-1.html",
+            "label_zh": "開啟簽證規費說明",
+            "label_en": "Open Visa Fee Information"
+          }
+        ]
       },
       {
         "zh": "提交上述文件至中華民國駐外館處申請",
@@ -3462,8 +3564,20 @@ export const tasks: Task[] = [
         "en": "To receive your scholarship, you need to open a postal account at the on-campus Post Office"
       },
       {
-        "zh": "至國際處網站查看目前開放的獎學金項目：https://oia.ccu.edu.tw/p/412-1008-3967.php?Lang=zh-tw",
-        "en": "Check OIA website for currently available scholarships: https://oia.ccu.edu.tw/p/412-1008-3967.php?Lang=en"
+        "zh": "至國際處網站查看目前開放的獎學金項目。",
+        "en": "Check the OIA website for currently available scholarships.",
+        "links": [
+          {
+            "url": "https://oia.ccu.edu.tw/p/412-1008-3967.php?Lang=zh-tw",
+            "label_zh": "開啟國際處獎學金頁面",
+            "label_en": "Open OIA Scholarships Page"
+          },
+          {
+            "url": "https://oia.ccu.edu.tw/p/412-1008-3967.php?Lang=en",
+            "label_zh": "開啟國際處獎學金頁面（英文）",
+            "label_en": "Open OIA Scholarships Page (English)"
+          }
+        ]
       },
       {
         "zh": "確認申請資格與截止日期",
@@ -3500,12 +3614,26 @@ export const tasks: Task[] = [
         "en": "The duration of suspension can be one semester, one academic year, or two academic years, with a total limit of two academic years in principle"
       },
       {
-        "zh": "於教務處網站上下載休學申請表，並閱讀文件內所附的辦理流程： https://oaa.ccu.edu.tw/p/406-1004-14288,r1960.php?Lang=zh-tw",
-        "en": "Download the Application Form for Suspension from the Office of Academic Affairs website and read the attached procedures: https://oaa.ccu.edu.tw/p/406-1004-14288,r1960.php?Lang=zh-tw"
+        "zh": "於教務處網站上下載休學申請表，並閱讀文件內所附的辦理流程。",
+        "en": "Download the Application Form for Suspension from the Office of Academic Affairs website and read the attached procedures.",
+        "links": [
+          {
+            "url": "https://oaa.ccu.edu.tw/p/406-1004-14288,r1960.php?Lang=zh-tw",
+            "label_zh": "開啟休學申請說明",
+            "label_en": "Open Suspension Application Guide"
+          }
+        ]
       },
       {
-        "zh": "至SSO網路離校系統辦理離校手續：https://portal.ccu.edu.tw/",
-        "en": "Complete the departure clearance via the Online Leave System in SSO: https://portal.ccu.edu.tw/"
+        "zh": "至 SSO 網路離校系統辦理離校手續。",
+        "en": "Complete the departure clearance through the Online Leave System in SSO.",
+        "links": [
+          {
+            "url": "https://portal.ccu.edu.tw/",
+            "label_zh": "開啟中正大學單一入口",
+            "label_en": "Open CCU Portal / SSO"
+          }
+        ]
       },
       {
         "zh": "等待各單位網路審核通過（若有單位審核未通過，則需親自到該單位詢問）",
@@ -3824,24 +3952,38 @@ export const tasks: Task[] = [
     ],
     "steps": [
       {
-        "zh": "登入學籍系統修改預設密碼：請先前往中正大學的「校際生學籍系統」（https://www026168.ccu.edu.tw/）。首次登入時，系統的預設帳號與密碼皆為學生的學號。",
-        "en": "Visit the Intercollegiate Student Academic System: https://www026168.ccu.edu.tw/"
+        "zh": "登入學籍系統修改預設密碼；首次登入時，系統的預設帳號與密碼皆為學生的學號。",
+        "en": "Visit the Intercollegiate Student Academic System to change your default password. At first login, both the default account and password are your student ID.",
+        "links": [
+          {
+            "url": "https://www026168.ccu.edu.tw/",
+            "label_zh": "開啟校際生學籍系統",
+            "label_en": "Open Intercollegiate Student System"
+          }
+        ]
       },
       {
-        "zh": "登入後修改密碼。",
+        "zh": "使用學號作為帳號與預設密碼登入。",
         "en": "Log in using your student ID as both username and default password."
       },
       {
-        "zh": "等待約 10 分鐘讓系統同步。",
+        "zh": "登入後修改密碼。",
         "en": "Change your password."
       },
       {
-        "zh": "同步完成後，前往 eCourse2（https://ecourse2.ccu.edu.tw/），使用「Non-CCU Faculty/Student Login」登入。",
+        "zh": "等待約 10 分鐘讓系統同步。",
         "en": "Wait approximately 10 minutes for synchronization."
       },
       {
-        "zh": "帳號格式為 ccu 加上學號，例如 ccu123456789；密碼為剛剛更新後的新密碼。",
-        "en": "Go to https://ecourse2.ccu.edu.tw/ and log in via the \"Non-CCU Faculty/Student Login\" portal. Username: ccu + your student ID (e.g., ccu123456789). Password: your newly updated password."
+        "zh": "同步完成後，前往 eCourse2，使用「Non-CCU Faculty/Student Login」登入。帳號格式為 ccu 加上學號，例如 ccu123456789；密碼為剛剛更新後的新密碼。",
+        "en": "After synchronization, go to eCourse2 and log in via the \"Non-CCU Faculty/Student Login\" portal. Username: ccu + your student ID (e.g., ccu123456789). Password: your newly updated password.",
+        "links": [
+          {
+            "url": "https://ecourse2.ccu.edu.tw/",
+            "label_zh": "開啟 eCourse2",
+            "label_en": "Open eCourse2"
+          }
+        ]
       }
     ]
   },
@@ -3958,8 +4100,15 @@ export const tasks: Task[] = [
     ],
     "steps": [
       {
-        "zh": "取得初始密碼：請前往「校園單一入口網頁」（https://portal.ccu.edu.tw/），選擇「第一次登入->學生->請先按此註冊帳號」，並點選初始密碼功能，輸入個人資料進行身分驗證即可取得。或者，可至學籍系統的「新生初始密碼查詢」網頁，輸入學號、身分證字號與出生年月日，畫面即會顯示您的初始密碼。",
-        "en": "Visit the Campus Single Sign-On Portal: https://portal.ccu.edu.tw/"
+        "zh": "取得初始密碼：請前往「校園單一入口網頁」，選擇「第一次登入->學生->請先按此註冊帳號」，並點選初始密碼功能，輸入個人資料進行身分驗證即可取得。或者，可至學籍系統的「新生初始密碼查詢」網頁，輸入學號、身分證字號與出生年月日，畫面即會顯示您的初始密碼。",
+        "en": "Visit the Campus Single Sign-On Portal to retrieve your initial password.",
+        "links": [
+          {
+            "url": "https://portal.ccu.edu.tw/",
+            "label_zh": "開啟中正大學單一入口",
+            "label_en": "Open CCU Portal / SSO"
+          }
+        ]
       },
       {
         "zh": "寄發啟用驗證信：回到單一入口的註冊帳號頁面，依序輸入您的學號、剛剛取得的新生初始密碼，以及您的電子郵件信箱。確認無誤後，按下「寄出驗證信」。",
@@ -4174,12 +4323,31 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "連接校內網路（若在校外可以使用 VPN）參考網站：https://it.ccu.edu.tw/p/426-1009-36.php?Lang=zh-tw；VPN 使用說明 PDF：https://it.ccu.edu.tw/var/file/9/1009/img/1404/609499594.pdf",
-        "en": "Connect to the campus network (if off campus, use VPN). Reference: https://it.ccu.edu.tw/p/426-1009-36.php?Lang=zh-tw. VPN PDF guide: https://it.ccu.edu.tw/var/file/9/1009/img/1404/609499594.pdf"
+        "zh": "連接校內網路；若在校外，請先使用 VPN。",
+        "en": "Connect to the campus network; if you are off campus, use VPN first.",
+        "links": [
+          {
+            "url": "https://it.ccu.edu.tw/p/426-1009-36.php?Lang=zh-tw",
+            "label_zh": "開啟資訊處軟體服務頁",
+            "label_en": "Open OIT Software Service Page"
+          },
+          {
+            "url": "https://it.ccu.edu.tw/var/file/9/1009/img/1404/609499594.pdf",
+            "label_zh": "開啟 VPN PDF 教學",
+            "label_en": "Open VPN PDF Guide"
+          }
+        ]
       },
       {
-        "zh": "前往 https://software.ccu.edu.tw/",
-        "en": "Go to https://software.ccu.edu.tw/"
+        "zh": "前往校園授權軟體平台下載需要的軟體；此平台通常需要校內網路。",
+        "en": "Go to the Campus Software Download Platform to download the software you need; campus network access is usually required.",
+        "links": [
+          {
+            "url": "https://software.ccu.edu.tw/",
+            "label_zh": "開啟校園授權軟體平台（限校內網路）",
+            "label_en": "Open Campus Software Download Platform (Campus Network Required)"
+          }
+        ]
       },
       {
         "zh": "使用單一入口帳號密碼登入",
@@ -4194,8 +4362,15 @@ export const tasks: Task[] = [
         "en": "Click the software download link"
       },
       {
-        "zh": "認證軟體（可見 https://it.ccu.edu.tw/p/426-1009-18.php?Lang=zh-tw 有安裝與認證說明）",
-        "en": "Activate/authenticate the software. Installation and activation guidance is available at https://it.ccu.edu.tw/p/426-1009-18.php?Lang=zh-tw"
+        "zh": "依資訊處說明安裝並認證軟體。",
+        "en": "Install and activate the software according to the OIT instructions.",
+        "links": [
+          {
+            "url": "https://it.ccu.edu.tw/p/426-1009-18.php?Lang=zh-tw",
+            "label_zh": "開啟軟體認證教學",
+            "label_en": "Open Software Activation Guide"
+          }
+        ]
       }
     ]
   },
@@ -4222,8 +4397,15 @@ export const tasks: Task[] = [
         "en": "Group Borrowing: Register with the graduation class representative and pay the fee for a group loan"
       },
       {
-        "zh": "個人借用（參考 https://oga.ccu.edu.tw/p/404-1006-11703.php?Lang=zh-tw）：至出納組繳交洗滌費",
-        "en": "Individual borrowing (reference: https://oga.ccu.edu.tw/p/404-1006-11703.php?Lang=zh-tw): Pay the cleaning fee at the Cashier's Office"
+        "zh": "個人借用請先參考學位服借用說明，再至出納組繳交洗滌費。",
+        "en": "For individual borrowing, review the graduation gown borrowing information first, then pay the cleaning fee at the Cashier's Office.",
+        "links": [
+          {
+            "url": "https://oga.ccu.edu.tw/p/404-1006-11703.php?Lang=zh-tw",
+            "label_zh": "開啟學位服借用說明",
+            "label_en": "Open Graduation Gown Borrowing Information"
+          }
+        ]
       },
       {
         "zh": "攜帶收據及學生證到保管組辦理借用手續",
@@ -4310,8 +4492,15 @@ export const tasks: Task[] = [
     ],
     "steps": [
       {
-        "zh": "前往外國專業人員工作許可申辦網：https://ezwp.wda.gov.tw/",
-        "en": "Visit the Work Permit Application Portal for Foreign Professionals: https://ezwp.wda.gov.tw/"
+        "zh": "前往外國專業人員工作許可申辦網。",
+        "en": "Visit the Work Permit Application Portal for Foreign Professionals.",
+        "links": [
+          {
+            "url": "https://ezwp.wda.gov.tw/",
+            "label_zh": "開啟工作許可申辦網",
+            "label_en": "Open Work Permit Application Portal"
+          }
+        ]
       },
       {
         "zh": "填入應填資料（請注意申請資格）",
@@ -4330,8 +4519,15 @@ export const tasks: Task[] = [
         "en": "Payment options (choose one): ATM transfer, Taiwan Pay, or postal transfer (Account name: Work Permit Fee Account of the Workforce Development Agency, MOL / Account number: 19058848)"
       },
       {
-        "zh": "等待審核；查詢案件狀態：https://ezwp.wda.gov.tw/wcfonline/wSite/Control?function=RunAction&_action=pr0000/pr0000_qp.xml\n•「雇主編號」：輸入 ARC 號碼\n•「收文起迄日期」：輸入寄出申請件當日及一週後的日期",
-        "en": "Wait for review; check application status at: https://ezwp.wda.gov.tw/wcfonline/wSite/Control?function=RunAction&_action=pr0000/pr0000_qp.xml\n•\"number of employer\": Enter your ARC number\n•\"Submitting date\": Enter the date you submitted your application and the date one week later"
+        "zh": "等待審核；查詢案件狀態時，「雇主編號」請輸入 ARC 號碼，「收文起迄日期」請輸入寄出申請件當日及一週後的日期。",
+        "en": "Wait for review. When checking application status, enter your ARC number as the employer number, and enter the submission date and one week later as the receiving date range.",
+        "links": [
+          {
+            "url": "https://ezwp.wda.gov.tw/wcfonline/wSite/Control?function=RunAction&_action=pr0000/pr0000_qp.xml",
+            "label_zh": "開啟工作許可案件查詢",
+            "label_en": "Open Work Permit Status Inquiry"
+          }
+        ]
       }
     ]
   },
@@ -4348,8 +4544,15 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "前往 https://career.ccu.edu.tw/p/412-1038-244.php?Lang=zh-tw 查詢實習相關資訊",
-        "en": "Visit https://career.ccu.edu.tw/p/412-1038-244.php?Lang=zh-tw for internship information"
+        "zh": "前往職涯發展中心頁面查詢校外實習相關資訊。",
+        "en": "Visit the Career Development Center page for off-campus internship information.",
+        "links": [
+          {
+            "url": "https://career.ccu.edu.tw/p/412-1038-244.php?Lang=zh-tw",
+            "label_zh": "開啟校外實習資訊",
+            "label_en": "Open Off-Campus Internship Information"
+          }
+        ]
       },
       {
         "zh": "依照需求投遞履歷並等待錄取結果",
@@ -4418,12 +4621,26 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "校內急難救助：https://studentlife.ccu.edu.tw/p/404-1034-20790.php?Lang=zh-tw",
-        "en": "On-campus emergency aid: https://studentlife.ccu.edu.tw/p/404-1034-20790.php?Lang=zh-tw"
+        "zh": "校內急難救助資訊請參考生活事務組頁面。",
+        "en": "Please refer to the Student Life Division page for on-campus emergency aid information.",
+        "links": [
+          {
+            "url": "https://studentlife.ccu.edu.tw/p/404-1034-20790.php?Lang=zh-tw",
+            "label_zh": "開啟校內急難救助",
+            "label_en": "Open On-campus Emergency Aid"
+          }
+        ]
       },
       {
-        "zh": "校外急難救助：https://studentlife.ccu.edu.tw/p/404-1034-20791.php?Lang=zh-tw",
-        "en": "Off-campus emergency aid: https://studentlife.ccu.edu.tw/p/404-1034-20791.php?Lang=zh-tw"
+        "zh": "校外急難救助資訊請參考生活事務組頁面。",
+        "en": "Please refer to the Student Life Division page for off-campus emergency aid information.",
+        "links": [
+          {
+            "url": "https://studentlife.ccu.edu.tw/p/404-1034-20791.php?Lang=zh-tw",
+            "label_zh": "開啟校外急難救助",
+            "label_en": "Open Off-campus Emergency Aid"
+          }
+        ]
       }
     ]
   },

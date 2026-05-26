@@ -212,6 +212,10 @@ const knownContentTextReplacements: Array<[string, string]> = [
     "Off-campus emergency aid",
   ],
   [
+    "https://chiayiibus.cyhg.gov.tw/DynamicBusQuery",
+    "https://taiwanhelper.com/bus/CYI",
+  ],
+  [
     "https://oga.ccu.edu.tw/p/404100611703.php?Lang=zhtw",
     "https://oga.ccu.edu.tw/p/404-1006-11703.php?Lang=zh-tw",
   ],
@@ -224,6 +228,29 @@ const knownContentTextReplacements: Array<[string, string]> = [
     "https://www.ccu.edu.tw/p/404-1000-25665.php?Lang=zh-tw",
   ],
 ];
+
+const structuredTaskStepSyncIds = new Set([
+  "registration",
+  "arc_visitor_visa",
+  "arc_extension",
+  "go_to_nia",
+  "resident_visa_degree",
+  "resident_visa_exchange_year",
+  "visitor_visa_exchange_semester",
+  "scholarship",
+  "suspension",
+  "exchange_ecourse_account",
+  "default_password",
+  "licensed_software",
+  "graduation_gown",
+  "work_permit",
+  "off_campus_internship",
+  "emergency_aid",
+  "mcp_chinese_language_learning_support",
+  "mcp_reserve_sports_facilities",
+  "mcp_sports_center_opening_hours",
+  "mcp_check_bus_schedules",
+]);
 
 function applyKnownContentTextReplacements(value: unknown): unknown {
   if (typeof value === "string") {
@@ -263,6 +290,12 @@ async function applyKnownContentFixes() {
     if (!data) continue;
 
     const nextData = applyKnownContentTextReplacements(data) as Record<string, unknown>;
+    if (structuredTaskStepSyncIds.has(row.item_id)) {
+      const staticTask = tasks.find((task) => task.id === row.item_id);
+      if (staticTask) {
+        nextData.steps = staticTask.steps;
+      }
+    }
     const nextJson = JSON.stringify(nextData);
     if (nextJson === row.data_json) continue;
 

@@ -555,6 +555,7 @@ export function formatTaskResult(result: RankedResult<Task>, language: McpLangua
       order: index + 1,
       en: step.en,
       zh: step.zh,
+      links: step.links ?? [],
     })),
     responsible_unit: relatedOffice
       ? {
