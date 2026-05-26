@@ -134,6 +134,88 @@ async function ensureContentItemsSchema() {
   await db.exec("CREATE INDEX IF NOT EXISTS idx_content_items_status ON content_items(status)");
 }
 
+const knownContentTextReplacements: Array<[string, string]> = [
+  [
+    "同步完成後，前往 eCourse2，使用「Non-CCU Faculty/Student Login」登入。",
+    "同步完成後，前往 eCourse2（https://ecourse2.ccu.edu.tw/），使用「Non-CCU Faculty/Student Login」登入。",
+  ],
+  [
+    "Log in to eCourse2 via the \"Non-CCU Faculty/Student Login\" portal. Username: ccu + your student ID (e.g., ccu123456789). Password: your newly updated password.",
+    "Go to https://ecourse2.ccu.edu.tw/ and log in via the \"Non-CCU Faculty/Student Login\" portal. Username: ccu + your student ID (e.g., ccu123456789). Password: your newly updated password.",
+  ],
+  [
+    "https://it.ccu.edu.tw/p/426100930.php",
+    "https://it.ccu.edu.tw/p/426-1009-30.php?Lang=zh-tw",
+  ],
+  [
+    "https://it.ccu.edu.tw/p/426100918.php",
+    "https://it.ccu.edu.tw/p/426-1009-18.php?Lang=zh-tw",
+  ],
+  [
+    "https://oga.ccu.edu.tw/p/404100611703.php?Lang=zhtw",
+    "https://oga.ccu.edu.tw/p/404-1006-11703.php?Lang=zh-tw",
+  ],
+  [
+    "https://career.ccu.edu.tw/p/40310384787.php?Lang=zhtw",
+    "https://career.ccu.edu.tw/p/412-1038-244.php?Lang=zh-tw",
+  ],
+  [
+    "https://www.ccu.edu.tw/p/404100025665.php?Lang=zhtw",
+    "https://www.ccu.edu.tw/p/404-1000-25665.php?Lang=zh-tw",
+  ],
+];
+
+function applyKnownContentTextReplacements(value: unknown): unknown {
+  if (typeof value === "string") {
+    return knownContentTextReplacements.reduce(
+      (current, [from, to]) => current.split(from).join(to),
+      value
+    );
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(applyKnownContentTextReplacements);
+  }
+
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, entry]) => [
+        key,
+        applyKnownContentTextReplacements(entry),
+      ])
+    );
+  }
+
+  return value;
+}
+
+async function applyKnownContentFixes() {
+  const rows = await db.prepare(
+    [
+      "SELECT item_id, data_json",
+      "FROM content_items",
+      "WHERE content_type = 'task' AND status = 'active'",
+    ].join(" ")
+  ).all<{ item_id: string; data_json: string }>();
+
+  for (const row of rows) {
+    const data = parseJsonObject(row.data_json);
+    if (!data) continue;
+
+    const nextData = applyKnownContentTextReplacements(data) as Record<string, unknown>;
+    const nextJson = JSON.stringify(nextData);
+    if (nextJson === row.data_json) continue;
+
+    await db.prepare(
+      [
+        "UPDATE content_items",
+        "SET item_label = ?, data_json = ?, updated_at = CURRENT_TIMESTAMP",
+        "WHERE content_type = 'task' AND item_id = ?",
+      ].join(" ")
+    ).run(contentLabel("task", nextData), nextJson, row.item_id);
+  }
+}
+
 async function searchContentItems(query: string) {
   const q = normalizeQuery(query);
   const items = await getActiveContentItems();
@@ -524,6 +606,7 @@ async function startServer() {
   await initDb();
   await ensureContentItemsSchema();
   await seedContentItems();
+  await applyKnownContentFixes();
 
   const app = express();
   const server = createServer(app);

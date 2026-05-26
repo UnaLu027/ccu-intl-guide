@@ -3829,12 +3829,12 @@ export const tasks: Task[] = [
         "en": "Change your password."
       },
       {
-        "zh": "同步完成後，前往 eCourse2，使用「Non-CCU Faculty/Student Login」登入。",
+        "zh": "同步完成後，前往 eCourse2（https://ecourse2.ccu.edu.tw/），使用「Non-CCU Faculty/Student Login」登入。",
         "en": "Wait approximately 10 minutes for synchronization."
       },
       {
         "zh": "帳號格式為 ccu 加上學號，例如 ccu123456789；密碼為剛剛更新後的新密碼。",
-        "en": "Log in to eCourse2 via the \"Non-CCU Faculty/Student Login\" portal. Username: ccu + your student ID (e.g., ccu123456789). Password: your newly updated password."
+        "en": "Go to https://ecourse2.ccu.edu.tw/ and log in via the \"Non-CCU Faculty/Student Login\" portal. Username: ccu + your student ID (e.g., ccu123456789). Password: your newly updated password."
       }
     ]
   },
@@ -4167,8 +4167,8 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "連接校內網路（若在校外可以使用VPN）參考網站：https://it.ccu.edu.tw/p/426100930.php 最下方下載Ivanti和查看使用說明：https://it.ccu.edu.tw/var/file/9/1009/img/1404/609499594.pdf",
-        "en": "Connect to the campus network (if offcampus, use VPN). Reference: https://it.ccu.edu.tw/p/426100930.php Download Ivanti and view instructions at the bottom of the page: https://it.ccu.edu.tw/var/file/9/1009/img/1404/609499594.pdf"
+        "zh": "連接校內網路（若在校外可以使用 VPN）參考網站：https://it.ccu.edu.tw/p/426-1009-30.php?Lang=zh-tw；VPN 使用說明 PDF：https://it.ccu.edu.tw/var/file/9/1009/img/1404/609499594.pdf",
+        "en": "Connect to the campus network (if off campus, use VPN). Reference: https://it.ccu.edu.tw/p/426-1009-30.php?Lang=zh-tw. VPN PDF guide: https://it.ccu.edu.tw/var/file/9/1009/img/1404/609499594.pdf"
       },
       {
         "zh": "前往 https://software.ccu.edu.tw/",
@@ -4187,8 +4187,8 @@ export const tasks: Task[] = [
         "en": "Click the software download link"
       },
       {
-        "zh": "認證軟體（可見 https://it.ccu.edu.tw/p/426100918.php 有安裝指導）",
-        "en": "Activate/authenticate the software (installation guides available at https://it.ccu.edu.tw/p/426100918.php)"
+        "zh": "認證軟體（可見 https://it.ccu.edu.tw/p/426-1009-18.php?Lang=zh-tw 有安裝與認證說明）",
+        "en": "Activate/authenticate the software. Installation and activation guidance is available at https://it.ccu.edu.tw/p/426-1009-18.php?Lang=zh-tw"
       }
     ]
   },
@@ -4215,8 +4215,8 @@ export const tasks: Task[] = [
         "en": "Group Borrowing: Register with the graduation class representative and pay the fee for a group loan"
       },
       {
-        "zh": "個人借用（參考 https://oga.ccu.edu.tw/p/404100611703.php?Lang=zhtw）：至出納組繳交洗滌費",
-        "en": "Individual Borrowing (Reference: https://oga.ccu.edu.tw/p/404100611703.php?Lang=zhtw): Pay the cleaning fee at the Cashier's Office"
+        "zh": "個人借用（參考 https://oga.ccu.edu.tw/p/404-1006-11703.php?Lang=zh-tw）：至出納組繳交洗滌費",
+        "en": "Individual borrowing (reference: https://oga.ccu.edu.tw/p/404-1006-11703.php?Lang=zh-tw): Pay the cleaning fee at the Cashier's Office"
       },
       {
         "zh": "攜帶收據及學生證到保管組辦理借用手續",
@@ -4341,8 +4341,8 @@ export const tasks: Task[] = [
     "required_documents_en": [],
     "steps": [
       {
-        "zh": "前往 https://career.ccu.edu.tw/p/40310384787.php?Lang=zhtw 查詢實習相關資訊",
-        "en": "Visit https://career.ccu.edu.tw/p/40310384787.php?Lang=zhtw for internship information"
+        "zh": "前往 https://career.ccu.edu.tw/p/412-1038-244.php?Lang=zh-tw 查詢實習相關資訊",
+        "en": "Visit https://career.ccu.edu.tw/p/412-1038-244.php?Lang=zh-tw for internship information"
       },
       {
         "zh": "依照需求投遞履歷並等待錄取結果",
