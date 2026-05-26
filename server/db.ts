@@ -4,10 +4,23 @@ import { createRequire } from "module";
 import path from "path";
 import type { Pool as PgPool, PoolClient } from "pg";
 
-const require = createRequire(import.meta.url);
-const { Pool, types: pgTypes } = require("pg") as typeof import("pg");
+const _require = createRequire(import.meta.url);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const _pgMod = _require("pg") as any;
+const Pool = _pgMod.Pool as new (opts: { connectionString: string }) => PgPool;
+const pgTypes = _pgMod.types as {
+  setTypeParser: (oid: number, parseFn: (value: string) => unknown) => void;
+};
 
 type QueryParam = string | number | null;
+
+export interface DatabaseAdapter {
+  readonly dialect: "sqlite" | "postgres";
+  init(): Promise<void>;
+  prepare(sql: string): Statement;
+  exec(sql: string): void | Promise<void>;
+  transaction(action: () => Promise<void>): Promise<void>;
+}
 
 type DbRunResult = {
   changes?: number;
@@ -61,7 +74,7 @@ class SqliteDatabaseAdapter {
     };
   }
 
-  exec(sql: string) {
+  exec(sql: string): void {
     this.sqlite.exec(sql);
   }
 
@@ -139,7 +152,7 @@ class PostgresDatabaseAdapter {
   }
 }
 
-export const db = DATABASE_URL
+export const db: DatabaseAdapter = DATABASE_URL
   ? new PostgresDatabaseAdapter(DATABASE_URL)
   : new SqliteDatabaseAdapter();
 

@@ -1,7 +1,8 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { useEffect } from "react";
+import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
@@ -14,10 +15,21 @@ import Departments from "./pages/Departments";
 import Offices from "./pages/Offices";
 import Tasks from "./pages/Tasks";
 import TaskDetail from "./pages/TaskDetail";
+import StudentGuidePage from "./pages/StudentGuidePage";
 import RelatedSites from "./pages/RelatedSites";
 import Navigation from "./pages/Navigation";
 import Admin from "./pages/Admin";
 import CCUGPTWidget from "@/components/CCUGPTWidget";
+
+function LegacyHandbookRedirect() {
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    navigate("/guides/degree", { replace: true });
+  }, [navigate]);
+
+  return null;
+}
 
 function Router() {
   return (
@@ -30,6 +42,9 @@ function Router() {
       <Route path="/offices" component={Offices} />
       <Route path="/tasks" component={Tasks} />
       <Route path="/task/:id" component={TaskDetail} />
+      <Route path="/guides/:guideId" component={StudentGuidePage} />
+      <Route path="/guides" component={LegacyHandbookRedirect} />
+      <Route path="/handbook" component={LegacyHandbookRedirect} />
       <Route path="/related-sites" component={RelatedSites} />
       <Route path="/navigate/:type/:id" component={Navigation} />
       <Route path="/admin" component={Admin} />

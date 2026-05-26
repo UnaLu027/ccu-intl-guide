@@ -42,6 +42,13 @@ const zh = {
   webmail: "\u958b\u555f\u4e2d\u6b63\u5927\u5b78 Webmail",
   alumniEmail: "\u958b\u555f\u6821\u53cb\u4fe1\u7bb1\u7cfb\u7d71",
   intercollegiateCourse: "\u958b\u555f\u6821\u969b\u9078\u8ab2\u7cfb\u7d71",
+  academicCourseList: "\u958b\u555f\u8ab2\u7a0b\u67e5\u8a62\u7cfb\u7d71",
+  englishCourseList: "\u958b\u555f\u82f1\u8a9e\u6388\u8ab2\u8ab2\u7a0b\u6e05\u55ae",
+  chineseCourseList: "\u958b\u555f\u83ef\u8a9e\u8ab2\u7a0b\u6e05\u55ae",
+  thsr: "\u958b\u555f\u53f0\u7063\u9ad8\u9435\u82f1\u6587\u7db2\u7ad9",
+  nhi: "\u958b\u555f\u5065\u4fdd\u7f72\u82f1\u6587\u7db2\u7ad9",
+  wda: "\u958b\u555f\u52de\u52d5\u529b\u767c\u5c55\u7f72\u82f1\u6587\u7db2\u7ad9",
+  youtube: "\u89c0\u770b\u4e2d\u6b63\u5927\u5b78\u6821\u5712\u5f71\u7247",
   academicAffairs: "\u958b\u555f\u6559\u52d9\u7cfb\u7d71",
   pdf: "\u958b\u555f PDF \u6559\u5b78",
   ccuPage: "\u958b\u555f\u4e2d\u6b63\u5927\u5b78\u9801\u9762",
@@ -225,6 +232,34 @@ export function getTaskLinkLabel(
 
   if (lowerUrl.includes("cross-school.ccu.edu.tw")) {
     return t("Open Intercollegiate Course System", zh.intercollegiateCourse);
+  }
+
+  if (lowerUrl.includes("kiki.ccu.edu.tw/~ccmisp06//course/all_english")) {
+    return t("Open English-Taught Course List", zh.englishCourseList);
+  }
+
+  if (lowerUrl.includes("kiki.ccu.edu.tw/~ccmisp06/course/z121")) {
+    return t("Open Chinese Training Course List", zh.chineseCourseList);
+  }
+
+  if (lowerUrl.includes("kiki.ccu.edu.tw/~ccmisp06/course/index_e")) {
+    return t("Open Academic Course List", zh.academicCourseList);
+  }
+
+  if (lowerUrl.includes("en.thsrc.com.tw")) {
+    return t("Open Taiwan High Speed Rail", zh.thsr);
+  }
+
+  if (lowerUrl.includes("nhi.gov.tw")) {
+    return t("Open National Health Insurance Website", zh.nhi);
+  }
+
+  if (lowerUrl.includes("wda.gov.tw")) {
+    return t("Open Workforce Development Agency Website", zh.wda);
+  }
+
+  if (lowerUrl.includes("youtube.com") || lowerUrl.includes("youtu.be")) {
+    return t("Watch CCU Campus Video", zh.youtube);
   }
 
   if (lowerUrl.includes("kiki.ccu.edu.tw")) {
