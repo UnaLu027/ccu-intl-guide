@@ -40,6 +40,18 @@ type OfficePayload = ReturnType<typeof formatOfficeResult>;
 type DepartmentPayload = ReturnType<typeof formatDepartmentResult>;
 type TaskPayload = ReturnType<typeof formatTaskResult>;
 
+export interface CampusSearchData {
+  offices: Office[];
+  departments: Department[];
+  tasks: Task[];
+}
+
+const staticCampusSearchData: CampusSearchData = {
+  offices,
+  departments,
+  tasks,
+};
+
 interface AliasRule<T> {
   isMatch: (item: T) => boolean;
   terms: string[];
@@ -431,15 +443,19 @@ function sortAndFilter<T>(results: RankedResult<T>[], limit: number, threshold: 
     .slice(0, limit);
 }
 
-export function searchCampusServices(query: string, language: McpLanguage = "auto"): SearchCampusServicesPayload {
+export function searchCampusServices(
+  query: string,
+  language: McpLanguage = "auto",
+  data: CampusSearchData = staticCampusSearchData
+): SearchCampusServicesPayload {
   const intent = inferIntent(query);
   const officeLimit = intent === "unit_lookup" || intent === "contact_lookup" || intent === "location_lookup" ? 3 : 2;
   const departmentLimit = intent === "unit_lookup" || intent === "location_lookup" ? 3 : 1;
   const taskLimit = intent === "task_or_procedure" ? 5 : 3;
 
-  const rankedOffices = sortAndFilter(offices.map((office) => rankOffice(office, query)), officeLimit, 35);
-  const rankedDepartments = sortAndFilter(departments.map((department) => rankDepartment(department, query)), departmentLimit, 35);
-  const rankedTasks = sortAndFilter(tasks.map((task) => rankTask(task, query)), taskLimit, 30);
+  const rankedOffices = sortAndFilter(data.offices.map((office) => rankOffice(office, query)), officeLimit, 35);
+  const rankedDepartments = sortAndFilter(data.departments.map((department) => rankDepartment(department, query)), departmentLimit, 35);
+  const rankedTasks = sortAndFilter(data.tasks.map((task) => rankTask(task, query)), taskLimit, 30);
 
   const total = rankedOffices.length + rankedDepartments.length + rankedTasks.length;
 
@@ -453,22 +469,22 @@ export function searchCampusServices(query: string, language: McpLanguage = "aut
         : "No confident result found. Ask for a more specific office, task, location, or keyword.",
     offices: rankedOffices.map((result) => formatOfficeResult(result, language)),
     departments: rankedDepartments.map((result) => formatDepartmentResult(result, language)),
-    tasks: rankedTasks.map((result) => formatTaskResult(result, language)),
+    tasks: rankedTasks.map((result) => formatTaskResult(result, language, data)),
   };
 }
 
-export function resolveOffice(query: string): RankedResult<Office> | null {
-  const result = sortAndFilter(offices.map((office) => rankOffice(office, query)), 1, 35)[0];
+export function resolveOffice(query: string, data: CampusSearchData = staticCampusSearchData): RankedResult<Office> | null {
+  const result = sortAndFilter(data.offices.map((office) => rankOffice(office, query)), 1, 35)[0];
   return result ?? null;
 }
 
-export function resolveDepartment(query: string): RankedResult<Department> | null {
-  const result = sortAndFilter(departments.map((department) => rankDepartment(department, query)), 1, 35)[0];
+export function resolveDepartment(query: string, data: CampusSearchData = staticCampusSearchData): RankedResult<Department> | null {
+  const result = sortAndFilter(data.departments.map((department) => rankDepartment(department, query)), 1, 35)[0];
   return result ?? null;
 }
 
-export function resolveTask(query: string): RankedResult<Task> | null {
-  const result = sortAndFilter(tasks.map((task) => rankTask(task, query)), 1, 30)[0];
+export function resolveTask(query: string, data: CampusSearchData = staticCampusSearchData): RankedResult<Task> | null {
+  const result = sortAndFilter(data.tasks.map((task) => rankTask(task, query)), 1, 30)[0];
   return result ?? null;
 }
 
@@ -534,10 +550,14 @@ export function formatDepartmentResult(result: RankedResult<Department>, languag
   };
 }
 
-export function formatTaskResult(result: RankedResult<Task>, language: McpLanguage = "auto") {
+export function formatTaskResult(
+  result: RankedResult<Task>,
+  language: McpLanguage = "auto",
+  data: CampusSearchData = staticCampusSearchData
+) {
   const task = result.item;
-  const relatedOffice = task.target_unit_type === "office" ? offices.find((office) => office.id === task.target_unit_id) : undefined;
-  const relatedDepartment = task.target_unit_type === "department" ? departments.find((department) => department.id === task.target_unit_id) : undefined;
+  const relatedOffice = task.target_unit_type === "office" ? data.offices.find((office) => office.id === task.target_unit_id) : undefined;
+  const relatedDepartment = task.target_unit_type === "department" ? data.departments.find((department) => department.id === task.target_unit_id) : undefined;
 
   return {
     type: "task",
@@ -585,12 +605,16 @@ export function formatTaskResult(result: RankedResult<Task>, language: McpLangua
   };
 }
 
-export function makeNotFoundPayload(query: string, type: "office" | "department" | "task") {
+export function makeNotFoundPayload(
+  query: string,
+  type: "office" | "department" | "task",
+  data: CampusSearchData = staticCampusSearchData
+) {
   return {
     status: "not_found",
     type,
     query,
     message: "No confident exact match found. Use search_campus_service or ask for a more specific keyword.",
-    candidates: searchCampusServices(query, "auto"),
+    candidates: searchCampusServices(query, "auto", data),
   };
 }

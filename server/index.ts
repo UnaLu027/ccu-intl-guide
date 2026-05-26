@@ -17,6 +17,7 @@ import {
   formatDepartmentResult,
   formatTaskResult,
   makeNotFoundPayload,
+  type CampusSearchData,
   type McpLanguage,
 } from "../shared/mcpSearch.js";
 import { db, initDb } from "./db.js";
@@ -134,6 +135,75 @@ async function getActiveContentItems() {
   const stored = await getStoredContentItems();
   if (stored.length > 0) return stored;
   return (await hasContentItems()) ? [] : staticContentItems();
+}
+
+async function getMergedCampusContentData(): Promise<CampusSearchData> {
+  const items = await getActiveContentItems();
+  return {
+    offices: items.filter((item) => item.type === "office").map((item) => item.data) as unknown as typeof offices,
+    departments: items.filter((item) => item.type === "department").map((item) => item.data) as unknown as typeof departments,
+    tasks: items.filter((item) => item.type === "task").map((item) => item.data) as unknown as typeof tasks,
+  };
+}
+
+async function syncStaticContentItemsToDatabase() {
+  const staticItems = staticContentItems();
+  const changedByAdminRows = await db.prepare(
+    "SELECT DISTINCT content_type, item_id FROM content_drafts"
+  ).all<{ content_type: ContentType; item_id: string }>();
+  const changedByAdmin = new Set(changedByAdminRows.map((row) => `${row.content_type}:${row.item_id}`));
+  const result = {
+    inserted: 0,
+    updated: 0,
+    unchanged: 0,
+    skipped_manual: 0,
+  };
+
+  for (const item of staticItems) {
+    const key = `${item.type}:${item.id}`;
+    const current = await db.prepare(
+      [
+        "SELECT data_json, item_label, status",
+        "FROM content_items",
+        "WHERE content_type = ? AND item_id = ?",
+        "LIMIT 1",
+      ].join(" ")
+    ).get<{ data_json: string; item_label: string; status: string }>(item.type, item.id);
+
+    if (!current) {
+      await db.prepare(
+        [
+          "INSERT INTO content_items",
+          "(content_type, item_id, item_label, data_json, status)",
+          "VALUES (?, ?, ?, ?, 'active')",
+        ].join(" ")
+      ).run(item.type, item.id, item.label, JSON.stringify(item.data));
+      result.inserted += 1;
+      continue;
+    }
+
+    if (changedByAdmin.has(key)) {
+      result.skipped_manual += 1;
+      continue;
+    }
+
+    const nextJson = JSON.stringify(item.data);
+    if (current.data_json === nextJson && current.item_label === item.label && current.status === "active") {
+      result.unchanged += 1;
+      continue;
+    }
+
+    await db.prepare(
+      [
+        "UPDATE content_items",
+        "SET item_label = ?, data_json = ?, status = 'active', updated_at = CURRENT_TIMESTAMP",
+        "WHERE content_type = ? AND item_id = ?",
+      ].join(" ")
+    ).run(item.label, nextJson, item.type, item.id);
+    result.updated += 1;
+  }
+
+  return result;
 }
 
 function cloneStudentGuides() {
@@ -634,6 +704,82 @@ function firstNonEmpty(...values: Array<string | undefined>) {
   return values.find((value) => value && value.trim().length > 0)?.trim() ?? "";
 }
 
+function guideSectionText(section: StudentGuideSection) {
+  return normalizeQuery(JSON.stringify(section));
+}
+
+function formatStudentGuideSection(guide: StudentGuide, section: StudentGuideSection, language: McpLanguage = "auto") {
+  return {
+    type: "student_guide_section",
+    guide_id: guide.id,
+    guide_title_en: guide.title_en,
+    guide_title_zh: guide.title_zh,
+    id: section.id,
+    title_en: section.title_en,
+    title_zh: section.title_zh,
+    category_id: section.categoryId,
+    tags_en: section.tags_en,
+    tags_zh: section.tags_zh,
+    summary_en: section.summary_en,
+    summary_zh: section.summary_zh,
+    source_references: section.sourceReferences ?? [],
+    related_task_ids: section.relatedTaskIds ?? [],
+    blocks: section.blocks,
+    suggested_answer_language: language,
+  };
+}
+
+async function searchStudentGuideSections(query: string, language: McpLanguage = "auto") {
+  const q = normalizeQuery(query);
+  const guides = await getStudentGuidesFromContentItems();
+  const results = guides.flatMap((guide) =>
+    guide.sections
+      .map((section) => {
+        const titleText = normalizeQuery(`${section.title_en} ${section.title_zh}`);
+        const summaryText = normalizeQuery(`${section.summary_en} ${section.summary_zh}`);
+        const tagText = normalizeQuery([...section.tags_en, ...section.tags_zh].join(" "));
+        const fullText = guideSectionText(section);
+        const score =
+          titleText.includes(q) ? 90 :
+          tagText.includes(q) ? 75 :
+          summaryText.includes(q) ? 65 :
+          fullText.includes(q) ? 45 :
+          0;
+
+        return {
+          guide,
+          section,
+          score,
+        };
+      })
+      .filter((result) => !q || result.score > 0)
+  )
+    .sort((a, b) => b.score - a.score)
+    .slice(0, q ? 10 : 12);
+
+  return {
+    query,
+    language,
+    total: results.length,
+    sections: results.map((result) => ({
+      score: result.score,
+      ...formatStudentGuideSection(result.guide, result.section, language),
+    })),
+  };
+}
+
+async function resolveStudentGuideSection(sectionIdOrQuery: string, language: McpLanguage = "auto") {
+  const guides = await getStudentGuidesFromContentItems();
+  const q = normalizeQuery(sectionIdOrQuery);
+  for (const guide of guides) {
+    const section = guide.sections.find((item) => item.id === sectionIdOrQuery || normalizeQuery(item.id) === q);
+    if (section) return formatStudentGuideSection(guide, section, language);
+  }
+
+  const search = await searchStudentGuideSections(sectionIdOrQuery, language);
+  return search.sections[0] ?? null;
+}
+
 const languageSchema = z.enum(["auto", "en", "zh-TW"]).optional().describe(
   'Response language for this tool result. Pass "en" if the user wrote in English, "zh-TW" if the user wrote in Chinese. Use "auto" only when the user language is genuinely unknown.'
 );
@@ -650,7 +796,10 @@ function registerTools(server: McpServer) {
       query: z.string().describe("Natural language question or keyword, e.g. lost student ID, language center, OIA, course selection."),
       language: languageSchema,
     },
-    async ({ query, language }) => textResponse(searchCampusServices(query, (language ?? "auto") as McpLanguage))
+    async ({ query, language }) => {
+      const data = await getMergedCampusContentData();
+      return textResponse(searchCampusServices(query, (language ?? "auto") as McpLanguage, data));
+    }
   );
 
   server.tool(
@@ -668,8 +817,9 @@ function registerTools(server: McpServer) {
     async ({ office_id, query, language }) => {
       const lookup = firstNonEmpty(query, office_id);
       if (!lookup) return textResponse({ status: "missing_input", message: "Provide an office id, name, alias, or keyword." });
-      const result = resolveOffice(lookup);
-      return textResponse(result ? formatOfficeResult(result, (language ?? "auto") as McpLanguage) : makeNotFoundPayload(lookup, "office"));
+      const data = await getMergedCampusContentData();
+      const result = resolveOffice(lookup, data);
+      return textResponse(result ? formatOfficeResult(result, (language ?? "auto") as McpLanguage) : makeNotFoundPayload(lookup, "office", data));
     }
   );
 
@@ -688,8 +838,9 @@ function registerTools(server: McpServer) {
     async ({ dept_id, query, language }) => {
       const lookup = firstNonEmpty(query, dept_id);
       if (!lookup) return textResponse({ status: "missing_input", message: "Provide a department id, name, college name, or keyword." });
-      const result = resolveDepartment(lookup);
-      return textResponse(result ? formatDepartmentResult(result, (language ?? "auto") as McpLanguage) : makeNotFoundPayload(lookup, "department"));
+      const data = await getMergedCampusContentData();
+      const result = resolveDepartment(lookup, data);
+      return textResponse(result ? formatDepartmentResult(result, (language ?? "auto") as McpLanguage) : makeNotFoundPayload(lookup, "department", data));
     }
   );
 
@@ -708,8 +859,9 @@ function registerTools(server: McpServer) {
     async ({ task_keyword, query, language }) => {
       const lookup = firstNonEmpty(query, task_keyword);
       if (!lookup) return textResponse({ status: "missing_input", message: "Provide a task keyword, id, scenario, or question." });
-      const result = resolveTask(lookup);
-      return textResponse(result ? formatTaskResult(result, (language ?? "auto") as McpLanguage) : makeNotFoundPayload(lookup, "task"));
+      const data = await getMergedCampusContentData();
+      const result = resolveTask(lookup, data);
+      return textResponse(result ? formatTaskResult(result, (language ?? "auto") as McpLanguage, data) : makeNotFoundPayload(lookup, "task", data));
     }
   );
 
@@ -724,7 +876,8 @@ function registerTools(server: McpServer) {
       language: languageSchema,
     },
     async ({ query, language }) => {
-      const result = searchCampusServices(query, (language ?? "auto") as McpLanguage);
+      const data = await getMergedCampusContentData();
+      const result = searchCampusServices(query, (language ?? "auto") as McpLanguage, data);
       return textResponse({
         query,
         language: language ?? "auto",
@@ -764,7 +917,8 @@ function registerTools(server: McpServer) {
       language: languageSchema,
     },
     async ({ query, language }) => {
-      const result = searchCampusServices(query, (language ?? "auto") as McpLanguage);
+      const data = await getMergedCampusContentData();
+      const result = searchCampusServices(query, (language ?? "auto") as McpLanguage, data);
       return textResponse({
         query,
         language: language ?? "auto",
@@ -782,6 +936,39 @@ function registerTools(server: McpServer) {
           needs_manual_review: office.needs_manual_review,
         })),
       });
+    }
+  );
+
+  server.tool(
+    "search_student_guides",
+    [
+      "Search New Student Guide sections for degree-seeking students, exchange students, arrival, registration, visa, ARC, housing, health check, course selection, safety, and handbook content.",
+      "Use this when the user asks about new student handbook content or guide sections, not only administrative tasks.",
+      "Returns ranked guide sections from the same Neon-backed content source used by the website.",
+    ].join(" "),
+    {
+      query: z.string().describe("Natural language question or keyword, e.g. arrival checklist, exchange course selection, ARC for new students."),
+      language: languageSchema,
+    },
+    async ({ query, language }) => textResponse(await searchStudentGuideSections(query, (language ?? "auto") as McpLanguage))
+  );
+
+  server.tool(
+    "get_student_guide_section",
+    [
+      "Get one New Student Guide section by id or keyword.",
+      "Use this when the user needs the detailed blocks in a degree-seeking or exchange student guide section.",
+    ].join(" "),
+    {
+      section_id: z.string().optional().describe("Optional section id, e.g. degree_arc_application_extension or exchange_course_selection."),
+      query: z.string().optional().describe("Section title, keyword, or natural language question."),
+      language: languageSchema,
+    },
+    async ({ section_id, query, language }) => {
+      const lookup = firstNonEmpty(query, section_id);
+      if (!lookup) return textResponse({ status: "missing_input", message: "Provide a student guide section id, title, or keyword." });
+      const result = await resolveStudentGuideSection(lookup, (language ?? "auto") as McpLanguage);
+      return textResponse(result ?? { status: "not_found", type: "student_guide_section", query: lookup });
     }
   );
 
@@ -895,12 +1082,12 @@ async function startServer() {
   });
 
   app.get("/api/content-data", (_req, res) => void adminJson(res, async () => {
-    const items = await getActiveContentItems();
+    const contentData = await getMergedCampusContentData();
     return {
       serviceCategories,
-      offices: items.filter((item) => item.type === "office").map((item) => item.data),
-      departments: items.filter((item) => item.type === "department").map((item) => item.data),
-      tasks: items.filter((item) => item.type === "task").map((item) => item.data),
+      offices: contentData.offices,
+      departments: contentData.departments,
+      tasks: contentData.tasks,
     };
   }));
 
@@ -1177,6 +1364,13 @@ async function startServer() {
     }
     await db.exec("VACUUM");
     return { ok: true };
+  }));
+
+  app.post("/api/admin/maintenance/sync-static-content", (_req, res) => void adminJson(res, async () => {
+    return {
+      ok: true,
+      result: await syncStaticContentItemsToDatabase(),
+    };
   }));
 
   app.get("/api/admin/content-items", (req, res) => void adminJson(res, async () => {

@@ -96,6 +96,7 @@ type ApiError = Error & { status?: number };
 interface MaintenanceResult {
   ok: boolean;
   deleted?: Record<string, number>;
+  result?: Record<string, number>;
 }
 
 function fmt(ts: string) {
@@ -1707,6 +1708,15 @@ function MaintenanceTab({ onChanged }: { onChanged: () => Promise<void> }) {
       confirmText: "確定要壓縮整理資料庫嗎？大型資料庫可能需要一些時間。",
       danger: false,
     },
+    {
+      key: "sync-static",
+      title: "同步程式內建內容",
+      description: "把目前程式碼內建的 offices、departments、tasks、新生指南章節補進資料庫；已被後台人工修改過的資料會跳過，避免覆蓋國際處維護內容。",
+      endpoint: "/api/admin/maintenance/sync-static-content",
+      method: "POST",
+      confirmText: "確定要同步目前程式內建內容到資料庫嗎？已被人工修改過的資料會保留。",
+      danger: false,
+    },
   ];
 
   const runAction = async (action: (typeof actions)[number]) => {
@@ -1718,12 +1728,13 @@ function MaintenanceTab({ onChanged }: { onChanged: () => Promise<void> }) {
 
     try {
       const result = await fetchJson<MaintenanceResult>(action.endpoint, { method: action.method });
-      const deletedText = result.deleted
-        ? Object.entries(result.deleted)
+      const summary = result.deleted ?? result.result;
+      const summaryText = summary
+        ? Object.entries(summary)
             .map(([key, value]) => `${key}: ${value}`)
             .join(", ")
         : "已完成";
-      setMessage(`${action.title}完成。${deletedText}`);
+      setMessage(`${action.title}完成。${summaryText}`);
       await onChanged();
     } catch (err) {
       setError(err instanceof Error ? err.message : "操作失敗");
