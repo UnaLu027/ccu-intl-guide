@@ -31,7 +31,7 @@ const guideChildren = [
 const navItems = [
   { href: "/", labelEn: "Home", labelZh: "首頁", icon: Search },
   { href: "/guides/degree", labelEn: "New Student Guide", labelZh: "新生指南", icon: BookOpen, children: guideChildren },
-  { href: "/tasks", labelEn: "Tasks", labelZh: "常見任務", icon: ClipboardList },
+  { href: "/tasks", labelEn: "FAQ", labelZh: "常見問題", icon: ClipboardList },
   { href: "/map", labelEn: "Map", labelZh: "地圖", icon: Map },
   { href: "/offices", labelEn: "Offices", labelZh: "行政單位", icon: Briefcase },
   { href: "/departments", labelEn: "Departments", labelZh: "系所", icon: Building2 },

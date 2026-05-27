@@ -429,12 +429,12 @@ export default function StudentGuidePage() {
             />
           </div>
 
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            <button type="button" onClick={() => setFilter("all")} className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${filter === "all" ? "border-amber bg-amber text-navy" : "border-border bg-card text-muted-foreground hover:text-navy"}`}>
+          <div className="-mx-4 flex w-full max-w-full snap-x gap-2 overflow-x-auto overscroll-x-contain scroll-smooth scroll-px-4 px-4 pb-2 sm:mx-0 sm:px-0">
+            <button type="button" onClick={() => setFilter("all")} className={`shrink-0 snap-start whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${filter === "all" ? "border-amber bg-amber text-navy" : "border-border bg-card text-muted-foreground hover:text-navy"}`}>
               {t("All", "全部")}
             </button>
             {guide.filters.map((option) => (
-              <button key={option.id} type="button" onClick={() => setFilter(option.id)} className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${filter === option.id ? "border-amber bg-amber text-navy" : "border-border bg-card text-muted-foreground hover:text-navy"}`}>
+              <button key={option.id} type="button" onClick={() => setFilter(option.id)} className={`shrink-0 snap-start whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${filter === option.id ? "border-amber bg-amber text-navy" : "border-border bg-card text-muted-foreground hover:text-navy"}`}>
                 {t(option.name_en, option.name_zh)}
               </button>
             ))}

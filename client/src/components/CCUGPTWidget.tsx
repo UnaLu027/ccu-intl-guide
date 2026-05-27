@@ -46,6 +46,14 @@ export default function CCUGPTWidget() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent("ccugpt-open-change", {
+        detail: { isOpen },
+      })
+    );
+  }, [isOpen]);
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 

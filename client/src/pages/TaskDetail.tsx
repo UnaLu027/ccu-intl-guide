@@ -45,7 +45,7 @@ export default function TaskDetail() {
             className="inline-flex items-center gap-2 px-4 py-2 bg-navy text-white rounded-lg text-sm font-semibold"
           >
             <ArrowLeft className="w-4 h-4" />
-            {t("Back to Tasks", "返回常見任務")}
+            {t("Back to FAQ", "返回常見問題")}
           </Link>
         </div>
       </div>
@@ -109,7 +109,7 @@ export default function TaskDetail() {
 
             <div>
               <h1 className="font-display font-bold text-lg text-navy">
-                {t("Task Guide", "任務指引")}
+                {t("FAQ Detail", "常見問題說明")}
               </h1>
               <p className="text-xs text-muted-foreground">
                 {t("Selected task and related office information", "你點選的任務與相關單位資訊")}

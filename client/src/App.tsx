@@ -19,7 +19,9 @@ import StudentGuidePage from "./pages/StudentGuidePage";
 import RelatedSites from "./pages/RelatedSites";
 import Navigation from "./pages/Navigation";
 import Admin from "./pages/Admin";
+import BackToTopButton from "@/components/BackToTopButton";
 import CCUGPTWidget from "@/components/CCUGPTWidget";
+import ScrollToTop from "@/components/ScrollToTop";
 
 function LegacyHandbookRedirect() {
   const [, navigate] = useLocation();
@@ -63,7 +65,9 @@ function App() {
           <CampusDataProvider>
             <TooltipProvider>
               <Toaster />
+              <ScrollToTop />
               <Router />
+              <BackToTopButton />
               <CCUGPTWidget />
             </TooltipProvider>
           </CampusDataProvider>
