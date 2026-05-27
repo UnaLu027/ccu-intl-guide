@@ -308,7 +308,7 @@ export default function StudentGuidePage() {
   useEffect(() => {
     let cancelled = false;
     setLoadingGuides(true);
-    fetch("/api/student-guides", { credentials: "same-origin" })
+    fetch("/api/student-guides", { credentials: "same-origin", cache: "no-store" })
       .then((res) => {
         if (!res.ok) throw new Error(`student guides returned ${res.status}`);
         return res.json() as Promise<{ studentGuides?: StudentGuide[] } | StudentGuide[]>;

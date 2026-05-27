@@ -206,6 +206,117 @@ async function syncStaticContentItemsToDatabase() {
   return result;
 }
 
+function staticStudentGuideContentItems() {
+  return staticContentItems().filter((item) => item.type === "student_guide_section");
+}
+
+async function getManuallyChangedStudentGuideSectionIds() {
+  const rows = await db.prepare(
+    "SELECT DISTINCT item_id FROM content_drafts WHERE content_type = 'student_guide_section'"
+  ).all<{ item_id: string }>();
+  return new Set(rows.map((row) => row.item_id));
+}
+
+async function syncStaticStudentGuideSectionsToDatabase() {
+  const staticItems = staticStudentGuideContentItems();
+  const manuallyChangedIds = await getManuallyChangedStudentGuideSectionIds();
+  const result = {
+    inserted: 0,
+    updated: 0,
+    unchanged: 0,
+    skipped_manual: 0,
+  };
+
+  for (const item of staticItems) {
+    const current = await db.prepare(
+      [
+        "SELECT data_json, item_label, status",
+        "FROM content_items",
+        "WHERE content_type = 'student_guide_section' AND item_id = ?",
+        "LIMIT 1",
+      ].join(" ")
+    ).get<{ data_json: string; item_label: string; status: string }>(item.id);
+
+    if (!current) {
+      await db.prepare(
+        [
+          "INSERT INTO content_items",
+          "(content_type, item_id, item_label, data_json, status)",
+          "VALUES ('student_guide_section', ?, ?, ?, 'active')",
+        ].join(" ")
+      ).run(item.id, item.label, JSON.stringify(item.data));
+      result.inserted += 1;
+      continue;
+    }
+
+    if (manuallyChangedIds.has(item.id)) {
+      result.skipped_manual += 1;
+      continue;
+    }
+
+    const nextJson = JSON.stringify(item.data);
+    if (current.data_json === nextJson && current.item_label === item.label && current.status === "active") {
+      result.unchanged += 1;
+      continue;
+    }
+
+    await db.prepare(
+      [
+        "UPDATE content_items",
+        "SET item_label = ?, data_json = ?, status = 'active', updated_at = CURRENT_TIMESTAMP",
+        "WHERE content_type = 'student_guide_section' AND item_id = ?",
+      ].join(" ")
+    ).run(item.label, nextJson, item.id);
+    result.updated += 1;
+  }
+
+  return result;
+}
+
+async function getStudentGuideSyncStatus() {
+  const staticItems = staticStudentGuideContentItems();
+  const manuallyChangedIds = await getManuallyChangedStudentGuideSectionIds();
+  const rows = await db.prepare(
+    [
+      "SELECT item_id, data_json, status",
+      "FROM content_items",
+      "WHERE content_type = 'student_guide_section'",
+      "ORDER BY item_id",
+    ].join(" ")
+  ).all<{ item_id: string; data_json: string; status: string }>();
+  const dbItems = new Map(rows.map((row) => [row.item_id, row]));
+
+  const staleIds: string[] = [];
+  const missingIds: string[] = [];
+  const manuallyChangedStaticIds: string[] = [];
+
+  for (const item of staticItems) {
+    const row = dbItems.get(item.id);
+    if (manuallyChangedIds.has(item.id)) {
+      manuallyChangedStaticIds.push(item.id);
+      continue;
+    }
+    if (!row) {
+      missingIds.push(item.id);
+      continue;
+    }
+    if (row.status !== "active" || row.data_json !== JSON.stringify(item.data)) {
+      staleIds.push(item.id);
+    }
+  }
+
+  return {
+    static_count: staticItems.length,
+    db_count: rows.length,
+    stale_count: staleIds.length,
+    missing_count: missingIds.length,
+    manually_changed_count: manuallyChangedStaticIds.length,
+    sample_stale_ids: staleIds.slice(0, 20),
+    sample_missing_ids: missingIds.slice(0, 20),
+    sample_manually_changed_ids: manuallyChangedStaticIds.slice(0, 20),
+  };
+}
+
 function cloneStudentGuides() {
   return JSON.parse(JSON.stringify(studentGuides)) as StudentGuide[];
 }
@@ -1004,6 +1115,7 @@ async function startServer() {
   await initDb();
   await ensureContentItemsSchema();
   await seedContentItems();
+  await syncStaticStudentGuideSectionsToDatabase();
   await applyKnownContentFixes();
 
   const app = express();
@@ -1377,6 +1489,10 @@ async function startServer() {
       ok: true,
       result: await syncStaticContentItemsToDatabase(),
     };
+  }));
+
+  app.get("/api/admin/student-guide-sync-status", (_req, res) => void adminJson(res, async () => {
+    return await getStudentGuideSyncStatus();
   }));
 
   app.get("/api/admin/content-items", (req, res) => void adminJson(res, async () => {

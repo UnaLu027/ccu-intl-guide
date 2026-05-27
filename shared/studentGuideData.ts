@@ -1602,7 +1602,7 @@ const baseStudentGuides: StudentGuide[] = [
               { item: { en: "ARC application", zh: "ARC 申請" }, estimate: "NT$1,000", note: { en: "Only for students staying more than six months.", zh: "僅適用於停留超過六個月者。" } },
               { item: { en: "Visitor visa extension", zh: "停留簽證延期" }, estimate: "NT$600", note: { en: "Apply before visa expiry.", zh: "請於簽證到期前申請。" } },
               { item: { en: "On-campus dormitory", zh: "校內宿舍" }, estimate: "US$310-360", note: { en: "Depends on exchange agreement.", zh: "依交換協議而定。" } },
-              { item: { en: "Health check", zh: "健康檢查" }, estimate: { en: "Around US$25", zh: "約 US$25" }, note: { en: "May be higher if completed off campus.", zh: "若自行至校外醫院辦理，費用可能較高。" } },
+              { item: { en: "Health check", zh: "健康檢查" }, estimate: { en: "NTD 1400", zh: "NTD 1400" }, note: { en: "Mandatory for every new student. If missed, students must go to a hospital by themselves and the fee will be more expensive.", zh: "每位新生皆須完成。若錯過校內健檢，需自行至醫院辦理，費用會較高。" } },
             ],
           },
         ],
@@ -2566,6 +2566,452 @@ const studentGuidePdfDetailSupplements: Record<string, HandbookBlock[]> = {
   ],
 };
 
+const studentGuideFinalPdfCorrections: Record<string, HandbookBlock[]> = {
+  degree_health_check: [
+    {
+      type: "contact",
+      name_en: "Chia-Yi Christian Hospital",
+      name_zh: "嘉義基督教醫院",
+      phone: "05-2765041 ext. 2792 / 2750-2751",
+      location_en: "Chia-Yi Christian Hospital Health Examination Service",
+      location_zh: "嘉義基督教醫院健康檢查服務",
+    },
+    {
+      type: "note",
+      tone: "info",
+      content_en: "Service hours: Mon-Sat morning 08:00-12:00; Mon-Fri afternoon 13:30-17:30. Please call to make an appointment or inquire about your report.",
+      content_zh: "服務時間：週一至週六上午 08:00-12:00；週一至週五下午 13:30-17:30。請先電話詢問預約或報告相關事宜。",
+    },
+    {
+      type: "checklist",
+      items: [
+        { en: "No need to fast.", zh: "不需要空腹。" },
+        { en: "Bring original ARC or passport.", zh: "攜帶 ARC 或護照正本。" },
+        { en: "Feces needs to be collected on site.", zh: "糞便檢體需現場採集。" },
+        { en: "Pregnant women or those who may be pregnant cannot undergo X-ray.", zh: "孕婦或可能懷孕者不可照 X 光。" },
+        { en: "If vaccinated against German measles and measles, bring original and photocopy of vaccination certificate.", zh: "若已接種德國麻疹與麻疹疫苗，請攜帶接種證明正本與影本。" },
+        { en: "No appointment required, on-site processing.", zh: "不需預約，現場辦理。" },
+        { en: "Bring an ID photo.", zh: "攜帶證件照。" },
+      ],
+    },
+  ],
+  degree_registration_overview: [
+    {
+      type: "table",
+      columns: [
+        { key: "unit", label_en: "Unit", label_zh: "單位" },
+        { key: "location", label_en: "Location", label_zh: "地點" },
+        { key: "documents", label_en: "Documents", label_zh: "文件" },
+        { key: "notes", label_en: "Notes", label_zh: "備註" },
+      ],
+      rows: [
+        {
+          unit: { en: "Office of International Affairs", zh: "國際事務處" },
+          location: { en: "OIA", zh: "國際事務處" },
+          documents: {
+            en: "Passport & Visa with stamp of entering Taiwan; ID Photo 4.5 x 3.5 cm; Diploma original and authenticated version; Transcript original and authenticated version; English Proficiency Certificate; Chinese Proficiency Certificate; Financial Statement; Health Certificate or ARC; Health Insurance or NHI, if any; Taiwan Bank, if any.",
+            zh: "護照與簽證含入境章、4.5 x 3.5 cm 證件照、畢業證書正本與驗證本、成績單正本與驗證本、英文能力證明、中文能力證明、財力證明、健康證明或 ARC、醫療保險或健保資料（如有）、臺灣銀行資料（如有）。",
+          },
+          notes: { en: "OIA verifies identity, arrival status, and international student registration materials.", zh: "國際處確認身分、入境狀態與國際學生報到資料。" },
+        },
+        {
+          unit: { en: "Health Center", zh: "衛生保健組" },
+          location: { en: "Health Center", zh: "衛生保健組" },
+          documents: { en: "CCU Student Health Examination Form; NT$630; passport; Registration Sheet.", zh: "中正大學學生健康檢查表、NT$630、護照、註冊程序單。" },
+          notes: { en: "Complete health check procedures as instructed.", zh: "依現場指示完成健康檢查流程。" },
+        },
+        {
+          unit: { en: "Office of Academic Affairs", zh: "教務處" },
+          location: { en: "Office of Academic Affairs", zh: "教務處" },
+          documents: { en: "Photocopy of passport with visa; authenticated diploma; authenticated transcript; Student Academic Record Entry Form; Registration Sheet.", zh: "含簽證之護照影本、驗證後畢業證書、驗證後成績單、學籍資料登錄表、註冊程序單。" },
+          notes: { en: "Academic record verification and registration completion.", zh: "完成學籍審核與註冊確認。" },
+        },
+      ],
+    },
+    {
+      type: "checklist",
+      items: [
+        { en: "Complete Dorm Check-in before applying for dormitory internet; room and bed information are required.", zh: "先完成宿舍入住，取得房號與床號後才能申請宿舍網路。" },
+        { en: "Dorm Internet is handled at the Computer Center / Office of Information Technology in CB1 from 7PM-10PM; fee NT$1,000; prepare computer address, internet cable, and room / bed information.", zh: "宿舍網路於 CB1 資訊處辦理，時間 19:00-22:00，費用 NT$1,000，需準備電腦位址、網路線、房號與床號。" },
+        { en: "Upload a digital photo to the Student Academic Record Entry System. Default password is birthday plus the first two uppercase letters of the student's name.", zh: "新生須至學籍資料登錄系統上傳數位照片；預設密碼為生日加姓名前兩個大寫字母。" },
+        { en: "If payment amount exceeds NT$40,000, pay at a post office or the Bank of Taiwan counter at B1 of the Administration Building. The campus Bank of Taiwan counter opens 09:00-11:50.", zh: "繳費金額若超過 NT$40,000，只能至郵局或行政大樓 B1 臺灣銀行繳費；校內臺灣銀行櫃台時間為 09:00-11:50。" },
+        { en: "Even with a CCU scholarship, students may still need to pay insurance, dormitory deposit, computer practicum fee, or internet fee.", zh: "即使獲得 CCU scholarship，仍可能需繳保險費、宿舍保證金、電腦實習費或網路費。" },
+        { en: "Registration guidance also covers Chinese Program information, Post Account after getting ARC, Language Learning Resources, and English Proficiency Test information.", zh: "報到資訊也包含中文課程、取得 ARC 後辦理郵局帳戶、語言學習資源與英文能力測驗資訊。" },
+      ],
+    },
+  ],
+  degree_fees: [
+    {
+      type: "table",
+      columns: [
+        { key: "item", label_en: "Fee item", label_zh: "費用項目" },
+        { key: "amount", label_en: "Amount", label_zh: "金額" },
+        { key: "note", label_en: "Note", label_zh: "備註" },
+      ],
+      rows: [
+        { item: { en: "College tuition / miscellaneous fees / total", zh: "各學院學費／雜費／總額" }, amount: { en: "See tuition table by college.", zh: "依各學院費用表計算。" }, note: { en: "Tuition and miscellaneous fees differ by college and program.", zh: "學費與雜費依學院與學制不同。" } },
+        { item: { en: "Delayed undergraduate or graduate from 5th semester", zh: "延畢大學部或碩博士第 5 學期起" }, amount: { en: "Miscellaneous fees plus credit fees.", zh: "繳交雜費與學分費。" }, note: { en: "Credit fee NT$3,015 per credit; 10 credits or more pay full tuition and miscellaneous fees.", zh: "學分費 NT$3,015／學分；10 學分以上繳全額學雜費。" } },
+        { item: { en: "Undergraduate on-campus accommodation", zh: "大學部校內住宿" }, amount: "NT$7,530", note: { en: "Per semester.", zh: "每學期。" } },
+        { item: { en: "Graduate accommodation", zh: "研究生住宿" }, amount: "NT$7,210 / NT$10,130", note: { en: "Per semester, depending on room type.", zh: "依房型每學期計算。" } },
+        { item: { en: "Dorm deposit", zh: "宿舍保證金" }, amount: "NT$1,600", note: { en: "Residence deposit.", zh: "住宿保證金。" } },
+        { item: { en: "Electricity fee", zh: "電費" }, amount: "NT$2,000", note: { en: "Includes room electricity card and public electricity reserve.", zh: "包含寢室電費儲值與公共電費預留。" } },
+        { item: { en: "Winter / summer vacation dorm fees", zh: "寒暑假住宿費" }, amount: { en: "Charged separately.", zh: "另依假期住宿規定收費。" }, note: { en: "Students staying during breaks should confirm with dormitory office.", zh: "假期住宿請依宿舍公告確認。" } },
+        { item: { en: "Off-campus rent", zh: "校外租屋" }, amount: "NT$21,000-33,000", note: { en: "About NT$3,500-5,500 per month.", zh: "約每月 NTD 3,500 至 5,500。" } },
+        { item: { en: "Computer lab fee", zh: "電腦實習費" }, amount: "Bachelor NT$1,155 / Master NT$460", note: { en: "Per semester where applicable.", zh: "依適用學制每學期收費。" } },
+        { item: { en: "Chinese New Year dorm fee", zh: "春節宿舍費" }, amount: "NT$300", note: { en: "For students staying in dormitory during Chinese New Year.", zh: "春節期間留宿宿舍者適用。" } },
+      ],
+    },
+  ],
+  degree_pre_arrival_checklist: [
+    {
+      type: "checklist",
+      items: [
+        { en: "ID photo size 4.5 x 3.5 cm; head length 3.2-3.6 cm; white background; taken within 6 months.", zh: "證件照尺寸 4.5 x 3.5 cm，頭部長度 3.2-3.6 cm，白色背景，6 個月內拍攝。" },
+        { en: "Photos from the home country may not meet Taiwan requirements; students can take photos at CCU campus photo shop.", zh: "在原國家拍攝的照片可能不符合臺灣規定，可於中正大學校內照相店拍攝。" },
+        { en: "Diploma and transcript translation must follow authentication rules if the original documents are not in Chinese or English.", zh: "畢業證書與成績單若非中文或英文，翻譯本需依規定完成驗證。" },
+        { en: "Taiwan voltage is 110V; bring a compatible plug or adapter.", zh: "臺灣電壓為 110V，請準備相容插頭或轉接頭。" },
+        { en: "Taiwan country code is 886.", zh: "臺灣國碼為 886。" },
+        { en: "International calls from Taiwan: 019 + country code + area code + local number.", zh: "從臺灣撥打國際電話：019 + 國碼 + 區碼 + 當地電話號碼。" },
+        { en: "Apply cellular service at the airport after arrival.", zh: "抵臺後可於機場辦理行動電話門號。" },
+      ],
+    },
+  ],
+  degree_accommodation: [
+    {
+      type: "table",
+      columns: [
+        { key: "type", label_en: "Room type", label_zh: "房型" },
+        { key: "capacity", label_en: "Capacity", label_zh: "人數" },
+        { key: "equipment", label_en: "Room equipment", label_zh: "設備" },
+      ],
+      rows: [
+        { type: { en: "Undergraduate", zh: "大學部" }, capacity: { en: "4 students per room", zh: "4 人一間" }, equipment: { en: "Bed, desk, closet, phone, lamp, and internet access.", zh: "床、書桌、衣櫃、電話、檯燈與網路。" } },
+        { type: { en: "Graduate", zh: "研究生" }, capacity: { en: "2 students per room", zh: "2 人一間" }, equipment: { en: "Bed, desk, chair, bookshelf, closet, phone, and internet access.", zh: "床、書桌、椅子、書架、衣櫃、電話與網路。" } },
+        { type: { en: "PhD", zh: "博士生" }, capacity: { en: "1-3 students per room", zh: "1 至 3 人一間" }, equipment: { en: "Bed, desk, chair, bookshelf, closet, phone, and internet access.", zh: "床、書桌、椅子、書架、衣櫃、電話與網路。" } },
+      ],
+    },
+    {
+      type: "checklist",
+      items: [
+        { en: "Residence deposit NT$1,600 and electricity charge NT$2,000 are required.", zh: "需繳住宿保證金 NT$1,600 與電費 NT$2,000。" },
+        { en: "The IC card includes NT$1,000 for room electricity; NT$500 is reserved for public space electricity.", zh: "IC 卡含 NT$1,000 寢室電費，另預留 NT$500 作為公共空間電費。" },
+        { en: "Electricity is settled at the end of the semester.", zh: "學期末會結算實際電費。" },
+        { en: "Dormitories do not provide sheets, kitchen space, or permission to cook in the room.", zh: "宿舍不提供床單，無廚房，房內不得烹煮。" },
+        { en: "Public facilities include washing machines, RO drinking water, and social lounge.", zh: "公共設施包含洗衣機、RO 飲水機與交誼空間。" },
+        { en: "Dormitory network extension: 14151.", zh: "宿舍網路分機：14151。" },
+      ],
+    },
+  ],
+  degree_library: [
+    {
+      type: "table",
+      columns: [
+        { key: "floor", label_en: "Floor", label_zh: "樓層" },
+        { key: "facilities", label_en: "Facilities", label_zh: "設施" },
+      ],
+      rows: [
+        { floor: { en: "Basement", zh: "地下室" }, facilities: { en: "Study room; open 24 hours during midterm/final weeks.", zh: "自習室；期中考與期末考週 24 小時開放。" } },
+        { floor: "1F", facilities: { en: "Audio-Visual Center, Cafeteria, Acquisition and Cataloging Division, Audio-Visual Resources Division, Center of Language Study, Center of Cultural Events.", zh: "視聽中心、餐廳、採編組、視聽資料組、語言中心、藝文中心。" } },
+        { floor: "2F", facilities: { en: "Information Desk, Reference Desk, Circulation Desk, Database Research Area, Reference Materials, Microform Materials, Current Journals, Photocopy Room, Reader's Services Division.", zh: "服務台、參考諮詢台、流通櫃台、資料庫查詢區、參考資料、縮影片資料、現期期刊、影印室、讀者服務組。" } },
+        { floor: "3F", facilities: { en: "Newspapers Reading Area, Bound Western Journals, Art Exhibition Hall, Study Carrels.", zh: "報紙閱覽區、西文合訂期刊、藝術展覽廳、研究小間。" } },
+        { floor: "4F", facilities: { en: "Bound East-Asian Journals, Maps & Atlas, Carrels, Reports on Overseas Assignments.", zh: "東亞語文合訂期刊、地圖與地圖集、研究小間、出國報告。" } },
+        { floor: "5F", facilities: { en: "East-Asian Language Collection, Photocopy Room, Carrels & Discussion Rooms, Collection Maintenance Division.", zh: "東亞語文館藏、影印室、研究小間與討論室、館藏維護組。" } },
+        { floor: "6F", facilities: { en: "East-Asian Language Collection, Photocopy Room, Carrels & Discussion Rooms, Collection Maintenance Division.", zh: "東亞語文館藏、影印室、研究小間與討論室、館藏維護組。" } },
+        { floor: "7F", facilities: { en: "Western Language Collection, American Studies Library Collection, Photocopy Room, Carrels & Discussion Rooms, Conference Room, Library Director's Office.", zh: "西文館藏、美國研究圖書館館藏、影印室、研究小間與討論室、會議室、館長室。" } },
+        { floor: "8F", facilities: { en: "Western Language Collection, Photocopy Room, Carrels & Discussion Rooms, School History Hall.", zh: "西文館藏、影印室、研究小間與討論室、校史館。" } },
+      ],
+    },
+    {
+      type: "checklist",
+      items: [
+        { en: "Use CCU SSO to access the Library Online System.", zh: "使用 CCU SSO 進入圖書館線上系統。" },
+        { en: "Check borrowing status regularly; if another user reserves a borrowed item, the due date may be advanced.", zh: "定期查看借閱狀態；若借閱資料被他人預約，歸還期限可能提前。" },
+        { en: "Check My Account / Renew about every 10 days and confirm your email to receive notices.", zh: "建議約每 10 天至 My Account / Renew 查詢，並確認 email 可收到通知。" },
+        { en: "Food and drinks are prohibited; mobile phones should be set to vibration.", zh: "館內禁止飲食，手機請調成震動。" },
+        { en: "Violations may lead to penalty points or suspension of borrowing / library privileges.", zh: "違規可能扣點或暫停借閱／館舍使用權。" },
+      ],
+    },
+  ],
+  degree_campus_life: [
+    {
+      type: "table",
+      columns: [
+        { key: "topic", label_en: "Topic", label_zh: "主題" },
+        { key: "details", label_en: "Details", label_zh: "內容" },
+      ],
+      rows: [
+        { topic: { en: "On-campus shops", zh: "校內商店" }, details: { en: "Three FamilyMart stores; Student Activity Center 24-hour FamilyMart; beverage shop, coffee shop, vegetarian food stand, noodle shop, fruit shop, post office, hair-cut salon, and bookstore.", zh: "三間全家便利商店、活動中心 24 小時全家、飲料店、咖啡店、素食攤、麵店、水果店、郵局、理髮店與書店。" } },
+        { topic: { en: "University Supermarket share NT$100", zh: "大學超市股金 NT$100" }, details: { en: "University Supermarket share NT$100 is refundable after graduation.", zh: "大學超市股金 NT$100，畢業後可退還。" } },
+        { topic: { en: "Eating-out", zh: "外食" }, details: { en: "Campus restaurants, restaurants and stands outside front gate, Minxiong downtown, and dormitory slope eateries.", zh: "可至校內餐廳、前門外餐廳與攤販、民雄市區、宿舍坡道周邊店家用餐。" } },
+      ],
+    },
+    {
+      type: "table",
+      columns: [
+        { key: "name", label_en: "Hospital / Clinic", label_zh: "醫院／診所" },
+        { key: "address", label_en: "Address", label_zh: "地址" },
+        { key: "phone", label_en: "Phone", label_zh: "電話" },
+        { key: "website", label_en: "Website", label_zh: "網站" },
+      ],
+      rows: [
+        { name: { en: "Tzu Chi Hospital (Dalin)", zh: "大林慈濟醫院" }, address: { en: "No.2, Minsheng Rd., Dalin Township, Chiayi County 622, Taiwan", zh: "嘉義縣大林鎮民生路 2 號" }, phone: "(05) 264-8000 ext. 5920, 5921", website: "https://dalin.tzuchi-healthcare.org.tw/" },
+        { name: { en: "Chiayi Christian Hospital", zh: "嘉義基督教醫院" }, address: { en: "No.539, Zhongxiao Rd., East Dist., Chiayi City 600, Taiwan", zh: "嘉義市東區忠孝路 539 號" }, phone: "(05) 2764994", website: "http://elearn2.cych.org.tw/1900/en/index.php" },
+        { name: { en: "Chang Gung Memorial Hospital (Chiayi)", zh: "嘉義長庚紀念醫院" }, address: { en: "No.8, Sec. W., Jiapu Rd., Puzi City, Chiayi County 613, Taiwan", zh: "嘉義縣朴子市嘉朴路西段 8 號" }, phone: "(05) 3621000", website: "https://www.cgmh.org.tw/eng/about/system" },
+        { name: { en: "St. Martin De Porres Hospital", zh: "聖馬爾定醫院" }, address: { en: "No.565, Sec. 2, Daya Rd., East Dist., Chiayi City 600, Taiwan", zh: "嘉義市東區大雅路二段 565 號" }, phone: "(05) 2756555", website: "https://www.stm.org.tw/stm_en/" },
+        { name: { en: "Huider Clinic", zh: "惠德診所" }, address: { en: "No. 281, Sec. 1, University Road, Minxiong Township, Chiayi County 621, Taiwan", zh: "嘉義縣民雄鄉大學路一段 281 號" }, phone: "(05) 2721665", website: "https://www.facebook.com/wedeclinic?locale=zh_TW" },
+      ],
+    },
+    {
+      type: "links",
+      links: [
+        { url: "https://eng.taiwan.net.tw/", label_en: "Open Tourism Bureau", label_zh: "開啟交通部觀光署英文網站" },
+        { url: "https://oia.ccu.edu.tw/?Lang=en", label_en: "Open OIA Website", label_zh: "開啟國際處網站" },
+        { url: "https://www.facebook.com/groups/696419170371204/", label_en: "Open Buy & Sell of CCU", label_zh: "開啟中正大學買賣社團" },
+        { url: "https://english.moe.gov.tw/mp-1.html", label_en: "Open Ministry of Education", label_zh: "開啟教育部英文網站" },
+        { url: "https://www.boca.gov.tw/mp-2.html", label_en: "Open Ministry of Foreign Affairs", label_zh: "開啟外交部領事事務局英文網站" },
+        { url: "https://www.ali-nsa.net/en", label_en: "Open Alishan National Scenic Area", label_zh: "開啟阿里山國家風景區英文網站" },
+        { url: "http://www.kingbus.com.tw/", label_en: "Open King Bus", label_zh: "開啟國光客運網站" },
+        { url: "https://en.thsrc.com.tw/", label_en: "Open Taiwan High Speed Rail", label_zh: "開啟台灣高鐵英文網站" },
+        { url: "https://tip.railway.gov.tw/tra-tip-web/tip?lang=EN_US", label_en: "Open Taiwan Railways", label_zh: "開啟台灣鐵路英文網站" },
+        { url: "https://travel.chiayi.gov.tw/English", label_en: "Open Travel in Chiayi City", label_zh: "開啟嘉義市旅遊英文網站" },
+        { url: "https://tbocc.cyhg.gov.tw/en/", label_en: "Open Travel in Chiayi County", label_zh: "開啟嘉義縣旅遊英文網站" },
+        { url: "https://cypac.cyhg.gov.tw/en/", label_en: "Open Chiayi County Performing Art Center", label_zh: "開啟嘉義縣表演藝術中心英文網站" },
+        { url: "https://www.cypd.gov.tw/english", label_en: "Open Chiayi County Police Bureau", label_zh: "開啟嘉義縣警察局英文網站" },
+      ],
+    },
+  ],
+  degree_sports_facilities: [
+    {
+      type: "checklist",
+      items: [
+        { en: "Outdoor facilities include 12 tennis courts, 6 volleyball courts, 6 basketball courts, soccer field, softball field, baseball field, golf driving range, track, and swimming pool.", zh: "戶外設施包含 12 座網球場、6 座排球場、6 座籃球場、足球場、壘球場、棒球場、高爾夫練習場、跑道與游泳池。" },
+        { en: "Indoor facilities include gymnasium, weight training equipment, bowling center, table tennis courts, and squash racquet courts.", zh: "室內設施包含體育館、重量訓練設備、保齡球館、桌球場與壁球場。" },
+      ],
+    },
+  ],
+  degree_work_permit: [
+    {
+      type: "checklist",
+      items: [
+        { en: "Off-campus full-time/part-time work requires a valid work permit.", zh: "校外全職或兼職工作皆需有效工作許可。" },
+        { en: "Only degree-seeking students can apply for work permit.", zh: "只有學位生可以申請工作許可。" },
+        { en: "Learning-Oriented Part-Time Assistant: no work permit needed; Labor-Oriented Part-Time Assistant: work permit required.", zh: "學習型兼任助理不需工作許可；勞僱型兼任助理需工作許可。" },
+        { en: "If receiving stipend from lab/department, confirm with advisor which type applies.", zh: "若自實驗室或系所領取 stipend，請先與指導教授確認屬於哪一類。" },
+        { en: "Maximum 20 hours per week except winter/summer vacations.", zh: "除寒暑假外，每週最多工作 20 小時。" },
+        { en: "Work permit valid up to 6 months. Fall semester permit valid until March 31; Spring semester permit valid until September 30.", zh: "工作許可最長 6 個月；秋季學期許可至 3 月 31 日，春季學期許可至 9 月 30 日。" },
+        { en: "Return work permit to OIA if suspended or discontinued.", zh: "若休學或退學，須將工作許可繳回國際處。" },
+        { en: "Reissue documents: application form, declaration with stamp from department director or OIA, copies of valid passport and ARC.", zh: "補發文件包含申請表、經系主任或國際處蓋章之聲明書、有效護照與 ARC 影本。" },
+      ],
+    },
+    {
+      type: "timeline",
+      items: [
+        { date: "1", event_en: "Fill application form.", event_zh: "填寫申請表。" },
+        { date: "2", event_en: "Pay fee at ATM or post office.", event_zh: "至 ATM 或郵局繳費。" },
+        { date: "3", event_en: "Upload front/back student ID with semester registration stamp.", event_zh: "上傳含當學期註冊章之學生證正反面。" },
+        { date: "4", event_en: "Upload passport.", event_zh: "上傳護照。" },
+        { date: "5", event_en: "Upload front/back ARC.", event_zh: "上傳 ARC 正反面。" },
+        { date: "6", event_en: "Wait and check status; use ARC number in Number of Employer and use submitting date.", event_zh: "等待並查詢進度；Number of Employer 請填 ARC 號碼，日期使用送件日期。" },
+      ],
+    },
+    {
+      type: "contact",
+      name_en: "Workforce Development Agency",
+      name_zh: "勞動力發展署",
+      phone: "0800-881-339 / 02-2380-1720; Monday-Friday 8:30-12:30, 13:30-17:30",
+      links: [{ url: "https://ezwp.wda.gov.tw/", label_en: "Open Work Permit Application Portal", label_zh: "開啟工作許可申辦網" }],
+    },
+  ],
+  degree_arc_application_extension: [
+    {
+      type: "note",
+      tone: "danger",
+      content_en: "First-time ARC late application penalty NT$2,000-10,000. ARC extension late renewal penalty NT$10,000-50,000. If over 30 days late, students must leave Taiwan and re-apply from abroad.",
+      content_zh: "首次 ARC 逾期申請罰鍰 NT$2,000-10,000；ARC 延期逾期罰鍰 NT$10,000-50,000。逾期超過 30 天須離境並自境外重新申請。",
+    },
+    {
+      type: "checklist",
+      items: [
+        { en: "Address/passport changes must be reported within 30 days.", zh: "地址或護照資料變更須於 30 天內通報。" },
+        { en: "Penalty for not reporting personal info update: NT$2,000-10,000.", zh: "未通報個人資料變更，罰鍰 NT$2,000-10,000。" },
+        { en: "ARC collection location: Chiayi City Service Center.", zh: "ARC 領取地點：嘉義市服務站。" },
+        { en: "Method of collection: in person in Taiwan.", zh: "領取方式：在臺本人領取。" },
+        { en: "Bring payment receipt paper or digital copy.", zh: "攜帶繳費收據紙本或電子檔。" },
+      ],
+    },
+  ],
+  degree_chinese_language: [
+    {
+      type: "checklist",
+      items: [
+        { en: "Chinese Training Program is credit-loaded and free.", zh: "中文課程有學分且免費。" },
+        { en: "International students are encouraged to take at least one Chinese course.", zh: "鼓勵國際學生至少修習一門中文課。" },
+        { en: "Course system URL may need update once new course selection system is ready.", zh: "新的選課系統上線後，課程系統網址可能需要更新。" },
+      ],
+    },
+    {
+      type: "links",
+      links: [
+        { url: "https://kiki.ccu.edu.tw/~ccmisp06/Course/1334_e.html", label_en: "Open Chinese Credit Course Information", label_zh: "開啟中文學分課程資訊" },
+        { url: "https://chineselanguagecenter.ccu.edu.tw/", label_en: "Open Chinese Language Center Page", label_zh: "開啟華語中心頁面" },
+      ],
+    },
+  ],
+  degree_gender_incident_regulations: [
+    {
+      type: "contact",
+      name_en: "Office of Student Affairs",
+      name_zh: "學務處",
+      email: "health@ccu.edu.tw",
+      phone: "Gender Equality Investigation Application Acceptance Hotline: 05-272-0411 ext.12346; Gender Equality Reporting 24-hour Hotline: 05-272-1114",
+    },
+    {
+      type: "checklist",
+      items: [
+        { en: "Receiving agency: Office of Student Affairs.", zh: "受理單位：學務處。" },
+        { en: "Faculty/staff who become aware of suspected incidents must report within 24 hours.", zh: "教職員知悉疑似事件後，須於 24 小時內通報。" },
+        { en: "University sends written notification of acceptance within 20 days.", zh: "學校於 20 日內以書面通知是否受理。" },
+        { en: "If not accepted, applicant/victim/informant may request reconsideration within 20 days.", zh: "若不受理，申請人、被害人或通報人可於 20 日內申復。" },
+        { en: "If dissatisfied with handling result, applicant/victim/offender may request reconsideration within 30 days.", zh: "若不服處理結果，申請人、被害人或行為人可於 30 日內申復。" },
+        { en: "Possible assistance includes psychological counseling, legal assistance, academic assistance, financial assistance, social welfare referral, and other protective measures.", zh: "可提供心理諮商、法律協助、課業協助、經濟協助、社會福利轉介與其他保護措施。" },
+      ],
+    },
+  ],
+  exchange_health_check: [
+    {
+      type: "table",
+      columns: [
+        { key: "item", label_en: "Item", label_zh: "項目" },
+        { key: "detail", label_en: "Detail", label_zh: "內容" },
+      ],
+      rows: [
+        { item: { en: "Date and time", zh: "日期與時間" }, detail: { en: "Mar. 5, 9:30-13:30", zh: "3 月 5 日 09:30-13:30" } },
+        { item: { en: "Requirement", zh: "規定" }, detail: { en: "Mandatory for every new student.", zh: "每位新生皆須完成。" } },
+        { item: { en: "Fee", zh: "費用" }, detail: { en: "NTD 1400", zh: "NTD 1400" } },
+        { item: { en: "Bring", zh: "攜帶文件" }, detail: { en: "Passport and CCU Student Health Examination Form.", zh: "護照與中正大學學生健康檢查表。" } },
+        { item: { en: "If missed", zh: "若錯過" }, detail: { en: "Students must go to a hospital by themselves and the fee will be more expensive.", zh: "需自行至醫院辦理，費用會較高。" } },
+      ],
+    },
+  ],
+  exchange_document_submission: [
+    {
+      type: "checklist",
+      items: [
+        { en: "Deadline: Feb. 5, 2026.", zh: "截止日期：2026 年 2 月 5 日。" },
+        { en: "Email scanned copies to astevelyn@ccu.edu.tw and ciacoop@ccu.edu.tw.", zh: "請將掃描檔寄至 astevelyn@ccu.edu.tw 與 ciacoop@ccu.edu.tw。" },
+        { en: "Required documents: certificate of medical examination, visa, flight ticket, and insurance certificate.", zh: "需繳文件：體檢證明、簽證、機票與保險證明。" },
+      ],
+    },
+  ],
+  exchange_course_types: [
+    {
+      type: "checklist",
+      items: [
+        { en: "Academic courses are held by departments and may be taught in Chinese or English.", zh: "學術課程由各系所開設，可能以中文或英文授課。" },
+        { en: "Chinese training courses are provided by Center for Language Studies.", zh: "中文訓練課程由語言中心提供。" },
+        { en: "Certificate Program of Applied Language Studies may be available.", zh: "可選修應用語言學程相關課程。" },
+        { en: "Spring 2026 offers 3 Chinese Training Courses, 7 credits total.", zh: "2026 春季提供 3 門中文訓練課程，共 7 學分。" },
+        { en: "Chinese courses are free for international students.", zh: "中文課程對國際學生免費。" },
+        { en: "Exchange students are encouraged to take at least one Chinese course.", zh: "鼓勵交換生至少修習一門中文課。" },
+        { en: "General Education courses are not guaranteed because of quota limits.", zh: "通識課程因名額限制，不保證可選上。" },
+      ],
+    },
+  ],
+  exchange_arrival_transportation: [
+    {
+      type: "table",
+      columns: [
+        { key: "route", label_en: "Route", label_zh: "路線" },
+        { key: "cost", label_en: "Estimated cost", label_zh: "預估費用" },
+      ],
+      rows: [
+        { route: { en: "Taipei city to CCU pickup around NTD5500", zh: "台北市區至中正大學接送" }, cost: { en: "Around NTD5,500", zh: "約 NTD5,500" } },
+        { route: { en: "Taoyuan to CCU around NTD5000", zh: "桃園至中正大學接送" }, cost: { en: "Around NTD5,000", zh: "約 NTD5,000" } },
+      ],
+    },
+  ],
+  exchange_fees_expenses: [
+    {
+      type: "table",
+      columns: [
+        { key: "item", label_en: "Item", label_zh: "項目" },
+        { key: "estimate", label_en: "Estimate", label_zh: "預估費用" },
+        { key: "note", label_en: "Note", label_zh: "備註" },
+      ],
+      rows: [
+        { item: { en: "Visiting student administration fee", zh: "訪問學生行政費" }, estimate: "US$500", note: { en: "For visiting students.", zh: "訪問學生適用。" } },
+        { item: { en: "Visiting student tuition per semester", zh: "訪問學生每學期學費" }, estimate: "US$1,609-1,843", note: { en: "Depends on program.", zh: "依課程或學制而定。" } },
+        { item: { en: "Exchange students under exchange agreement", zh: "交換協議學生" }, estimate: { en: "Exempt from tuition and administration fee.", zh: "免學費與行政費。" }, note: { en: "Based on exchange agreement.", zh: "依交換協議辦理。" } },
+        { item: { en: "TPE Airport to CCU pickup", zh: "桃園機場至中正大學接送" }, estimate: "Around NTD5,000", note: { en: "Up to two students.", zh: "最多約兩人。" } },
+        { item: { en: "Taipei city to CCU pickup around NTD5500", zh: "台北市區至中正大學接送" }, estimate: "Around NTD5,500", note: { en: "Private pickup estimate.", zh: "專車接送預估。" } },
+        { item: { en: "Taipei to Chiayi HSR", zh: "台北至嘉義高鐵" }, estimate: "NTD1,080", note: { en: "One-way ticket.", zh: "單程票。" } },
+        { item: { en: "Taoyuan to Chiayi HSR", zh: "桃園至嘉義高鐵" }, estimate: "NTD920", note: { en: "One-way ticket.", zh: "單程票。" } },
+        { item: { en: "Chiayi HSR to CCU taxi", zh: "嘉義高鐵至中正大學計程車" }, estimate: "Around NTD700", note: { en: "Taxi estimate.", zh: "計程車預估。" } },
+        { item: { en: "On-campus dormitory", zh: "校內宿舍" }, estimate: "US$310-360 per semester", note: { en: "Depends on exchange agreement.", zh: "依交換協議而定。" } },
+        { item: { en: "Dormitory deposit", zh: "宿舍押金" }, estimate: "Around US$55", note: { en: "Refundable subject to dorm rules.", zh: "依宿舍規定退還。" } },
+        { item: { en: "Electricity", zh: "電費" }, estimate: "Around US$50 per semester", note: { en: "Estimated.", zh: "預估費用。" } },
+        { item: { en: "Internet", zh: "網路費" }, estimate: "Around US$35 per semester", note: { en: "Estimated.", zh: "預估費用。" } },
+        { item: { en: "Off-campus dormitory", zh: "校外住宿" }, estimate: "US$700-800 for 4.5 months", note: { en: "Paid directly to landlord.", zh: "直接繳給房東。" } },
+        { item: { en: "Off-campus dormitory deposit", zh: "校外住宿押金" }, estimate: "Around US$170", note: { en: "Depends on landlord.", zh: "依房東規定。" } },
+        { item: { en: "Water", zh: "水費" }, estimate: "Around US$4 per month", note: { en: "Estimated.", zh: "預估費用。" } },
+        { item: { en: "Mattress, pillow, quilt", zh: "床墊、枕頭、棉被" }, estimate: "Around US$100", note: { en: "Personal purchase.", zh: "自行購買。" } },
+        { item: { en: "Insurance", zh: "保險" }, estimate: "Around US$28 per month", note: { en: "For students eligible for NHI.", zh: "符合健保資格者適用。" } },
+        { item: { en: "Health check", zh: "健康檢查" }, estimate: "NTD 1400", note: { en: "Mandatory for every new student.", zh: "每位新生皆須完成。" } },
+        { item: { en: "Food", zh: "餐費" }, estimate: "Around US$3 per meal", note: { en: "Estimated.", zh: "預估費用。" } },
+      ],
+    },
+  ],
+  exchange_arc: [
+    {
+      type: "checklist",
+      items: [
+        { en: "ARC applies to students staying in Taiwan for more than 6 months.", zh: "ARC 適用於在臺停留超過 6 個月的學生。" },
+        { en: "Apply within 30 days after entering Taiwan.", zh: "入境後 30 天內申請。" },
+        { en: "Application fee: NTD1,000.", zh: "申請費：NTD1,000。" },
+        { en: "ARC also works as multiple re-entry permit.", zh: "ARC 同時具有多次入境許可功能。" },
+        { en: "If ARC is lost, students must pay NTD1,000 to apply for a new one.", zh: "ARC 遺失需繳 NTD1,000 申請補發。" },
+        { en: "Required documents: application form, photo, passport, resident visa, photocopy of student ID card, and fee NTD1,000.", zh: "所需文件：申請表、照片、護照、居留簽證、學生證影本與費用 NTD1,000。" },
+        { en: "Photo requirements: color photo, front head and shoulder, taken within 6 months, no hat, no glasses, 4.5cm x 3.5cm, head length 3.2-3.6cm, white background.", zh: "照片規格：彩色、正面半身、6 個月內拍攝、不可戴帽與眼鏡、4.5cm x 3.5cm、頭部 3.2-3.6cm、白色背景。" },
+      ],
+    },
+    {
+      type: "links",
+      links: [
+        { url: "https://coa.immigration.gov.tw/coa-frontend/student/entry?lang=en", label_en: "Open Students Online Application System", label_zh: "開啟學生線上申辦系統" },
+        { url: "https://coa.immigration.gov.tw/coa-frontend/foreign-student/individual/login", label_en: "Open ARC Online Application Login", label_zh: "開啟 ARC 線上申請登入" },
+      ],
+    },
+  ],
+  exchange_work_restriction: [
+    {
+      type: "note",
+      tone: "danger",
+      content_en: "Exchange/visiting students are not allowed to work on or off campus in Taiwan. Full-time and part-time jobs are included, and receiving stipend from lab is included if it counts as paid work.",
+      content_zh: "交換生與訪問學生不得在臺灣校內或校外工作。全職、兼職皆包含在內；若實驗室 stipend 屬於有給付工作，也包含在限制內。",
+    },
+    {
+      type: "checklist",
+      items: [
+        { en: "Work permit from Bureau of Employment and Vocational Training is for eligible students; exchange/visiting students are not allowed to work on or off campus in Taiwan.", zh: "工作許可由就業服務相關機關核發；交換生與訪問學生不得在臺灣校內或校外工作。" },
+        { en: "Working without permission may result in fine of NTD30,000-150,000.", zh: "未經許可工作可能罰鍰 NTD30,000-150,000。" },
+      ],
+    },
+  ],
+  exchange_check_in_leaving: [
+    {
+      type: "table",
+      columns: [
+        { key: "form", label_en: "Form", label_zh: "表單" },
+        { key: "items", label_en: "Required items", label_zh: "必要項目" },
+      ],
+      rows: [
+        { form: { en: "Appendix 1 Registration Sheet", zh: "附錄一 報到程序單" }, items: { en: "Home University; Host Department at CCU; mobile number; come to OIA; get student ID card; get payment sheet for dormitory fee; check in at host department; accomplish course-taking procedure and hand in sheet to Office of Academic Affairs; hand registration sheet to OIA.", zh: "填寫原學校、中正大學接待系所、手機號碼；至國際處報到、領學生證、領宿舍費繳費單、至接待系所報到、完成選課程序並繳交至教務處，最後將報到程序單交回國際處。" } },
+        { form: { en: "Appendix 2 School Leaving Procedure", zh: "附錄二 離校程序單" }, items: { en: "Return key/equipment/materials borrowed from host department; return library books if any; return PE Center equipment if any; visit dorm service center to reserve checkout date; hand leaving sheet to OIA. Even if nothing was borrowed, students still need stamps from each designated office.", zh: "歸還向接待系所借用的鑰匙、設備與物品；若有借書需歸還圖書館；若有借用體育中心器材需歸還；至宿舍服務中心預約退宿日期；將離校程序單交回國際處。即使沒有借用任何物品，也仍需至指定單位蓋章。" } },
+      ],
+    },
+  ],
+};
+
 function applyStudentGuideSupplements(guides: StudentGuide[]): StudentGuide[] {
   return guides.map((guide) => ({
     ...guide,
@@ -2575,6 +3021,7 @@ function applyStudentGuideSupplements(guides: StudentGuide[]): StudentGuide[] {
         ...section.blocks,
         ...(studentGuideBlockSupplements[section.id] ?? []),
         ...(studentGuidePdfDetailSupplements[section.id] ?? []),
+        ...(studentGuideFinalPdfCorrections[section.id] ?? []),
       ],
     })),
   }));
