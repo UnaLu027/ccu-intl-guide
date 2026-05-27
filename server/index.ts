@@ -491,15 +491,20 @@ async function applyKnownContentFixes() {
   }
 }
 
-async function searchContentItems(query: string, type?: ContentType) {
+async function searchContentItems(query: string, typeFilter: "all" | ContentType = "all") {
   const q = normalizeQuery(query);
   const items = await getActiveContentItems();
 
   return items
       .filter((item) => {
-        if (type && item.type !== type) return false;
+        if (typeFilter !== "all" && item.type !== typeFilter) return false;
         if (!q) return true;
-        return normalizeQuery(JSON.stringify(item.data)).includes(q);
+        return normalizeQuery([
+          item.id,
+          item.label,
+          item.type,
+          JSON.stringify(item.data),
+        ].join(" ")).includes(q);
       })
       .slice(0, q ? 50 : 15)
       .map((item) => ({
@@ -1377,10 +1382,10 @@ async function startServer() {
   app.get("/api/admin/content-items", (req, res) => void adminJson(res, async () => {
     const query = readString(req.query.query) ?? "";
     const requestedType = readString(req.query.type);
-    const type = requestedType && contentTypes.includes(requestedType as ContentType)
+    const typeFilter: "all" | ContentType = requestedType && contentTypes.includes(requestedType as ContentType)
       ? requestedType as ContentType
-      : undefined;
-    return await searchContentItems(query, type);
+      : "all";
+    return await searchContentItems(query, typeFilter);
   }));
 
   app.get("/api/admin/content-items/:type/:id", (req, res) => void adminJson(res, async () => {

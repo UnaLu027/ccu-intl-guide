@@ -494,8 +494,8 @@ function typeLabel(type: ContentType) {
 const CONTENT_TYPE_FILTERS: Array<{ value: "all" | ContentType; label: string }> = [
   { value: "all", label: "全部資料類型" },
   { value: "task", label: "任務流程 Task" },
-  { value: "office", label: "行政單位 Office" },
   { value: "department", label: "系所單位 Department" },
+  { value: "office", label: "行政單位 Office" },
   { value: "student_guide_section", label: "新生指南章節 Student Guide Section" },
 ];
 
@@ -1488,8 +1488,8 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
                 className="rounded-md border bg-background px-3 py-2 text-sm"
               >
                 <option value="task">任務流程 Task</option>
-                <option value="office">行政單位 Office</option>
                 <option value="department">系所單位 Department</option>
+                <option value="office">行政單位 Office</option>
                 <option value="student_guide_section">新生指南章節 Student Guide Section</option>
               </select>
               <input
