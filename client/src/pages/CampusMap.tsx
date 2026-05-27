@@ -722,10 +722,10 @@ export default function CampusMap() {
         Mobile: flex-col, map first (order-1), list below (order-2)
         Desktop: lg:grid 2-column, list in col-1, map in col-2
       */}
-      <div className="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[380px_minmax(0,1fr)] lg:overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[380px_minmax(0,1fr)] lg:[grid-auto-rows:minmax(0,1fr)] lg:overflow-hidden">
 
         {/* Map container: order-1 mobile / col-2 desktop */}
-        <div className="relative order-1 min-h-[55vh] lg:col-start-2 lg:row-start-1 lg:min-h-0">
+        <div className="relative order-1 min-h-[55vh] lg:col-start-2 lg:row-start-1 lg:h-full lg:min-h-0">
           <MapView className="h-[55vh] lg:h-full" onMapReady={handleMapReady} />
 
           {/* Legend: top-left, pointer-events-none so it doesn't block map */}
