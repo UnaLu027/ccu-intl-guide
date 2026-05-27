@@ -26,7 +26,7 @@ import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCampusData } from "@/contexts/CampusDataContext";
 import { MapView } from "@/components/Map";
-import { getGoogleMapsSearchUrlFromPosition } from "@/lib/mapTarget";
+import { getGoogleMapsSearchUrl, resolveMapPosition, type MapPositionSource } from "@/lib/mapTarget";
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { Link } from "wouter";
 import {
@@ -70,6 +70,7 @@ interface MapItem {
 interface SelectedItem extends MapItem {
   lat: number;
   lng: number;
+  positionSource?: MapPositionSource;
 }
 
 interface MarkerEntry {
@@ -78,6 +79,7 @@ interface MarkerEntry {
   id: string;
   item: MapItem;
   position: google.maps.LatLngLiteral;
+  source: MapPositionSource;
 }
 
 // Constants
@@ -101,42 +103,24 @@ const markerColors: Record<MarkerType, string> = {
 
 // Helpers
 
-function hasValidLatLng(item: MapItem) {
-  return (
-    Number.isFinite(item.latitude) &&
-    Number.isFinite(item.longitude) &&
-    item.latitude !== 0 &&
-    item.longitude !== 0
-  );
-}
-
-function getPrimaryMapPosition(item: MapItem): google.maps.LatLngLiteral | null {
-  if (hasValidLatLng(item)) {
-    return { lat: item.latitude, lng: item.longitude };
-  }
-  return null;
-}
-
-function getGroupingKey(item: MapItem) {
-  const position = getPrimaryMapPosition(item);
-  if (position) return `coords:${position.lat.toFixed(6)},${position.lng.toFixed(6)}`;
-  return `missing:${item.type}:${item.id}`;
+function getGroupingKey(position: google.maps.LatLngLiteral) {
+  return `coords:${position.lat.toFixed(6)},${position.lng.toFixed(6)}`;
 }
 
 function getDisplayPosition(
-  item: MapItem,
+  basePosition: google.maps.LatLngLiteral,
   indexWithinSameCoordinate: number,
   totalAtSameCoordinate: number,
-) {
+): google.maps.LatLngLiteral {
   if (totalAtSameCoordinate <= 1) {
-    return { lat: item.latitude, lng: item.longitude };
+    return basePosition;
   }
   const radius = 0.000045 + Math.floor(indexWithinSameCoordinate / 12) * 0.000025;
   const angle =
     (Math.PI * 2 * indexWithinSameCoordinate) / Math.min(totalAtSameCoordinate, 12);
   return {
-    lat: item.latitude + Math.sin(angle) * radius,
-    lng: item.longitude + Math.cos(angle) * radius,
+    lat: basePosition.lat + Math.sin(angle) * radius,
+    lng: basePosition.lng + Math.cos(angle) * radius,
   };
 }
 
@@ -474,7 +458,7 @@ export default function CampusMap() {
     if (!entry || !mapRef.current) return;
     mapRef.current.panTo(entry.position);
     mapRef.current.setZoom(Math.max(mapRef.current.getZoom() || 16, 18));
-    setSelected({ ...entry.item, lat: entry.position.lat, lng: entry.position.lng });
+    setSelected({ ...entry.item, lat: entry.position.lat, lng: entry.position.lng, positionSource: entry.source });
   }, []);
 
   const handleMapReady = useCallback(
@@ -488,30 +472,56 @@ export default function CampusMap() {
       map.setCenter({ lat: 23.5628, lng: 120.4724 });
       map.setZoom(16);
 
-      // Group by coordinate key to spread co-located markers
-      const grouped = new Map<string, MapItem[]>();
-      allItems.forEach((item) => {
-        const key = getGroupingKey(item);
-        grouped.set(key, [...(grouped.get(key) ?? []), item]);
-      });
+      // Debug hint: to clear Place API sessionStorage cache run in console:
+      // Object.keys(sessionStorage).filter(k=>k.startsWith('ccu_place_')).forEach(k=>sessionStorage.removeItem(k))
+      console.debug(
+        "CampusMap: to clear Place cache: " +
+        "Object.keys(sessionStorage).filter(k=>k.startsWith('ccu_place_')).forEach(k=>sessionStorage.removeItem(k))",
+      );
 
-      allItems.forEach((item) => {
-        const primaryPosition = getPrimaryMapPosition(item);
-        if (!primaryPosition) {
-          console.warn("CampusMap item has no valid coordinates; marker skipped.", item);
-          return;
+      // PlacesService requires a map div element as the attribution anchor
+      const service = new google.maps.places.PlacesService(map.getDiv() as HTMLDivElement);
+
+      // Resolve all positions concurrently:
+      // • use_manual_coordinates === true  → use latitude/longitude directly
+      // • has google_maps_query           → Google Places lookup (cached in sessionStorage)
+      // • fallback                        → latitude/longitude if valid
+      type ResolvedEntry = { item: MapItem; pos: { lat: number; lng: number; source: MapPositionSource } };
+      const resolvedAll = await Promise.all(
+        allItems.map(async (item): Promise<ResolvedEntry | null> => {
+          const pos = await resolveMapPosition(service, item);
+          if (!pos) return null;
+          return { item, pos };
+        }),
+      );
+
+      // Group by resolved position key to spread co-located markers
+      const grouped = new Map<string, ResolvedEntry[]>();
+      for (const entry of resolvedAll) {
+        if (!entry) continue;
+        const key = getGroupingKey(entry.pos);
+        const group = grouped.get(key) ?? [];
+        group.push(entry);
+        grouped.set(key, group);
+      }
+
+      for (const entry of resolvedAll) {
+        if (!entry) {
+          // find which item was null — already warned inside resolveMapPosition
+          continue;
         }
+        const { item, pos } = entry;
 
-        const groupKey = getGroupingKey(item);
-        const sameGroupItems = grouped.get(groupKey) ?? [item];
-        const indexWithinGroup = sameGroupItems.findIndex(
-          (u) => u.id === item.id && u.type === item.type,
+        const groupKey = getGroupingKey(pos);
+        const group = grouped.get(groupKey) ?? [entry];
+        const indexWithinGroup = group.findIndex(
+          (e) => e.item.id === item.id && e.item.type === item.type,
         );
 
         const position = getDisplayPosition(
-          { ...item, latitude: primaryPosition.lat, longitude: primaryPosition.lng },
+          { lat: pos.lat, lng: pos.lng },
           Math.max(indexWithinGroup, 0),
-          sameGroupItems.length,
+          group.length,
         );
 
         const pin = new google.maps.marker.PinElement({
@@ -534,14 +544,15 @@ export default function CampusMap() {
           content: pin.element,
         });
 
+        const source = pos.source;
         marker.addListener("click", () => {
-          setSelected({ ...item, lat: position.lat, lng: position.lng });
+          setSelected({ ...item, lat: position.lat, lng: position.lng, positionSource: source });
           map.panTo(position);
           map.setZoom(Math.max(map.getZoom() || 16, 18));
         });
 
-        markersRef.current.push({ marker, type: item.type, id: item.id, item, position });
-      });
+        markersRef.current.push({ marker, type: item.type, id: item.id, item, position, source });
+      }
     },
     [lang], // eslint-disable-line react-hooks/exhaustive-deps
   );
@@ -600,9 +611,11 @@ export default function CampusMap() {
     );
   }, [t]);
 
-  const selectedGoogleMapsUrl = selected
-    ? getGoogleMapsSearchUrlFromPosition({ lat: selected.lat, lng: selected.lng })
-    : "";
+  // getGoogleMapsSearchUrl routes:
+  //   use_manual_coordinates → lat/lng coordinates
+  //   google_maps_query present → query search (correct named-place link)
+  //   fallback → lat/lng coordinates
+  const selectedGoogleMapsUrl = selected ? getGoogleMapsSearchUrl(selected) : "";
   const activeCollege = collegeOptions.find((college) => college.en === collegeFilter);
 
   // Render
