@@ -491,12 +491,13 @@ async function applyKnownContentFixes() {
   }
 }
 
-async function searchContentItems(query: string) {
+async function searchContentItems(query: string, type?: ContentType) {
   const q = normalizeQuery(query);
   const items = await getActiveContentItems();
 
   return items
       .filter((item) => {
+        if (type && item.type !== type) return false;
         if (!q) return true;
         return normalizeQuery(JSON.stringify(item.data)).includes(q);
       })
@@ -1375,7 +1376,11 @@ async function startServer() {
 
   app.get("/api/admin/content-items", (req, res) => void adminJson(res, async () => {
     const query = readString(req.query.query) ?? "";
-    return await searchContentItems(query);
+    const requestedType = readString(req.query.type);
+    const type = requestedType && contentTypes.includes(requestedType as ContentType)
+      ? requestedType as ContentType
+      : undefined;
+    return await searchContentItems(query, type);
   }));
 
   app.get("/api/admin/content-items/:type/:id", (req, res) => void adminJson(res, async () => {

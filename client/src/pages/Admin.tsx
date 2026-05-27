@@ -491,6 +491,14 @@ function typeLabel(type: ContentType) {
   return "任務流程";
 }
 
+const CONTENT_TYPE_FILTERS: Array<{ value: "all" | ContentType; label: string }> = [
+  { value: "all", label: "全部資料類型" },
+  { value: "task", label: "任務流程 Task" },
+  { value: "office", label: "行政單位 Office" },
+  { value: "department", label: "系所單位 Department" },
+  { value: "student_guide_section", label: "新生指南章節 Student Guide Section" },
+];
+
 function makeContentTemplate(type: ContentType, id: string): Record<string, unknown> {
   if (type === "student_guide_section") {
     return {
@@ -1323,6 +1331,7 @@ function StudentGuideSectionEditor({
 function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
   const [contentMode, setContentMode] = useState<"edit" | "create">("edit");
   const [query, setQuery] = useState("");
+  const [searchType, setSearchType] = useState<"all" | ContentType>("all");
   const [newType, setNewType] = useState<ContentType>("task");
   const [newId, setNewId] = useState("");
   const [items, setItems] = useState<ContentItem[]>([]);
@@ -1338,7 +1347,12 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
     setLoadingItems(true);
     setMessage(null);
     try {
-      const result = await fetchJson<ContentItem[]>(`/api/admin/content-items?query=${encodeURIComponent(query)}`);
+      const params = new URLSearchParams();
+      const trimmedQuery = query.trim();
+      if (trimmedQuery) params.set("query", trimmedQuery);
+      if (searchType !== "all") params.set("type", searchType);
+      const endpoint = `/api/admin/content-items${params.toString() ? `?${params.toString()}` : ""}`;
+      const result = await fetchJson<ContentItem[]>(endpoint);
       setItems(result);
     } catch (err) {
       setMessage(err instanceof Error ? err.message : "搜尋失敗");
@@ -1351,6 +1365,11 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
     void searchItems();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (contentMode === "edit") void searchItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchType]);
 
   const choose = (item: ContentItem) => {
     setContentMode("edit");
@@ -1490,12 +1509,24 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
           </div>
 
           <form
-            className={`flex gap-2 ${contentMode === "edit" ? "" : "hidden"}`}
+            className={`grid gap-2 sm:grid-cols-[180px_1fr_auto] ${contentMode === "edit" ? "" : "hidden"}`}
             onSubmit={(event) => {
               event.preventDefault();
               void searchItems();
             }}
           >
+            <select
+              value={searchType}
+              onChange={(event) => setSearchType(event.target.value as "all" | ContentType)}
+              className="rounded-md border bg-background px-3 py-2 text-sm"
+              aria-label="篩選資料類型"
+            >
+              {CONTENT_TYPE_FILTERS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}

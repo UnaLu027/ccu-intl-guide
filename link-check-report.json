@@ -688,6 +688,22 @@
     "error": "fetch failed"
   },
   {
+    "url": "https://reurl.cc/b3xMmy",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://reurl.cc/eGaj3K",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
     "url": "https://school.bot.com.tw/newTwbank/mobile/login.aspx",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
@@ -888,6 +904,22 @@
     "error": "fetch failed"
   },
   {
+    "url": "https://www.boca.gov.tw/cp-8-4336-94cdb-1.html",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.boca.gov.tw/cp-9-186-c060a-1.html",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
     "url": "https://www.ccu.edu.tw/p/404-1000-25665.php?Lang=zh-tw",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
@@ -969,6 +1001,14 @@
   },
   {
     "url": "https://www.route.com.tw/maintain.php",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.taipeitimes.com/",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
     "method": "GET",

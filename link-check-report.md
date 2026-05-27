@@ -1,12 +1,12 @@
 # Link Check Report
 
-Generated at: 2026-05-26T19:06:29.824Z
+Generated at: 2026-05-27T04:26:08.015Z
 
 ## Summary
 
 | Status | Count |
 | --- | ---: |
-| NEEDS_MANUAL_CHECK | 130 |
+| NEEDS_MANUAL_CHECK | 135 |
 
 ## Non-OK Links
 
@@ -98,6 +98,8 @@ Generated at: 2026-05-26T19:06:29.824Z
 | NEEDS_MANUAL_CHECK |  | GET | https://portal.ccu.edu.tw/sso_index.php | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://psy.ccu.edu.tw/ | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://resttc.ccu.edu.tw/ | fetch failed |
+| NEEDS_MANUAL_CHECK |  | GET | https://reurl.cc/b3xMmy | fetch failed |
+| NEEDS_MANUAL_CHECK |  | GET | https://reurl.cc/eGaj3K | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://school.bot.com.tw/newTwbank/mobile/login.aspx | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://school.bot.com.tw/newTwbank/StudentLogin.aspx | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://science.ccu.edu.tw/ | fetch failed |
@@ -123,6 +125,8 @@ Generated at: 2026-05-26T19:06:29.824Z
 | NEEDS_MANUAL_CHECK |  | GET | https://www.boca.gov.tw/cp-166-283-c4da3-2.html | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.boca.gov.tw/cp-166-284-6f5f7-2.html | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.boca.gov.tw/cp-396-32-4a369-1.html | fetch failed |
+| NEEDS_MANUAL_CHECK |  | GET | https://www.boca.gov.tw/cp-8-4336-94cdb-1.html | fetch failed |
+| NEEDS_MANUAL_CHECK |  | GET | https://www.boca.gov.tw/cp-9-186-c060a-1.html | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.ccu.edu.tw/p/404-1000-25665.php?Lang=zh-tw | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.dorm.ccu.edu.tw/en | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.dorm.ccu.edu.tw/student/login | fetch failed |
@@ -134,6 +138,7 @@ Generated at: 2026-05-26T19:06:29.824Z
 | NEEDS_MANUAL_CHECK |  | GET | https://www.mvdis.gov.tw/m3-simulator-drv/index | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.nhi.gov.tw/en/mp-2.html | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.route.com.tw/maintain.php | fetch failed |
+| NEEDS_MANUAL_CHECK |  | GET | https://www.taipeitimes.com/ | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.thb.gov.tw/en//cl.aspx?n=825 | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.youtube.com/watch?v=ggWsB4jjwCs | fetch failed |
 | NEEDS_MANUAL_CHECK |  | GET | https://www026168.ccu.edu.tw/ | fetch failed |
@@ -233,6 +238,8 @@ Generated at: 2026-05-26T19:06:29.824Z
 | NEEDS_MANUAL_CHECK |  | GET | https://portal.ccu.edu.tw/sso_index.php |
 | NEEDS_MANUAL_CHECK |  | GET | https://psy.ccu.edu.tw/ |
 | NEEDS_MANUAL_CHECK |  | GET | https://resttc.ccu.edu.tw/ |
+| NEEDS_MANUAL_CHECK |  | GET | https://reurl.cc/b3xMmy |
+| NEEDS_MANUAL_CHECK |  | GET | https://reurl.cc/eGaj3K |
 | NEEDS_MANUAL_CHECK |  | GET | https://school.bot.com.tw/newTwbank/mobile/login.aspx |
 | NEEDS_MANUAL_CHECK |  | GET | https://school.bot.com.tw/newTwbank/StudentLogin.aspx |
 | NEEDS_MANUAL_CHECK |  | GET | https://science.ccu.edu.tw/ |
@@ -258,6 +265,8 @@ Generated at: 2026-05-26T19:06:29.824Z
 | NEEDS_MANUAL_CHECK |  | GET | https://www.boca.gov.tw/cp-166-283-c4da3-2.html |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.boca.gov.tw/cp-166-284-6f5f7-2.html |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.boca.gov.tw/cp-396-32-4a369-1.html |
+| NEEDS_MANUAL_CHECK |  | GET | https://www.boca.gov.tw/cp-8-4336-94cdb-1.html |
+| NEEDS_MANUAL_CHECK |  | GET | https://www.boca.gov.tw/cp-9-186-c060a-1.html |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.ccu.edu.tw/p/404-1000-25665.php?Lang=zh-tw |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.dorm.ccu.edu.tw/en |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.dorm.ccu.edu.tw/student/login |
@@ -269,6 +278,7 @@ Generated at: 2026-05-26T19:06:29.824Z
 | NEEDS_MANUAL_CHECK |  | GET | https://www.mvdis.gov.tw/m3-simulator-drv/index |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.nhi.gov.tw/en/mp-2.html |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.route.com.tw/maintain.php |
+| NEEDS_MANUAL_CHECK |  | GET | https://www.taipeitimes.com/ |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.thb.gov.tw/en//cl.aspx?n=825 |
 | NEEDS_MANUAL_CHECK |  | GET | https://www.youtube.com/watch?v=ggWsB4jjwCs |
 | NEEDS_MANUAL_CHECK |  | GET | https://www026168.ccu.edu.tw/ |
