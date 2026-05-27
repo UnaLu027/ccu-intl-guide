@@ -108,26 +108,6 @@ const markerColors: Record<MarkerType, string> = {
 
 // Helpers
 
-function getGroupingKey(position: google.maps.LatLngLiteral) {
-  return `coords:${position.lat.toFixed(6)},${position.lng.toFixed(6)}`;
-}
-
-function getDisplayPosition(
-  basePosition: google.maps.LatLngLiteral,
-  indexWithinSameCoordinate: number,
-  totalAtSameCoordinate: number,
-): google.maps.LatLngLiteral {
-  if (totalAtSameCoordinate <= 1) {
-    return basePosition;
-  }
-  const radius = 0.000045 + Math.floor(indexWithinSameCoordinate / 12) * 0.000025;
-  const angle =
-    (Math.PI * 2 * indexWithinSameCoordinate) / Math.min(totalAtSameCoordinate, 12);
-  return {
-    lat: basePosition.lat + Math.sin(angle) * radius,
-    lng: basePosition.lng + Math.cos(angle) * radius,
-  };
-}
 
 function formatLocation(building: string, floor: string, room?: string) {
   return [building, floor, room]
@@ -501,31 +481,11 @@ export default function CampusMap() {
         }),
       );
 
-      // Group by resolved position key to spread co-located markers
-      const grouped = new Map<string, ResolvedEntry[]>();
-      for (const entry of resolvedAll) {
-        if (!entry) continue;
-        const key = getGroupingKey(entry.pos);
-        const group = grouped.get(key) ?? [];
-        group.push(entry);
-        grouped.set(key, group);
-      }
-
       for (const entry of resolvedAll) {
         if (!entry) continue;
         const { item, pos } = entry;
 
-        const groupKey = getGroupingKey(pos);
-        const group = grouped.get(groupKey) ?? [entry];
-        const indexWithinGroup = group.findIndex(
-          (e) => e.item.id === item.id && e.item.type === item.type,
-        );
-
-        const position = getDisplayPosition(
-          { lat: pos.lat, lng: pos.lng },
-          Math.max(indexWithinGroup, 0),
-          group.length,
-        );
+        const position = { lat: pos.lat, lng: pos.lng };
 
         const pin = new google.maps.marker.PinElement({
           background: markerColors[item.type],
