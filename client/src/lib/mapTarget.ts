@@ -23,10 +23,10 @@ export function hasValidCoordinates(item: MapTargetInput): boolean {
   return (
     isFiniteNumber(item.latitude) &&
     isFiniteNumber(item.longitude) &&
-    item.latitude >= -90 &&
-    item.latitude <= 90 &&
-    item.longitude >= -180 &&
-    item.longitude <= 180 &&
+    (item.latitude as number) >= -90 &&
+    (item.latitude as number) <= 90 &&
+    (item.longitude as number) >= -180 &&
+    (item.longitude as number) <= 180 &&
     !(item.latitude === 0 && item.longitude === 0)
   );
 }
@@ -72,22 +72,34 @@ export function getGoogleMapsSearchUrl(item: MapTargetInput): string {
   return "";
 }
 
-export function lookupPlaceLocation(
-  service: google.maps.places.PlacesService,
-  query: string
-): Promise<google.maps.LatLng | null> {
+/**
+ * Looks up a place's coordinates using the new Places API (Place.searchByText).
+ *
+ * Uses the importLibrary("places") dynamic loader — no PlacesService, no findPlaceFromQuery.
+ * Results are cached in sessionStorage under the key "ccu_place_v2_<query>" so repeated
+ * page loads do not re-query the API.
+ *
+ * Returns null (does NOT throw) if the lookup fails, so callers can fall back gracefully.
+ *
+ * Debug: to clear cache run in browser console:
+ *   Object.keys(sessionStorage).filter(k=>k.startsWith('ccu_place_v2_')).forEach(k=>sessionStorage.removeItem(k))
+ */
+export async function lookupPlaceLocation(
+  query: string,
+): Promise<google.maps.LatLngLiteral | null> {
   const normalizedQuery = query.trim();
-  if (!normalizedQuery) return Promise.resolve(null);
+  if (!normalizedQuery) return null;
 
-  const cacheKey = "ccu_place_" + normalizedQuery;
+  const cacheKey = "ccu_place_v2_" + normalizedQuery;
 
+  // --- sessionStorage cache ---
   try {
     const cached = sessionStorage.getItem(cacheKey);
     if (cached) {
       try {
-        const { lat, lng } = JSON.parse(cached);
+        const { lat, lng } = JSON.parse(cached) as { lat: unknown; lng: unknown };
         if (isFiniteNumber(lat) && isFiniteNumber(lng)) {
-          return Promise.resolve(new google.maps.LatLng(lat, lng));
+          return { lat, lng };
         }
       } catch {
         sessionStorage.removeItem(cacheKey);
@@ -97,38 +109,58 @@ export function lookupPlaceLocation(
     // sessionStorage may be unavailable in restricted browsing modes.
   }
 
-  return new Promise(resolve => {
-    service.findPlaceFromQuery(
-      { query: normalizedQuery, fields: ["geometry.location"] },
-      (results, status) => {
-        if (
-          status === google.maps.places.PlacesServiceStatus.OK &&
-          results &&
-          results[0]?.geometry?.location
-        ) {
-          const loc = results[0].geometry.location;
+  // --- New Places API: Place.searchByText ---
+  try {
+    // google.maps.importLibrary returns a union of library types; cast to any
+    // to access Place.searchByText without depending on the exact @types/google.maps version.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const lib = (await google.maps.importLibrary("places")) as any;
 
-          try {
-            sessionStorage.setItem(
-              cacheKey,
-              JSON.stringify({ lat: loc.lat(), lng: loc.lng() })
-            );
-          } catch {
-            // Ignore cache failures.
-          }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = (await lib.Place.searchByText({
+      textQuery: normalizedQuery,
+      fields: ["location", "displayName"],
+      maxResultCount: 1,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    })) as any;
 
-          resolve(loc);
-        } else {
-          resolve(null);
-        }
-      }
-    );
-  });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const location = response?.places?.[0]?.location as any;
+    if (!location) return null;
+
+    // LatLng objects expose .lat() / .lng() as functions; plain objects expose .lat / .lng directly.
+    const lat: unknown =
+      typeof location.lat === "function" ? location.lat() : Number(location.lat);
+    const lng: unknown =
+      typeof location.lng === "function" ? location.lng() : Number(location.lng);
+
+    if (!isFiniteNumber(lat) || !isFiniteNumber(lng)) return null;
+
+    try {
+      sessionStorage.setItem(cacheKey, JSON.stringify({ lat, lng }));
+    } catch {
+      // Ignore cache write failures.
+    }
+
+    return { lat, lng };
+  } catch (error) {
+    console.warn("Google Places lookup failed for query", normalizedQuery, error);
+    return null;
+  }
 }
 
+/**
+ * Resolves the map position for a MapTargetInput using the following priority:
+ *
+ * 1. use_manual_coordinates === true + valid lat/lng  →  source: "manual_coordinates"
+ * 2. google_maps_query present                        →  Place.searchByText lookup
+ *                                                         source: "google_places"
+ *                                                         (falls through if lookup fails)
+ * 3. valid lat/lng as fallback                        →  source: "fallback_coordinates"
+ * 4. none of the above                                →  null (caller should skip marker)
+ */
 export async function resolveMapPosition(
-  service: google.maps.places.PlacesService,
-  item: MapTargetInput
+  item: MapTargetInput,
 ): Promise<ResolvedMapPosition | null> {
   if (shouldUseManualCoordinates(item)) {
     return {
@@ -140,11 +172,11 @@ export async function resolveMapPosition(
 
   const query = getGoogleMapsQuery(item);
   if (query) {
-    const loc = await lookupPlaceLocation(service, query);
+    const loc = await lookupPlaceLocation(query);
     if (loc) {
       return {
-        lat: loc.lat(),
-        lng: loc.lng(),
+        lat: loc.lat,
+        lng: loc.lng,
         source: "google_places",
       };
     }

@@ -26,7 +26,12 @@ import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCampusData } from "@/contexts/CampusDataContext";
 import { MapView } from "@/components/Map";
-import { getGoogleMapsSearchUrl, resolveMapPosition, type MapPositionSource } from "@/lib/mapTarget";
+import {
+  getGoogleMapsSearchUrl,
+  resolveMapPosition,
+  type MapPositionSource,
+  type ResolvedMapPosition,
+} from "@/lib/mapTarget";
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { Link } from "wouter";
 import {
@@ -472,25 +477,26 @@ export default function CampusMap() {
       map.setCenter({ lat: 23.5628, lng: 120.4724 });
       map.setZoom(16);
 
-      // Debug hint: to clear Place API sessionStorage cache run in console:
-      // Object.keys(sessionStorage).filter(k=>k.startsWith('ccu_place_')).forEach(k=>sessionStorage.removeItem(k))
+      // Debug hint: to clear Place API sessionStorage cache run in browser console:
+      // Object.keys(sessionStorage).filter(k=>k.startsWith('ccu_place_v2_')).forEach(k=>sessionStorage.removeItem(k))
       console.debug(
         "CampusMap: to clear Place cache: " +
-        "Object.keys(sessionStorage).filter(k=>k.startsWith('ccu_place_')).forEach(k=>sessionStorage.removeItem(k))",
+        "Object.keys(sessionStorage).filter(k=>k.startsWith('ccu_place_v2_')).forEach(k=>sessionStorage.removeItem(k))",
       );
 
-      // PlacesService requires a map div element as the attribution anchor
-      const service = new google.maps.places.PlacesService(map.getDiv() as HTMLDivElement);
-
-      // Resolve all positions concurrently:
-      // • use_manual_coordinates === true  → use latitude/longitude directly
-      // • has google_maps_query           → Google Places lookup (cached in sessionStorage)
+      // Resolve all positions concurrently using the new Places API (Place.searchByText).
+      // No PlacesService / findPlaceFromQuery — those are legacy APIs deprecated as of 2025-03-01.
+      // • use_manual_coordinates === true  → latitude/longitude directly
+      // • has google_maps_query           → Place.searchByText lookup (cached in sessionStorage)
       // • fallback                        → latitude/longitude if valid
-      type ResolvedEntry = { item: MapItem; pos: { lat: number; lng: number; source: MapPositionSource } };
+      type ResolvedEntry = { item: MapItem; pos: ResolvedMapPosition };
       const resolvedAll = await Promise.all(
         allItems.map(async (item): Promise<ResolvedEntry | null> => {
-          const pos = await resolveMapPosition(service, item);
-          if (!pos) return null;
+          const pos = await resolveMapPosition(item);
+          if (!pos) {
+            console.warn("CampusMap: no valid position for item; marker skipped.", item.id, item.name_en);
+            return null;
+          }
           return { item, pos };
         }),
       );
@@ -506,10 +512,7 @@ export default function CampusMap() {
       }
 
       for (const entry of resolvedAll) {
-        if (!entry) {
-          // find which item was null — already warned inside resolveMapPosition
-          continue;
-        }
+        if (!entry) continue;
         const { item, pos } = entry;
 
         const groupKey = getGroupingKey(pos);

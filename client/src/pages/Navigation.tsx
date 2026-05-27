@@ -51,8 +51,7 @@ export default function Navigation() {
     async (map: google.maps.Map) => {
       if (!item) return;
 
-      const placesService = new google.maps.places.PlacesService(map);
-      const resolvedPosition = await resolveMapPosition(placesService, item);
+      const resolvedPosition = await resolveMapPosition(item);
 
       if (!resolvedPosition) return;
 
