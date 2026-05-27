@@ -1779,20 +1779,6 @@ const studentGuideBlockSupplements: Record<string, HandbookBlock[]> = {
         { en: "Students who miss the on-campus health check must complete the check at a designated or qualified hospital and submit the report as required.", zh: "若錯過校內健檢，須自行至指定或合格醫院完成健康檢查，並依規定繳交報告。" },
       ],
     },
-    {
-      type: "contact",
-      name_en: "Chia-Yi Christian Hospital",
-      name_zh: "嘉義基督教醫院",
-      phone: "05-2765041 ext. 2792 / 2750-2751",
-      location_en: "Chia-Yi Christian Hospital",
-      location_zh: "嘉義基督教醫院",
-    },
-    {
-      type: "note",
-      tone: "warning",
-      content_en: "Service hours: Mon-Sat morning 08:00-12:00; Mon-Fri afternoon 13:30-17:30. Please call to make an appointment or inquire about your report.",
-      content_zh: "服務時間：週一至週六上午 08:00-12:00；週一至週五下午 13:30-17:30。請先電話預約或詢問報告相關事項。",
-    },
   ],
   degree_health_insurance: [
     {
@@ -2473,20 +2459,6 @@ const studentGuidePdfDetailSupplements: Record<string, HandbookBlock[]> = {
       ],
     },
   ],
-  degree_health_check: [
-    {
-      type: "checklist",
-      items: [
-        { en: "No need to fast.", zh: "不需要空腹。" },
-        { en: "Bring original ARC or passport.", zh: "請攜帶 ARC 或護照正本。" },
-        { en: "Feces needs to be collected on site.", zh: "糞便檢體需現場採集。" },
-        { en: "Pregnant women or those who may be pregnant cannot undergo X-ray.", zh: "孕婦或可能懷孕者不可接受 X 光檢查。" },
-        { en: "If vaccinated against German measles and measles, bring original and photocopy of vaccination certificate.", zh: "若已接種德國麻疹與麻疹疫苗，請攜帶接種證明正本與影本。" },
-        { en: "No appointment required; on-site processing.", zh: "不需預約，現場辦理。" },
-        { en: "Bring an ID photo.", zh: "請攜帶證件照。" },
-      ],
-    },
-  ],
   degree_library: [
     {
       type: "table",
@@ -3012,17 +2984,99 @@ const studentGuideFinalPdfCorrections: Record<string, HandbookBlock[]> = {
   ],
 };
 
+// ─── Block deduplication helpers ─────────────────────────────────────────────
+
+/**
+ * Returns a stable string key for a HandbookBlock used to detect duplicates.
+ * Blocks with the same key are considered identical and the second occurrence is dropped.
+ */
+function blockDedupeKey(block: HandbookBlock): string {
+  switch (block.type) {
+    case "contact":
+      return `contact:${block.name_zh || block.name_en}:${block.phone ?? block.email ?? block.location_zh ?? block.location_en ?? ""}`;
+    case "links":
+      return `links:${[...block.links].map((l) => l.url).sort().join("|")}`;
+    case "note":
+      return `note:${block.tone ?? ""}:${block.content_zh || block.content_en}`;
+    case "paragraph":
+      return `paragraph:${block.content_zh || block.content_en}`;
+    case "table":
+      return `table:${block.columns.map((c) => c.key).join(",")}:${JSON.stringify(block.rows).slice(0, 300)}`;
+    case "checklist":
+      return `checklist:${block.items.map((i) => (i.zh || i.en).toLowerCase().trim()).join("|").slice(0, 500)}`;
+    case "timeline":
+      return `timeline:${block.items.map((i) => `${i.date}:${(i.event_zh || i.event_en).toLowerCase().trim()}`).join("|").slice(0, 500)}`;
+    default:
+      return JSON.stringify(block).slice(0, 200);
+  }
+}
+
+/**
+ * Merges multiple block arrays into one, deduplicating by blockDedupeKey.
+ * Also deduplicates items *within* checklist, timeline, and links blocks.
+ * Later groups win on ordering but lose on key conflicts (first occurrence kept).
+ */
+function mergeGuideBlocksWithDedupe(...blockGroups: HandbookBlock[][]): HandbookBlock[] {
+  const seen = new Set<string>();
+  const result: HandbookBlock[] = [];
+
+  for (const group of blockGroups) {
+    for (const block of group) {
+      // Dedupe items inside aggregate blocks before computing the key
+      let processed: HandbookBlock = block;
+
+      if (block.type === "checklist") {
+        const itemSeen = new Set<string>();
+        const dedupedItems = block.items.filter((item) => {
+          const k = (item.zh || item.en).toLowerCase().trim();
+          if (itemSeen.has(k)) return false;
+          itemSeen.add(k);
+          return true;
+        });
+        processed = { ...block, items: dedupedItems };
+      } else if (block.type === "timeline") {
+        const itemSeen = new Set<string>();
+        const dedupedItems = block.items.filter((item) => {
+          const k = `${item.date}:${(item.event_zh || item.event_en).toLowerCase().trim()}`;
+          if (itemSeen.has(k)) return false;
+          itemSeen.add(k);
+          return true;
+        });
+        processed = { ...block, items: dedupedItems };
+      } else if (block.type === "links") {
+        const urlSeen = new Set<string>();
+        const dedupedLinks = block.links.filter((link) => {
+          if (urlSeen.has(link.url)) return false;
+          urlSeen.add(link.url);
+          return true;
+        });
+        processed = { ...block, links: dedupedLinks };
+      }
+
+      const key = blockDedupeKey(processed);
+      if (!seen.has(key)) {
+        seen.add(key);
+        result.push(processed);
+      }
+    }
+  }
+
+  return result;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function applyStudentGuideSupplements(guides: StudentGuide[]): StudentGuide[] {
   return guides.map((guide) => ({
     ...guide,
     sections: guide.sections.map((section) => ({
       ...section,
-      blocks: [
-        ...section.blocks,
-        ...(studentGuideBlockSupplements[section.id] ?? []),
-        ...(studentGuidePdfDetailSupplements[section.id] ?? []),
-        ...(studentGuideFinalPdfCorrections[section.id] ?? []),
-      ],
+      blocks: mergeGuideBlocksWithDedupe(
+        section.blocks,
+        studentGuideBlockSupplements[section.id] ?? [],
+        studentGuidePdfDetailSupplements[section.id] ?? [],
+        studentGuideFinalPdfCorrections[section.id] ?? [],
+      ),
     })),
   }));
 }

@@ -1688,6 +1688,266 @@ function DraftsTab({ drafts }: { drafts: ContentDraft[] }) {
   );
 }
 
+// ─── Student Guide Sync Status Card ──────────────────────────────────────────
+
+interface SyncStatus {
+  static_count: number;
+  db_count: number;
+  stale_count: number;
+  missing_count: number;
+  manually_changed_count: number;
+  sample_stale_ids: string[];
+  sample_missing_ids: string[];
+  sample_manually_changed_ids: string[];
+}
+
+interface DuplicateReportEntry {
+  section_id: string;
+  guide_id: string;
+  duplicate_block_keys: string[];
+  duplicate_count: number;
+}
+
+interface DuplicateReport {
+  total_sections_checked: number;
+  sections_with_duplicates: number;
+  report: DuplicateReportEntry[];
+}
+
+function StudentGuideSyncCard() {
+  const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
+  const [dupReport, setDupReport] = useState<DuplicateReport | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [loadingDup, setLoadingDup] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [resetId, setResetId] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [showDup, setShowDup] = useState(false);
+
+  const loadStatus = async () => {
+    setLoading(true);
+    setMessage(null);
+    setError(null);
+    try {
+      const data = await fetchJson<SyncStatus>("/api/admin/student-guide-sync-status");
+      setSyncStatus(data);
+    } catch {
+      setError("無法載入同步狀態");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadDupReport = async () => {
+    setLoadingDup(true);
+    try {
+      const data = await fetchJson<DuplicateReport>("/api/admin/student-guide-duplicate-report");
+      setDupReport(data);
+      setShowDup(true);
+    } catch {
+      setError("無法載入重複 blocks 報告");
+    } finally {
+      setLoadingDup(false);
+    }
+  };
+
+  const doSync = async () => {
+    if (!window.confirm("確定要同步目前程式內建的新生指南 sections 到資料庫嗎？已被人工修改過的 sections 會跳過。")) return;
+    setSyncing(true);
+    setMessage(null);
+    setError(null);
+    try {
+      const result = await fetchJson<MaintenanceResult>("/api/admin/maintenance/sync-static-content", { method: "POST" });
+      const summary = result.result;
+      const summaryText = summary ? Object.entries(summary).map(([k, v]) => `${k}: ${v}`).join(", ") : "已完成";
+      setMessage(`同步完成。${summaryText}`);
+      await loadStatus();
+    } catch {
+      setError("同步失敗");
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const doResetToStatic = async (sectionId: string) => {
+    if (!window.confirm(`確定要將 ${sectionId} 重設為程式內建資料嗎？這將覆蓋後台人工修改的內容。`)) return;
+    setResetId(sectionId);
+    setMessage(null);
+    setError(null);
+    try {
+      await fetchJson<{ ok: true }>(`/api/admin/student-guide-sections/${sectionId}/reset-to-static`, { method: "POST" });
+      setMessage(`已將 ${sectionId} 重設為 static 資料。`);
+      await loadStatus();
+    } catch {
+      setError(`重設 ${sectionId} 失敗`);
+    } finally {
+      setResetId(null);
+    }
+  };
+
+  useEffect(() => { void loadStatus(); }, []);
+
+  const statItems = syncStatus
+    ? [
+        { label: "Static sections", value: syncStatus.static_count, color: "text-foreground" },
+        { label: "DB sections", value: syncStatus.db_count, color: "text-foreground" },
+        { label: "Stale (outdated)", value: syncStatus.stale_count, color: syncStatus.stale_count > 0 ? "text-amber-600 font-semibold" : "text-foreground" },
+        { label: "Missing in DB", value: syncStatus.missing_count, color: syncStatus.missing_count > 0 ? "text-red-600 font-semibold" : "text-foreground" },
+        { label: "Manually changed", value: syncStatus.manually_changed_count, color: syncStatus.manually_changed_count > 0 ? "text-blue-600 font-semibold" : "text-foreground" },
+      ]
+    : [];
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <RefreshCw className="h-4 w-4" />
+          新生指南 Sections 同步狀態
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          顯示 static code 與資料庫中新生指南 sections 的同步情況。若某 section 曾被後台修改過，系統會保護該 section 不自動覆蓋，需人工確認。
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {message && <div className="rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">{message}</div>}
+        {error && <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
+
+        {/* Stats grid */}
+        {syncStatus && (
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+            {statItems.map((s) => (
+              <div key={s.label} className="rounded-lg border p-3 text-center">
+                <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
+                <div className="mt-0.5 text-xs text-muted-foreground">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Sample IDs */}
+        {syncStatus && (syncStatus.sample_stale_ids.length > 0 || syncStatus.sample_missing_ids.length > 0 || syncStatus.sample_manually_changed_ids.length > 0) && (
+          <div className="space-y-2 text-xs">
+            {syncStatus.sample_stale_ids.length > 0 && (
+              <div>
+                <span className="font-semibold text-amber-600">Stale: </span>
+                <span className="text-muted-foreground">{syncStatus.sample_stale_ids.join(", ")}</span>
+              </div>
+            )}
+            {syncStatus.sample_missing_ids.length > 0 && (
+              <div>
+                <span className="font-semibold text-red-600">Missing: </span>
+                <span className="text-muted-foreground">{syncStatus.sample_missing_ids.join(", ")}</span>
+              </div>
+            )}
+            {syncStatus.sample_manually_changed_ids.length > 0 && (
+              <div>
+                <span className="font-semibold text-blue-600">Manually changed: </span>
+                <span className="text-muted-foreground">{syncStatus.sample_manually_changed_ids.join(", ")}</span>
+                <p className="mt-1 text-muted-foreground/70">若這些 sections 仍有重複 blocks，可用下方「重設為 Static」覆蓋後台修改。</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Action buttons */}
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => void loadStatus()}
+            disabled={loading}
+            className="inline-flex items-center gap-1.5 rounded-md border bg-background px-3 py-2 text-sm font-semibold hover:bg-muted disabled:opacity-60"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
+            重新檢查同步狀態
+          </button>
+          <button
+            type="button"
+            onClick={() => void doSync()}
+            disabled={syncing || loading}
+            className="inline-flex items-center gap-1.5 rounded-md border bg-background px-3 py-2 text-sm font-semibold hover:bg-muted disabled:opacity-60"
+          >
+            <Database className="h-3.5 w-3.5" />
+            {syncing ? "同步中..." : "同步 Static Content"}
+          </button>
+          <button
+            type="button"
+            onClick={() => void loadDupReport()}
+            disabled={loadingDup}
+            className="inline-flex items-center gap-1.5 rounded-md border bg-background px-3 py-2 text-sm font-semibold hover:bg-muted disabled:opacity-60"
+          >
+            <AlertCircle className="h-3.5 w-3.5" />
+            {loadingDup ? "檢查中..." : "檢查重複 Blocks"}
+          </button>
+        </div>
+
+        {/* Duplicate report */}
+        {showDup && dupReport && (
+          <div className="rounded-lg border p-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-semibold">
+                重複 Blocks 報告 — 共 {dupReport.total_sections_checked} 個 sections，
+                {dupReport.sections_with_duplicates === 0 ? (
+                  <span className="text-green-600"> 無重複 ✓</span>
+                ) : (
+                  <span className="text-red-600"> {dupReport.sections_with_duplicates} 個有重複</span>
+                )}
+              </h4>
+              <button type="button" onClick={() => setShowDup(false)} className="text-xs text-muted-foreground hover:underline">收起</button>
+            </div>
+            {dupReport.report.map((entry) => (
+              <div key={entry.section_id} className="rounded border border-red-200 bg-red-50 p-3 space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <span className="text-sm font-semibold text-red-700">{entry.section_id}</span>
+                    <span className="ml-2 text-xs text-muted-foreground">({entry.guide_id} guide) — {entry.duplicate_count} 個重複 block</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => void doResetToStatic(entry.section_id)}
+                    disabled={resetId === entry.section_id}
+                    className="shrink-0 rounded-md border border-red-300 bg-white px-2 py-1 text-xs font-semibold text-red-700 hover:bg-red-50 disabled:opacity-60"
+                  >
+                    {resetId === entry.section_id ? "重設中..." : "重設為 Static"}
+                  </button>
+                </div>
+                <div className="text-xs text-muted-foreground break-all">
+                  {entry.duplicate_block_keys.map((key, i) => (
+                    <span key={i} className="mr-1 inline-block rounded bg-red-100 px-1.5 py-0.5 font-mono">{key.slice(0, 80)}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Reset to static for manually changed sections */}
+        {syncStatus && syncStatus.sample_manually_changed_ids.length > 0 && (
+          <div className="rounded-lg border p-3 space-y-2">
+            <h4 className="text-sm font-semibold text-blue-700">人工修改過的 Sections — 可強制重設為 Static</h4>
+            <p className="text-xs text-muted-foreground">以下 sections 曾被後台修改過，若需清除修改內容、回復到程式內建版本，可點選「重設為 Static」。</p>
+            <div className="flex flex-wrap gap-2">
+              {syncStatus.sample_manually_changed_ids.map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => void doResetToStatic(id)}
+                  disabled={resetId === id}
+                  className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100 disabled:opacity-60"
+                >
+                  {resetId === id ? "重設中..." : id}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function MaintenanceTab({ onChanged }: { onChanged: () => Promise<void> }) {
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -1776,6 +2036,8 @@ function MaintenanceTab({ onChanged }: { onChanged: () => Promise<void> }) {
 
   return (
     <div className="space-y-4">
+      <StudentGuideSyncCard />
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">

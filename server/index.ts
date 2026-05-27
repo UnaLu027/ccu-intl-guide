@@ -1495,6 +1495,110 @@ async function startServer() {
     return await getStudentGuideSyncStatus();
   }));
 
+  // ── Duplicate report ────────────────────────────────────────────────────────
+  // Scans the *actual* blocks returned by /api/student-guides (DB overrides applied)
+  // and reports per-section duplicate block keys.
+  app.get("/api/admin/student-guide-duplicate-report", (_req, res) => void adminJson(res, async () => {
+    function serverBlockDedupeKey(block: StudentGuideSection["blocks"][number]): string {
+      switch (block.type) {
+        case "contact":
+          return `contact:${block.name_zh || block.name_en}:${block.phone ?? block.email ?? block.location_zh ?? block.location_en ?? ""}`;
+        case "links":
+          return `links:${[...block.links].map((l: { url: string }) => l.url).sort().join("|")}`;
+        case "note":
+          return `note:${(block as { tone?: string }).tone ?? ""}:${block.content_zh || block.content_en}`;
+        case "paragraph":
+          return `paragraph:${block.content_zh || block.content_en}`;
+        case "table":
+          return `table:${(block as { columns: Array<{ key: string }> }).columns.map((c) => c.key).join(",")}:${JSON.stringify((block as { rows: unknown[] }).rows).slice(0, 300)}`;
+        case "checklist":
+          return `checklist:${(block as { items: Array<{ zh?: string; en: string }> }).items.map((i) => (i.zh || i.en).toLowerCase().trim()).join("|").slice(0, 500)}`;
+        case "timeline":
+          return `timeline:${(block as { items: Array<{ date: string; event_zh?: string; event_en: string }> }).items.map((i) => `${i.date}:${(i.event_zh || i.event_en).toLowerCase().trim()}`).join("|").slice(0, 500)}`;
+        default:
+          return JSON.stringify(block).slice(0, 200);
+      }
+    }
+
+    const guides = await getStudentGuidesFromContentItems();
+    const report: Array<{ section_id: string; guide_id: string; duplicate_block_keys: string[]; duplicate_count: number }> = [];
+
+    for (const guide of guides) {
+      for (const section of guide.sections) {
+        const seen = new Map<string, number>();
+        for (const block of section.blocks) {
+          const key = serverBlockDedupeKey(block);
+          seen.set(key, (seen.get(key) ?? 0) + 1);
+        }
+        const duplicateKeys = Array.from(seen.entries()).filter(([, count]) => count > 1).map(([key]) => key);
+        if (duplicateKeys.length > 0) {
+          report.push({
+            section_id: section.id,
+            guide_id: guide.id,
+            duplicate_block_keys: duplicateKeys,
+            duplicate_count: duplicateKeys.reduce((sum, key) => sum + (seen.get(key) ?? 1) - 1, 0),
+          });
+        }
+      }
+    }
+
+    return {
+      total_sections_checked: guides.reduce((sum, g) => sum + g.sections.length, 0),
+      sections_with_duplicates: report.length,
+      report,
+    };
+  }));
+
+  // ── Reset student guide section to static data ──────────────────────────────
+  // Overwrites the content_items row for the given section with the current static data,
+  // even if it was previously manually edited (writes a content_drafts record as audit trail).
+  app.post("/api/admin/student-guide-sections/:id/reset-to-static", (req, res) => void adminJson(res, async () => {
+    const sectionId = req.params.id;
+
+    const staticItems = staticStudentGuideContentItems();
+    const staticItem = staticItems.find((item) => item.id === sectionId);
+    if (!staticItem) {
+      res.status(404);
+      return { error: `No static data found for section id: ${sectionId}` };
+    }
+
+    const current = await db.prepare(
+      "SELECT data_json, item_label FROM content_items WHERE content_type = 'student_guide_section' AND item_id = ? LIMIT 1"
+    ).get<{ data_json: string; item_label: string }>(sectionId);
+
+    const nextJson = JSON.stringify(staticItem.data);
+
+    await runDbTransaction(async () => {
+      await db.prepare(
+        [
+          "INSERT INTO content_items",
+          "(content_type, item_id, item_label, data_json, status)",
+          "VALUES ('student_guide_section', ?, ?, ?, 'active')",
+          "ON CONFLICT(content_type, item_id) DO UPDATE SET",
+          "item_label = excluded.item_label,",
+          "data_json = excluded.data_json,",
+          "status = 'active',",
+          "updated_at = CURRENT_TIMESTAMP",
+        ].join(" ")
+      ).run(sectionId, staticItem.label, nextJson);
+
+      await db.prepare(
+        [
+          "INSERT INTO content_drafts",
+          "(content_type, item_id, item_label, before_json, after_json, status, note)",
+          "VALUES ('student_guide_section', ?, ?, ?, ?, 'applied', 'Reset student guide section to static data')",
+        ].join(" ")
+      ).run(
+        sectionId,
+        staticItem.label,
+        current ? current.data_json : "{}",
+        nextJson
+      );
+    });
+
+    return { ok: true, section_id: sectionId, reset_to: staticItem.label };
+  }));
+
   app.get("/api/admin/content-items", (req, res) => void adminJson(res, async () => {
     const query = readString(req.query.query) ?? "";
     const requestedType = readString(req.query.type);
