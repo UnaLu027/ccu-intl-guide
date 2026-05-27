@@ -1,5 +1,21 @@
 [
   {
+    "url": "http://elearn2.cych.org.tw/1900/en/index.php",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "http://www.kingbus.com.tw/",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
     "url": "https://advising.ccu.edu.tw/",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
@@ -89,6 +105,14 @@
   },
   {
     "url": "https://cls.ccu.edu.tw/",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://coa.immigration.gov.tw/coa-frontend/foreign-student/individual/login",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
     "method": "GET",
@@ -201,6 +225,22 @@
   },
   {
     "url": "https://cyiaace.ccu.edu.tw/",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://cypac.cyhg.gov.tw/en/",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://dalin.tzuchi-healthcare.org.tw/",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
     "method": "GET",
@@ -360,6 +400,22 @@
     "error": "fetch failed"
   },
   {
+    "url": "https://eng.taiwan.net.tw/",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://english.moe.gov.tw/mp-1.html",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
     "url": "https://eq.ccu.edu.tw/",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
@@ -481,6 +537,14 @@
   },
   {
     "url": "https://kiki.ccu.edu.tw/~ccmisp06//Course/all_english.html",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://kiki.ccu.edu.tw/~ccmisp06/Course/1334_e.html",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
     "method": "GET",
@@ -688,14 +752,6 @@
     "error": "fetch failed"
   },
   {
-    "url": "https://reurl.cc/b3xMmy",
-    "status": "NEEDS_MANUAL_CHECK",
-    "httpStatus": null,
-    "method": "GET",
-    "finalUrl": "",
-    "error": "fetch failed"
-  },
-  {
     "url": "https://reurl.cc/eGaj3K",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
@@ -848,7 +904,31 @@
     "error": "fetch failed"
   },
   {
+    "url": "https://tbocc.cyhg.gov.tw/en/",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
     "url": "https://telecom.ccu.edu.tw/",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://tip.railway.gov.tw/tra-tip-web/tip?lang=EN_US",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://travel.chiayi.gov.tw/English",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
     "method": "GET",
@@ -865,6 +945,14 @@
   },
   {
     "url": "https://webmail.ccu.edu.tw",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.ali-nsa.net/en",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
     "method": "GET",
@@ -920,7 +1008,31 @@
     "error": "fetch failed"
   },
   {
+    "url": "https://www.boca.gov.tw/mp-2.html",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
     "url": "https://www.ccu.edu.tw/p/404-1000-25665.php?Lang=zh-tw",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.cgmh.org.tw/eng/about/system",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.cypd.gov.tw/english",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
     "method": "GET",
@@ -937,6 +1049,14 @@
   },
   {
     "url": "https://www.dorm.ccu.edu.tw/student/login",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.facebook.com/groups/696419170371204/",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
     "method": "GET",
@@ -961,6 +1081,14 @@
   },
   {
     "url": "https://www.facebook.com/tw.alerts/",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.facebook.com/wedeclinic?locale=zh_TW",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
     "method": "GET",
@@ -1008,6 +1136,14 @@
     "error": "fetch failed"
   },
   {
+    "url": "https://www.stm.org.tw/stm_en/",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
     "url": "https://www.taipeitimes.com/",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
@@ -1017,6 +1153,22 @@
   },
   {
     "url": "https://www.thb.gov.tw/en//cl.aspx?n=825",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.thsrc.com.tw/index_en.html",
+    "status": "NEEDS_MANUAL_CHECK",
+    "httpStatus": null,
+    "method": "GET",
+    "finalUrl": "",
+    "error": "fetch failed"
+  },
+  {
+    "url": "https://www.wda.gov.tw/en/",
     "status": "NEEDS_MANUAL_CHECK",
     "httpStatus": null,
     "method": "GET",
