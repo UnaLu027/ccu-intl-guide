@@ -2,7 +2,7 @@
  * CampusMap — Wayfinding Signage System
  *
  * v2 changes:
- * 1. Glyph markers — "O" for offices (navy), "D" for departments (sage green)
+ * 1. Color markers — navy for offices, sage green for departments and colleges
  * 2. Map legend overlay — top-left of map, semi-transparent white card
  * 3. Persistent location list panel — left sidebar on desktop, below map on mobile
  * 4. Responsive two-column layout on desktop (lg:grid-cols-[380px_1fr])
@@ -65,6 +65,9 @@ interface MapItem {
   latitude: number;
   longitude: number;
   use_manual_coordinates?: boolean;
+  college_en?: string;
+  college_zh?: string;
+  is_college_office?: boolean;
   navLink: string;
 }
 
@@ -145,6 +148,8 @@ function buildSearchText(item: MapItem) {
     item.floor,
     item.room_zh,
     item.room_en,
+    item.college_zh,
+    item.college_en,
     item.detail_zh,
     item.detail_en,
     item.google_maps_query,
@@ -156,6 +161,10 @@ function buildSearchText(item: MapItem) {
 
 function matchesFilter(type: MarkerType, filter: MarkerType | "all") {
   return filter === "all" || type === filter;
+}
+
+function matchesCollege(item: MapItem, collegeFilter: string) {
+  return item.type !== "department" || collegeFilter === "all" || item.college_en === collegeFilter;
 }
 
 function matchesSearch(item: MapItem, query: string) {
@@ -190,11 +199,9 @@ function MapLegend() {
       {(["office", "department"] as MarkerType[]).map((type) => (
         <div key={type} className="flex items-center gap-2">
           <span
-            className="inline-flex h-5 w-5 items-center justify-center rounded-full text-white font-bold text-[10px] shrink-0"
+            className="inline-flex h-3 w-3 rounded-full shrink-0 ring-2 ring-white shadow-sm"
             style={{ backgroundColor: markerColors[type] }}
-          >
-            {type === "office" ? "O" : "D"}
-          </span>
+          />
           <span className="text-xs text-foreground/80 whitespace-nowrap">
             {type === "office"
               ? t("Offices", "行政單位")
@@ -208,11 +215,98 @@ function MapLegend() {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
+function SelectedLocationCard({
+  selected,
+  googleMapsUrl,
+  onClose,
+}: {
+  selected: SelectedItem | null;
+  googleMapsUrl: string;
+  onClose: () => void;
+}) {
+  const { t } = useLanguage();
+
+  if (!selected) {
+    return (
+      <div className="border-b border-border bg-card p-4">
+        <div className="rounded-lg border border-dashed border-border bg-muted/30 px-3 py-3 text-sm text-muted-foreground">
+          {t(
+            "Select a location from the list or tap a marker on the map.",
+            "點選清單或地圖標記即可查看位置與詳細資訊。",
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="border-b border-border bg-card p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <TypeBadge type={selected.type} />
+          <h3 className="mt-1.5 font-display text-base font-bold leading-snug text-navy">
+            {t(selected.name_en, selected.name_zh)}
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            {t(selected.name_zh, selected.name_en)}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="shrink-0 rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+          aria-label={t("Close", "關閉")}
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+
+      <div className="mt-3 flex items-start gap-2 text-sm text-muted-foreground">
+        <DoorOpen className="mt-0.5 h-4 w-4 shrink-0" />
+        <span>
+          {formatLocation(
+            t(selected.building_en, selected.building_zh),
+            selected.floor,
+            t(selected.room_en ?? "", selected.room_zh ?? ""),
+          )}
+        </span>
+      </div>
+
+      {(selected.detail_en || selected.detail_zh) && (
+        <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-foreground/80">
+          {t(selected.detail_en, selected.detail_zh)}
+        </p>
+      )}
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        {selected.navLink && (
+          <Link
+            href={selected.navLink}
+            className="inline-flex items-center gap-1.5 rounded-md bg-navy px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-navy-light"
+          >
+            {t("View Details", "查看詳細資訊")}
+          </Link>
+        )}
+        <a
+          href={googleMapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-md bg-sage px-3 py-2 text-xs font-semibold text-white transition-opacity hover:opacity-90"
+        >
+          <MapPin className="h-3.5 w-3.5" />
+          Google Maps
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export default function CampusMap() {
   const { t } = useLanguage();
   const { offices, departments } = useCampusData();
 
   const [filter, setFilter] = useState<MarkerType | "all">("all");
+  const [collegeFilter, setCollegeFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState<SelectedItem | null>(null);
   const [locating, setLocating] = useState(false);
@@ -220,7 +314,9 @@ export default function CampusMap() {
 
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<MarkerEntry[]>([]);
+  const listItemRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
   const filterRef = useRef<MarkerType | "all">("all");
+  const collegeFilterRef = useRef("all");
   const searchQueryRef = useRef("");
   const userLocationMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
 
@@ -262,6 +358,9 @@ export default function CampusMap() {
         latitude: d.latitude,
         longitude: d.longitude,
         use_manual_coordinates: d.use_manual_coordinates,
+        college_en: d.college_en,
+        college_zh: d.college_zh,
+        is_college_office: d.is_college_office,
         navLink: `/navigate/dept/${d.id}`,
       })),
     ],
@@ -271,22 +370,67 @@ export default function CampusMap() {
   const matchedItems = useMemo(
     () =>
       allItems.filter(
-        (item) => matchesFilter(item.type, filter) && matchesSearch(item, searchQuery),
+        (item) =>
+          matchesFilter(item.type, filter) &&
+          matchesCollege(item, collegeFilter) &&
+          matchesSearch(item, searchQuery),
       ),
-    [allItems, filter, searchQuery],
+    [allItems, filter, collegeFilter, searchQuery],
   );
+
+  const collegeOptions = useMemo(() => {
+    const seen = new Map<string, { en: string; zh: string }>();
+    allItems
+      .filter((item) => item.type === "department" && item.college_en)
+      .forEach((item) => {
+        if (!item.college_en || seen.has(item.college_en)) return;
+        seen.set(item.college_en, {
+          en: item.college_en,
+          zh: item.college_zh || item.college_en,
+        });
+      });
+    return Array.from(seen.values());
+  }, [allItems]);
 
   // ── Marker visibility sync ────────────────────────────────────────────────
 
   // Show / hide markers whenever filter or search changes
   useEffect(() => {
     filterRef.current = filter;
+    collegeFilterRef.current = collegeFilter;
     searchQueryRef.current = searchQuery;
     markersRef.current.forEach(({ marker, type, item }) => {
-      const shouldShow = matchesFilter(type, filter) && matchesSearch(item, searchQuery);
+      const shouldShow =
+        matchesFilter(type, filter) &&
+        matchesCollege(item, collegeFilter) &&
+        matchesSearch(item, searchQuery);
       marker.map = shouldShow ? mapRef.current : null;
     });
-  }, [filter, searchQuery]);
+  }, [filter, collegeFilter, searchQuery]);
+
+  useEffect(() => {
+    if (filter !== "department" && collegeFilter !== "all") {
+      setCollegeFilter("all");
+    }
+  }, [filter, collegeFilter]);
+
+  useEffect(() => {
+    if (
+      selected &&
+      (!matchesFilter(selected.type, filter) ||
+        !matchesCollege(selected, collegeFilter) ||
+        !matchesSearch(selected, searchQuery))
+    ) {
+      setSelected(null);
+    }
+  }, [selected, filter, collegeFilter, searchQuery]);
+
+  useEffect(() => {
+    if (!selected) return;
+    if (!window.matchMedia("(min-width: 1024px)").matches) return;
+    const key = `${selected.type}-${selected.id}`;
+    listItemRefs.current.get(key)?.scrollIntoView({ block: "nearest" });
+  }, [selected]);
 
   // ── Map handlers ─────────────────────────────────────────────────────────
 
@@ -357,17 +501,15 @@ export default function CampusMap() {
           sameGroupItems.length,
         );
 
-        // Glyph "O" for offices, "D" for departments — visible at a glance
         const pin = new google.maps.marker.PinElement({
           background: markerColors[item.type],
           borderColor: "#ffffff",
-          glyphColor: "#ffffff",
-          glyph: item.type === "office" ? "O" : "D",
           scale: 0.95,
         });
 
         const shouldShow =
           matchesFilter(item.type, filterRef.current) &&
+          matchesCollege(item, collegeFilterRef.current) &&
           matchesSearch(item, searchQueryRef.current);
 
         const marker = new google.maps.marker.AdvancedMarkerElement({
@@ -445,6 +587,7 @@ export default function CampusMap() {
   const selectedGoogleMapsUrl = selected
     ? getGoogleMapsSearchUrlFromPosition({ lat: selected.lat, lng: selected.lng })
     : "";
+  const activeCollege = collegeOptions.find((college) => college.en === collegeFilter);
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -454,7 +597,7 @@ export default function CampusMap() {
 
       {/* ── Top bar ── filter chips + search (always visible) ───────────── */}
       <div className="bg-navy/[0.03] border-b border-border">
-        <div className="container py-3 space-y-3">
+        <div className="container py-4 space-y-4">
           {/* Breadcrumb + title */}
           <div className="flex items-center gap-3">
             <Link href="/" className="text-navy hover:text-amber transition-colors">
@@ -474,14 +617,19 @@ export default function CampusMap() {
           </div>
 
           {/* Category filter chips */}
-          <div className="flex gap-2 overflow-x-auto pb-1 -mb-1">
+          <div className="flex gap-2 overflow-x-auto overscroll-x-contain scroll-smooth pb-1">
             {filterOptions.map((opt) => (
               <button
                 key={opt.type}
-                onClick={() => setFilter(opt.type)}
+                onClick={() => {
+                  setFilter(opt.type);
+                  if (opt.type !== "department") setCollegeFilter("all");
+                }}
                 className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
                   filter === opt.type
-                    ? "bg-navy text-white"
+                    ? opt.type === "department"
+                      ? "bg-[#7A9E7E] text-white"
+                      : "bg-navy text-white"
                     : "bg-muted text-muted-foreground hover:bg-navy/10"
                 }`}
               >
@@ -490,6 +638,36 @@ export default function CampusMap() {
               </button>
             ))}
           </div>
+
+          {filter === "department" && (
+            <div className="flex gap-2 overflow-x-auto overscroll-x-contain scroll-smooth pb-1">
+              <button
+                type="button"
+                onClick={() => setCollegeFilter("all")}
+                className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-colors ${
+                  collegeFilter === "all"
+                    ? "border-[#7A9E7E] bg-[#7A9E7E]/15 text-[#315F38]"
+                    : "border-border bg-card text-muted-foreground hover:border-[#7A9E7E] hover:text-[#315F38]"
+                }`}
+              >
+                {t("All Colleges", "全部學院")}
+              </button>
+              {collegeOptions.map((college) => (
+                <button
+                  key={college.en}
+                  type="button"
+                  onClick={() => setCollegeFilter(college.en)}
+                  className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-colors ${
+                    collegeFilter === college.en
+                      ? "border-[#7A9E7E] bg-[#7A9E7E]/15 text-[#315F38]"
+                      : "border-border bg-card text-muted-foreground hover:border-[#7A9E7E] hover:text-[#315F38]"
+                  }`}
+                >
+                  {t(college.en, college.zh)}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Search input */}
           <div className="relative">
@@ -526,14 +704,11 @@ export default function CampusMap() {
         Mobile  → flex-col: map first (order-1), list below (order-2)
         Desktop → lg:grid 2-column: list in col-1, map in col-2
       */}
-      <div className="flex-1 flex flex-col lg:grid lg:grid-cols-[380px_minmax(0,1fr)]">
+      <div className="flex-1 flex flex-col lg:grid lg:h-[calc(100vh-185px)] lg:min-h-0 lg:grid-cols-[380px_minmax(0,1fr)]">
 
         {/* ── Map container ── order-1 mobile / col-2 desktop ──────────── */}
-        <div
-          className="relative order-1 lg:col-start-2 lg:row-start-1"
-          style={{ minHeight: "55vh" }}
-        >
-          <MapView onMapReady={handleMapReady} />
+        <div className="relative order-1 min-h-[55vh] lg:col-start-2 lg:row-start-1 lg:min-h-0">
+          <MapView className="h-[55vh] lg:h-full" onMapReady={handleMapReady} />
 
           {/* Legend — top-left, pointer-events-none so it doesn't block map */}
           <MapLegend />
@@ -561,7 +736,7 @@ export default function CampusMap() {
 
           {/* Selected item card — bottom of map */}
           {selected && (
-            <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-96 bg-card rounded-xl shadow-xl border border-border overflow-hidden z-10">
+            <div className="hidden absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-96 bg-card rounded-xl shadow-xl border border-border overflow-hidden z-10">
               {/* Coloured top stripe */}
               <div className="h-1" style={{ backgroundColor: markerColors[selected.type] }} />
 
@@ -628,7 +803,7 @@ export default function CampusMap() {
         </div>
 
         {/* ── Location list panel ── order-2 mobile / col-1 desktop ──────── */}
-        <div className="order-2 lg:col-start-1 lg:row-start-1 flex flex-col border-t lg:border-t-0 lg:border-r border-border">
+        <div className="order-2 flex flex-col border-t border-border lg:col-start-1 lg:row-start-1 lg:h-full lg:min-h-0 lg:border-r lg:border-t-0">
 
           {/* Panel header */}
           <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border bg-card">
@@ -642,6 +817,20 @@ export default function CampusMap() {
                 {matchedItems.length}{" "}
                 {t("locations", "個地點")}
               </p>
+              {filter === "department" && activeCollege && (
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-[#7A9E7E]/15 px-2 py-1 text-[11px] font-semibold text-[#315F38]">
+                    {t("Filtered", "已篩選")}：{t(activeCollege.en, activeCollege.zh)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setCollegeFilter("all")}
+                    className="text-[11px] font-semibold text-muted-foreground underline-offset-2 hover:text-navy hover:underline"
+                  >
+                    {t("Clear", "清除")}
+                  </button>
+                </div>
+              )}
             </div>
             <p className="text-xs text-muted-foreground text-right leading-snug hidden lg:block max-w-[160px]">
               {t(
@@ -651,8 +840,14 @@ export default function CampusMap() {
             </p>
           </div>
 
+          <SelectedLocationCard
+            selected={selected}
+            googleMapsUrl={selectedGoogleMapsUrl}
+            onClose={() => setSelected(null)}
+          />
+
           {/* Hint (mobile only) */}
-          <p className="lg:hidden px-4 py-2 text-xs text-muted-foreground bg-muted/30 border-b border-border">
+          <p className="hidden px-4 py-2 text-xs text-muted-foreground bg-muted/30 border-b border-border">
             {t(
               "Click a location from the list or tap a marker on the map.",
               "點選清單或地圖標記即可查看位置與詳細資訊。",
@@ -660,7 +855,7 @@ export default function CampusMap() {
           </p>
 
           {/* Scrollable list */}
-          <div className="overflow-y-auto max-h-72 lg:max-h-none lg:flex-1">
+          <div className="max-h-72 overflow-y-auto lg:max-h-none lg:min-h-0 lg:flex-1">
             {matchedItems.length === 0 ? (
               <div className="px-4 py-10 text-center">
                 <MapPin className="w-8 h-8 mx-auto mb-2 text-muted-foreground/30" />
@@ -681,6 +876,14 @@ export default function CampusMap() {
                 return (
                   <button
                     key={`${item.type}-${item.id}`}
+                    ref={(node) => {
+                      const key = `${item.type}-${item.id}`;
+                      if (node) {
+                        listItemRefs.current.set(key, node);
+                      } else {
+                        listItemRefs.current.delete(key);
+                      }
+                    }}
                     type="button"
                     onClick={() => openItemOnMap(item)}
                     className={[

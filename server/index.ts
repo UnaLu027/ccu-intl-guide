@@ -148,10 +148,7 @@ async function getMergedCampusContentData(): Promise<CampusSearchData> {
 
 async function syncStaticContentItemsToDatabase() {
   const staticItems = staticContentItems();
-  const changedByAdminRows = await db.prepare(
-    "SELECT DISTINCT content_type, item_id FROM content_drafts"
-  ).all<{ content_type: ContentType; item_id: string }>();
-  const changedByAdmin = new Set(changedByAdminRows.map((row) => `${row.content_type}:${row.item_id}`));
+  const changedByAdmin = await getManuallyChangedContentKeys();
   const result = {
     inserted: 0,
     updated: 0,
@@ -210,11 +207,52 @@ function staticStudentGuideContentItems() {
   return staticContentItems().filter((item) => item.type === "student_guide_section");
 }
 
+const RESET_STUDENT_GUIDE_TO_STATIC_NOTE = "Reset student guide section to static data";
+
+type ContentDraftMarker = {
+  content_type: ContentType;
+  item_id: string;
+  status: string;
+  note: string | null;
+};
+
+function isStaticResetDraft(row: Pick<ContentDraftMarker, "status" | "note">) {
+  return row.status === "applied" && row.note === RESET_STUDENT_GUIDE_TO_STATIC_NOTE;
+}
+
+async function getManuallyChangedContentKeys(type?: ContentType) {
+  const rows = type
+    ? await db.prepare(
+        [
+          "SELECT content_type, item_id, status, note",
+          "FROM content_drafts",
+          "WHERE content_type = ?",
+          "ORDER BY content_type, item_id, created_at, id",
+        ].join(" ")
+      ).all<ContentDraftMarker>(type)
+    : await db.prepare(
+        [
+          "SELECT content_type, item_id, status, note",
+          "FROM content_drafts",
+          "ORDER BY content_type, item_id, created_at, id",
+        ].join(" ")
+      ).all<ContentDraftMarker>();
+
+  const latestByItem = new Map<string, ContentDraftMarker>();
+  for (const row of rows) {
+    latestByItem.set(`${row.content_type}:${row.item_id}`, row);
+  }
+
+  return new Set(
+    Array.from(latestByItem.entries())
+      .filter(([, row]) => !isStaticResetDraft(row))
+      .map(([key]) => key)
+  );
+}
+
 async function getManuallyChangedStudentGuideSectionIds() {
-  const rows = await db.prepare(
-    "SELECT DISTINCT item_id FROM content_drafts WHERE content_type = 'student_guide_section'"
-  ).all<{ item_id: string }>();
-  return new Set(rows.map((row) => row.item_id));
+  const keys = await getManuallyChangedContentKeys("student_guide_section");
+  return new Set(Array.from(keys).map((key) => key.replace(/^student_guide_section:/, "")));
 }
 
 async function syncStaticStudentGuideSectionsToDatabase() {
@@ -1440,12 +1478,22 @@ async function startServer() {
     return { ok: true, deleted: before };
   }));
 
-  app.delete("/api/admin/records/content-drafts", (_req, res) => void adminJson(res, async () => {
+  app.delete("/api/admin/records/content-drafts", (req, res) => void adminJson(res, async () => {
+    const force = readString(req.query.force) === "true";
     const before = {
       drafts: ((await db.prepare("SELECT COUNT(*) as n FROM content_drafts").get()) as { n: number }).n,
+      preservedStudentGuideDrafts: force
+        ? 0
+        : ((await db.prepare(
+            "SELECT COUNT(*) as n FROM content_drafts WHERE content_type = 'student_guide_section'"
+          ).get()) as { n: number }).n,
     };
 
-    await db.prepare("DELETE FROM content_drafts").run();
+    if (force) {
+      await db.prepare("DELETE FROM content_drafts").run();
+    } else {
+      await db.prepare("DELETE FROM content_drafts WHERE content_type <> 'student_guide_section'").run();
+    }
 
     return { ok: true, deleted: before };
   }));
@@ -1497,8 +1545,32 @@ async function startServer() {
 
   // ── Duplicate report ────────────────────────────────────────────────────────
   // Scans the *actual* blocks returned by /api/student-guides (DB overrides applied)
-  // and reports per-section duplicate block keys.
+  // and reports per-section duplicate blocks, URLs, checklist items, timeline items, and contacts.
   app.get("/api/admin/student-guide-duplicate-report", (_req, res) => void adminJson(res, async () => {
+    function normalizeDuplicateText(value: string) {
+      return value.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
+    }
+
+    function addDuplicateCount(map: Map<string, number>, key: string) {
+      const normalizedKey = key.trim();
+      if (!normalizedKey || !normalizedKey.replace(/\|/g, "").trim()) return;
+      map.set(normalizedKey, (map.get(normalizedKey) ?? 0) + 1);
+    }
+
+    function duplicateKeys(map: Map<string, number>) {
+      return Array.from(map.entries())
+        .filter(([, count]) => count > 1)
+        .map(([key]) => key);
+    }
+
+    function duplicateCount(map: Map<string, number>) {
+      return Array.from(map.values()).reduce((sum, count) => sum + Math.max(0, count - 1), 0);
+    }
+
+    function duplicateUrlKey(url: string) {
+      return url.trim().replace(/\/$/, "");
+    }
+
     function serverBlockDedupeKey(block: StudentGuideSection["blocks"][number]): string {
       switch (block.type) {
         case "contact":
@@ -1521,22 +1593,88 @@ async function startServer() {
     }
 
     const guides = await getStudentGuidesFromContentItems();
-    const report: Array<{ section_id: string; guide_id: string; duplicate_block_keys: string[]; duplicate_count: number }> = [];
+    const report: Array<{
+      section_id: string;
+      guide_id: string;
+      duplicate_block_keys: string[];
+      duplicate_urls: string[];
+      duplicate_checklist_items: string[];
+      duplicate_timeline_items: string[];
+      duplicate_contacts: string[];
+      duplicate_count: number;
+    }> = [];
 
     for (const guide of guides) {
       for (const section of guide.sections) {
-        const seen = new Map<string, number>();
+        const blockKeys = new Map<string, number>();
+        const urls = new Map<string, number>();
+        const checklistItems = new Map<string, number>();
+        const timelineItems = new Map<string, number>();
+        const contacts = new Map<string, number>();
+
         for (const block of section.blocks) {
-          const key = serverBlockDedupeKey(block);
-          seen.set(key, (seen.get(key) ?? 0) + 1);
+          addDuplicateCount(blockKeys, serverBlockDedupeKey(block));
+
+          if (block.type === "links") {
+            for (const link of block.links) {
+              addDuplicateCount(urls, duplicateUrlKey(link.url));
+            }
+          } else if (block.type === "contact") {
+            addDuplicateCount(
+              contacts,
+              [
+                normalizeDuplicateText(block.name_en ?? ""),
+                normalizeDuplicateText(block.name_zh ?? ""),
+                normalizeDuplicateText(block.email ?? ""),
+                normalizeDuplicateText(block.phone ?? ""),
+              ].join("|"),
+            );
+            for (const link of block.links ?? []) {
+              addDuplicateCount(urls, duplicateUrlKey(link.url));
+            }
+          } else if (block.type === "checklist") {
+            for (const item of block.items) {
+              addDuplicateCount(
+                checklistItems,
+                `${normalizeDuplicateText(item.en)}|${normalizeDuplicateText(item.zh)}`,
+              );
+            }
+          } else if (block.type === "timeline") {
+            for (const item of block.items) {
+              addDuplicateCount(
+                timelineItems,
+                [
+                  normalizeDuplicateText(item.date),
+                  normalizeDuplicateText(item.event_en),
+                  normalizeDuplicateText(item.event_zh),
+                ].join("|"),
+              );
+            }
+          }
         }
-        const duplicateKeys = Array.from(seen.entries()).filter(([, count]) => count > 1).map(([key]) => key);
-        if (duplicateKeys.length > 0) {
+
+        const duplicateBlockKeys = duplicateKeys(blockKeys);
+        const duplicateUrls = duplicateKeys(urls);
+        const duplicateChecklistItems = duplicateKeys(checklistItems);
+        const duplicateTimelineItems = duplicateKeys(timelineItems);
+        const duplicateContacts = duplicateKeys(contacts);
+        const totalDuplicateCount =
+          duplicateCount(blockKeys) +
+          duplicateCount(urls) +
+          duplicateCount(checklistItems) +
+          duplicateCount(timelineItems) +
+          duplicateCount(contacts);
+
+        if (totalDuplicateCount > 0) {
           report.push({
             section_id: section.id,
             guide_id: guide.id,
-            duplicate_block_keys: duplicateKeys,
-            duplicate_count: duplicateKeys.reduce((sum, key) => sum + (seen.get(key) ?? 1) - 1, 0),
+            duplicate_block_keys: duplicateBlockKeys,
+            duplicate_urls: duplicateUrls,
+            duplicate_checklist_items: duplicateChecklistItems,
+            duplicate_timeline_items: duplicateTimelineItems,
+            duplicate_contacts: duplicateContacts,
+            duplicate_count: totalDuplicateCount,
           });
         }
       }
@@ -1586,13 +1724,14 @@ async function startServer() {
         [
           "INSERT INTO content_drafts",
           "(content_type, item_id, item_label, before_json, after_json, status, note)",
-          "VALUES ('student_guide_section', ?, ?, ?, ?, 'applied', 'Reset student guide section to static data')",
+          "VALUES ('student_guide_section', ?, ?, ?, ?, 'applied', ?)",
         ].join(" ")
       ).run(
         sectionId,
         staticItem.label,
         current ? current.data_json : "{}",
-        nextJson
+        nextJson,
+        RESET_STUDENT_GUIDE_TO_STATIC_NOTE
       );
     });
 

@@ -3011,46 +3011,73 @@ function blockDedupeKey(block: HandbookBlock): string {
   }
 }
 
+function normalizeBlockDedupeText(value: string) {
+  return value.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function checklistItemDedupeKey(item: { en: string; zh: string }) {
+  return `${normalizeBlockDedupeText(item.en)}|${normalizeBlockDedupeText(item.zh)}`;
+}
+
+function timelineItemDedupeKey(item: { date: string; event_en: string; event_zh: string }) {
+  return `${normalizeBlockDedupeText(item.date)}|${normalizeBlockDedupeText(item.event_en)}|${normalizeBlockDedupeText(item.event_zh)}`;
+}
+
+function linkDedupeKey(url: string) {
+  return url.trim().replace(/\/$/, "");
+}
+
 /**
  * Merges multiple block arrays into one, deduplicating by blockDedupeKey.
- * Also deduplicates items *within* checklist, timeline, and links blocks.
- * Later groups win on ordering but lose on key conflicts (first occurrence kept).
+ * Also deduplicates checklist items, timeline items, and links across all merged blocks.
+ * First occurrence wins so static guide ordering remains stable.
  */
 function mergeGuideBlocksWithDedupe(...blockGroups: HandbookBlock[][]): HandbookBlock[] {
   const seen = new Set<string>();
+  const seenChecklistItems = new Set<string>();
+  const seenTimelineItems = new Set<string>();
+  const seenLinks = new Set<string>();
   const result: HandbookBlock[] = [];
 
   for (const group of blockGroups) {
     for (const block of group) {
-      // Dedupe items inside aggregate blocks before computing the key
       let processed: HandbookBlock = block;
 
       if (block.type === "checklist") {
-        const itemSeen = new Set<string>();
         const dedupedItems = block.items.filter((item) => {
-          const k = (item.zh || item.en).toLowerCase().trim();
-          if (itemSeen.has(k)) return false;
-          itemSeen.add(k);
+          const key = checklistItemDedupeKey(item);
+          if (seenChecklistItems.has(key)) return false;
+          seenChecklistItems.add(key);
           return true;
         });
+        if (dedupedItems.length === 0) continue;
         processed = { ...block, items: dedupedItems };
       } else if (block.type === "timeline") {
-        const itemSeen = new Set<string>();
         const dedupedItems = block.items.filter((item) => {
-          const k = `${item.date}:${(item.event_zh || item.event_en).toLowerCase().trim()}`;
-          if (itemSeen.has(k)) return false;
-          itemSeen.add(k);
+          const key = timelineItemDedupeKey(item);
+          if (seenTimelineItems.has(key)) return false;
+          seenTimelineItems.add(key);
           return true;
         });
+        if (dedupedItems.length === 0) continue;
         processed = { ...block, items: dedupedItems };
       } else if (block.type === "links") {
-        const urlSeen = new Set<string>();
         const dedupedLinks = block.links.filter((link) => {
-          if (urlSeen.has(link.url)) return false;
-          urlSeen.add(link.url);
+          const key = linkDedupeKey(link.url);
+          if (seenLinks.has(key)) return false;
+          seenLinks.add(key);
           return true;
         });
+        if (dedupedLinks.length === 0) continue;
         processed = { ...block, links: dedupedLinks };
+      } else if (block.type === "contact" && block.links) {
+        const dedupedLinks = block.links.filter((link) => {
+          const key = linkDedupeKey(link.url);
+          if (seenLinks.has(key)) return false;
+          seenLinks.add(key);
+          return true;
+        });
+        processed = { ...block, links: dedupedLinks.length > 0 ? dedupedLinks : undefined };
       }
 
       const key = blockDedupeKey(processed);
