@@ -1,10 +1,10 @@
 /**
- * CampusMap — Wayfinding Signage System
+ * CampusMap - Wayfinding Signage System
  *
  * v2 changes:
- * 1. Color markers — navy for offices, sage green for departments and colleges
- * 2. Map legend overlay — top-left of map, semi-transparent white card
- * 3. Persistent location list panel — left sidebar on desktop, below map on mobile
+ * 1. Color markers - navy for offices, sage green for departments and colleges
+ * 2. Map legend overlay - top-left of map, semi-transparent white card
+ * 3. Persistent location list panel - left sidebar on desktop, below map on mobile
  * 4. Responsive two-column layout on desktop (lg:grid-cols-[380px_1fr])
  * 5. Selected item highlighted in list (navy left-border + tinted background)
  * 6. Type badge in selected card and list items
@@ -26,11 +26,7 @@ import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCampusData } from "@/contexts/CampusDataContext";
 import { MapView } from "@/components/Map";
-import {
-  getGoogleMapsSearchUrlFromPosition,
-  lookupPlaceLocation,
-  shouldUseManualCoordinates,
-} from "@/lib/mapTarget";
+import { getGoogleMapsSearchUrlFromPosition } from "@/lib/mapTarget";
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { Link } from "wouter";
 import {
@@ -45,7 +41,7 @@ import {
   X,
 } from "lucide-react";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// Types
 
 type MarkerType = "office" | "department";
 
@@ -84,7 +80,7 @@ interface MarkerEntry {
   position: google.maps.LatLngLiteral;
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// Constants
 
 const filterOptions: {
   type: MarkerType | "all";
@@ -103,12 +99,28 @@ const markerColors: Record<MarkerType, string> = {
   department: "#7A9E7E",
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
+
+function hasValidLatLng(item: MapItem) {
+  return (
+    Number.isFinite(item.latitude) &&
+    Number.isFinite(item.longitude) &&
+    item.latitude !== 0 &&
+    item.longitude !== 0
+  );
+}
+
+function getPrimaryMapPosition(item: MapItem): google.maps.LatLngLiteral | null {
+  if (hasValidLatLng(item)) {
+    return { lat: item.latitude, lng: item.longitude };
+  }
+  return null;
+}
 
 function getGroupingKey(item: MapItem) {
-  return shouldUseManualCoordinates(item)
-    ? `manual:${item.latitude},${item.longitude}`
-    : `query:${item.google_maps_query}`;
+  const position = getPrimaryMapPosition(item);
+  if (position) return `coords:${position.lat.toFixed(6)},${position.lng.toFixed(6)}`;
+  return `missing:${item.type}:${item.id}`;
 }
 
 function getDisplayPosition(
@@ -129,14 +141,22 @@ function getDisplayPosition(
 }
 
 function formatLocation(building: string, floor: string, room?: string) {
-  return [building, floor ? `· ${floor}` : "", room ? ` ${room}` : ""]
-    .join("")
+  return [building, floor, room]
+    .filter(Boolean)
+    .join(" ")
     .replace(/\s+/g, " ")
     .trim();
 }
 
 function normalizeSearchText(value: string) {
   return value.trim().toLowerCase();
+}
+
+function displayText(lang: "en" | "zh", en?: string, zh?: string, id?: string) {
+  const cleanEn = en?.trim();
+  const cleanZh = zh?.trim();
+  if (lang === "en") return cleanEn || cleanZh || id || "";
+  return cleanZh || cleanEn || id || "";
 }
 
 function buildSearchText(item: MapItem) {
@@ -173,7 +193,7 @@ function matchesSearch(item: MapItem, query: string) {
   return buildSearchText(item).includes(q);
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// Sub-components
 
 /** Colour + letter badge displayed in the list and selected card. */
 function TypeBadge({ type }: { type: MarkerType }) {
@@ -213,7 +233,7 @@ function MapLegend() {
   );
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
+// Main component
 
 function SelectedLocationCard({
   selected,
@@ -224,11 +244,11 @@ function SelectedLocationCard({
   googleMapsUrl: string;
   onClose: () => void;
 }) {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
 
   if (!selected) {
     return (
-      <div className="border-b border-border bg-card p-4">
+      <div className="shrink-0 border-b border-border bg-card p-4">
         <div className="rounded-lg border border-dashed border-border bg-muted/30 px-3 py-3 text-sm text-muted-foreground">
           {t(
             "Select a location from the list or tap a marker on the map.",
@@ -240,15 +260,15 @@ function SelectedLocationCard({
   }
 
   return (
-    <div className="border-b border-border bg-card p-4 shadow-sm">
+    <div className="shrink-0 border-b border-border bg-card p-4 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <TypeBadge type={selected.type} />
           <h3 className="mt-1.5 font-display text-base font-bold leading-snug text-navy">
-            {t(selected.name_en, selected.name_zh)}
+            {displayText(lang, selected.name_en, selected.name_zh, selected.id)}
           </h3>
           <p className="text-xs text-muted-foreground">
-            {t(selected.name_zh, selected.name_en)}
+            {displayText(lang === "en" ? "zh" : "en", selected.name_en, selected.name_zh, selected.id)}
           </p>
         </div>
         <button
@@ -265,16 +285,16 @@ function SelectedLocationCard({
         <DoorOpen className="mt-0.5 h-4 w-4 shrink-0" />
         <span>
           {formatLocation(
-            t(selected.building_en, selected.building_zh),
+            displayText(lang, selected.building_en, selected.building_zh),
             selected.floor,
-            t(selected.room_en ?? "", selected.room_zh ?? ""),
+            displayText(lang, selected.room_en, selected.room_zh),
           )}
         </span>
       </div>
 
       {(selected.detail_en || selected.detail_zh) && (
         <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-foreground/80">
-          {t(selected.detail_en, selected.detail_zh)}
+          {displayText(lang, selected.detail_en, selected.detail_zh)}
         </p>
       )}
 
@@ -302,7 +322,7 @@ function SelectedLocationCard({
 }
 
 export default function CampusMap() {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
   const { offices, departments } = useCampusData();
 
   const [filter, setFilter] = useState<MarkerType | "all">("all");
@@ -314,13 +334,14 @@ export default function CampusMap() {
 
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<MarkerEntry[]>([]);
+  const listContainerRef = useRef<HTMLDivElement | null>(null);
   const listItemRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
   const filterRef = useRef<MarkerType | "all">("all");
   const collegeFilterRef = useRef("all");
   const searchQueryRef = useRef("");
   const userLocationMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
 
-  // ── Data ──────────────────────────────────────────────────────────────────
+  // Data
 
   const allItems: MapItem[] = useMemo(
     () => [
@@ -392,7 +413,7 @@ export default function CampusMap() {
     return Array.from(seen.values());
   }, [allItems]);
 
-  // ── Marker visibility sync ────────────────────────────────────────────────
+  // Marker visibility sync
 
   // Show / hide markers whenever filter or search changes
   useEffect(() => {
@@ -429,10 +450,22 @@ export default function CampusMap() {
     if (!selected) return;
     if (!window.matchMedia("(min-width: 1024px)").matches) return;
     const key = `${selected.type}-${selected.id}`;
-    listItemRefs.current.get(key)?.scrollIntoView({ block: "nearest" });
+    const listContainer = listContainerRef.current;
+    const item = listItemRefs.current.get(key);
+    if (!listContainer || !item) return;
+    const itemTop = item.offsetTop;
+    const itemBottom = itemTop + item.offsetHeight;
+    const viewTop = listContainer.scrollTop;
+    const viewBottom = viewTop + listContainer.clientHeight;
+    if (itemTop < viewTop || itemBottom > viewBottom) {
+      listContainer.scrollTo({
+        top: Math.max(0, itemTop - 80),
+        behavior: "smooth",
+      });
+    }
   }, [selected]);
 
-  // ── Map handlers ─────────────────────────────────────────────────────────
+  // Map handlers
 
   const openItemOnMap = useCallback((item: MapItem) => {
     const entry = markersRef.current.find(
@@ -455,8 +488,6 @@ export default function CampusMap() {
       map.setCenter({ lat: 23.5628, lng: 120.4724 });
       map.setZoom(16);
 
-      const placesService = new google.maps.places.PlacesService(map);
-
       // Group by coordinate key to spread co-located markers
       const grouped = new Map<string, MapItem[]>();
       allItems.forEach((item) => {
@@ -464,39 +495,21 @@ export default function CampusMap() {
         grouped.set(key, [...(grouped.get(key) ?? []), item]);
       });
 
-      // Resolve Google Places for non-manual items
-      const queryCache = new Map<string, google.maps.LatLng | null>();
-      const uniqueQueries = Array.from(
-        new Set(
-          allItems
-            .filter((item) => !shouldUseManualCoordinates(item))
-            .map((item) => item.google_maps_query)
-            .filter(Boolean),
-        ),
-      );
-      await Promise.all(
-        uniqueQueries.map(async (query) => {
-          const loc = await lookupPlaceLocation(placesService, query);
-          queryCache.set(query, loc);
-        }),
-      );
-
       allItems.forEach((item) => {
+        const primaryPosition = getPrimaryMapPosition(item);
+        if (!primaryPosition) {
+          console.warn("CampusMap item has no valid coordinates; marker skipped.", item);
+          return;
+        }
+
         const groupKey = getGroupingKey(item);
         const sameGroupItems = grouped.get(groupKey) ?? [item];
         const indexWithinGroup = sameGroupItems.findIndex(
           (u) => u.id === item.id && u.type === item.type,
         );
 
-        const resolvedLoc = shouldUseManualCoordinates(item)
-          ? null
-          : queryCache.get(item.google_maps_query);
-
-        const baseLat = resolvedLoc ? resolvedLoc.lat() : item.latitude;
-        const baseLng = resolvedLoc ? resolvedLoc.lng() : item.longitude;
-
         const position = getDisplayPosition(
-          { ...item, latitude: baseLat, longitude: baseLng },
+          { ...item, latitude: primaryPosition.lat, longitude: primaryPosition.lng },
           Math.max(indexWithinGroup, 0),
           sameGroupItems.length,
         );
@@ -504,6 +517,8 @@ export default function CampusMap() {
         const pin = new google.maps.marker.PinElement({
           background: markerColors[item.type],
           borderColor: "#ffffff",
+          glyph: "",
+          glyphColor: "#ffffff",
           scale: 0.95,
         });
 
@@ -515,19 +530,20 @@ export default function CampusMap() {
         const marker = new google.maps.marker.AdvancedMarkerElement({
           map: shouldShow ? map : null,
           position,
-          title: t(item.name_en, item.name_zh),
+          title: displayText(lang, item.name_en, item.name_zh, item.id),
           content: pin.element,
         });
 
         marker.addListener("click", () => {
           setSelected({ ...item, lat: position.lat, lng: position.lng });
           map.panTo(position);
+          map.setZoom(Math.max(map.getZoom() || 16, 18));
         });
 
         markersRef.current.push({ marker, type: item.type, id: item.id, item, position });
       });
     },
-    [t], // eslint-disable-line react-hooks/exhaustive-deps
+    [lang], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const handleLocate = useCallback(() => {
@@ -535,7 +551,7 @@ export default function CampusMap() {
       setLocationError(
         t(
           "Location access denied. Please enable location in your browser settings.",
-          "無法取得位置，請在瀏覽器設定中開啟定位權限。",
+          "無法取得位置，請在瀏覽器設定中啟用定位權限。",
         ),
       );
       return;
@@ -576,7 +592,7 @@ export default function CampusMap() {
         setLocationError(
           t(
             "Location access denied. Please enable location in your browser settings.",
-            "無法取得位置，請在瀏覽器設定中開啟定位權限。",
+            "無法取得位置，請在瀏覽器設定中啟用定位權限。",
           ),
         );
         setLocating(false);
@@ -589,14 +605,16 @@ export default function CampusMap() {
     : "";
   const activeCollege = collegeOptions.find((college) => college.en === collegeFilter);
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // Render
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background lg:h-screen lg:overflow-hidden">
       <Header />
 
-      {/* ── Top bar ── filter chips + search (always visible) ───────────── */}
-      <div className="bg-navy/[0.03] border-b border-border">
+      <div className="flex min-h-0 flex-1 flex-col lg:overflow-hidden">
+
+      {/* Top bar: filter chips + search */}
+      <div className="shrink-0 bg-navy/[0.03] border-b border-border">
         <div className="container py-4 space-y-4">
           {/* Breadcrumb + title */}
           <div className="flex items-center gap-3">
@@ -663,7 +681,7 @@ export default function CampusMap() {
                       : "border-border bg-card text-muted-foreground hover:border-[#7A9E7E] hover:text-[#315F38]"
                   }`}
                 >
-                  {t(college.en, college.zh)}
+                  {displayText(lang, college.en, college.zh)}
                 </button>
               ))}
             </div>
@@ -677,8 +695,8 @@ export default function CampusMap() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t(
-                "Search offices, departments, buildings…",
-                "搜尋行政單位、系所、建築物…",
+                "Search offices, departments, buildings...",
+                "搜尋行政單位、系所、建築物...",
               )}
               className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-9 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-navy focus:ring-2 focus:ring-navy/10"
             />
@@ -699,21 +717,21 @@ export default function CampusMap() {
         </div>
       </div>
 
-      {/* ── Main content ─────────────────────────────────────────────────── */}
+      {/* Main content */}
       {/*
-        Mobile  → flex-col: map first (order-1), list below (order-2)
-        Desktop → lg:grid 2-column: list in col-1, map in col-2
+        Mobile: flex-col, map first (order-1), list below (order-2)
+        Desktop: lg:grid 2-column, list in col-1, map in col-2
       */}
-      <div className="flex-1 flex flex-col lg:grid lg:h-[calc(100vh-185px)] lg:min-h-0 lg:grid-cols-[380px_minmax(0,1fr)]">
+      <div className="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[380px_minmax(0,1fr)] lg:overflow-hidden">
 
-        {/* ── Map container ── order-1 mobile / col-2 desktop ──────────── */}
+        {/* Map container: order-1 mobile / col-2 desktop */}
         <div className="relative order-1 min-h-[55vh] lg:col-start-2 lg:row-start-1 lg:min-h-0">
           <MapView className="h-[55vh] lg:h-full" onMapReady={handleMapReady} />
 
-          {/* Legend — top-left, pointer-events-none so it doesn't block map */}
+          {/* Legend: top-left, pointer-events-none so it doesn't block map */}
           <MapLegend />
 
-          {/* Locate button — top-right to avoid conflict with selected card */}
+          {/* Locate button: top-right to avoid map controls */}
           <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-2">
             {locationError && (
               <p className="bg-white border border-red-200 text-red-700 text-xs px-3 py-2 rounded-lg shadow-md max-w-[220px] text-right leading-snug">
@@ -734,79 +752,13 @@ export default function CampusMap() {
             </button>
           </div>
 
-          {/* Selected item card — bottom of map */}
-          {selected && (
-            <div className="hidden absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-96 bg-card rounded-xl shadow-xl border border-border overflow-hidden z-10">
-              {/* Coloured top stripe */}
-              <div className="h-1" style={{ backgroundColor: markerColors[selected.type] }} />
-
-              <div className="p-4">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="min-w-0 flex-1">
-                    {/* Type badge above name */}
-                    <TypeBadge type={selected.type} />
-                    <h3 className="mt-1.5 font-display font-bold text-base text-navy leading-snug">
-                      {t(selected.name_en, selected.name_zh)}
-                    </h3>
-                    <p className="text-xs text-muted-foreground">
-                      {t(selected.name_zh, selected.name_en)}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setSelected(null)}
-                    className="shrink-0 p-1 hover:bg-muted rounded"
-                    aria-label={t("Close", "關閉")}
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div className="flex items-start gap-2 text-sm text-muted-foreground mb-2">
-                  <DoorOpen className="w-4 h-4 shrink-0 mt-0.5" />
-                  <span>
-                    {formatLocation(
-                      t(selected.building_en, selected.building_zh),
-                      selected.floor,
-                      t(selected.room_en ?? "", selected.room_zh ?? ""),
-                    )}
-                  </span>
-                </div>
-
-                {(selected.detail_en || selected.detail_zh) && (
-                  <p className="text-sm text-foreground/80 mb-3 line-clamp-3">
-                    {t(selected.detail_en, selected.detail_zh)}
-                  </p>
-                )}
-
-                <div className="flex gap-2 flex-wrap">
-                  {selected.navLink && (
-                    <Link
-                      href={selected.navLink}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 bg-navy text-white text-xs font-semibold rounded-md hover:bg-navy-light transition-colors"
-                    >
-                      {t("View Details", "查看詳情")}
-                    </Link>
-                  )}
-                  <a
-                    href={selectedGoogleMapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-2 bg-sage text-white text-xs font-semibold rounded-md hover:opacity-90 transition-opacity"
-                  >
-                    <MapPin className="w-3.5 h-3.5" />
-                    Google Maps
-                  </a>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* ── Location list panel ── order-2 mobile / col-1 desktop ──────── */}
-        <div className="order-2 flex flex-col border-t border-border lg:col-start-1 lg:row-start-1 lg:h-full lg:min-h-0 lg:border-r lg:border-t-0">
+        {/* Location list panel: order-2 mobile / col-1 desktop */}
+        <div className="order-2 flex flex-col border-t border-border lg:col-start-1 lg:row-start-1 lg:h-full lg:min-h-0 lg:overflow-hidden lg:border-r lg:border-t-0">
 
           {/* Panel header */}
-          <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border bg-card">
+          <div className="shrink-0 flex items-center justify-between gap-3 px-4 py-3 border-b border-border bg-card">
             <div>
               <h2 className="text-sm font-bold text-navy">
                 {searchQuery.trim()
@@ -820,7 +772,7 @@ export default function CampusMap() {
               {filter === "department" && activeCollege && (
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   <span className="rounded-full bg-[#7A9E7E]/15 px-2 py-1 text-[11px] font-semibold text-[#315F38]">
-                    {t("Filtered", "已篩選")}：{t(activeCollege.en, activeCollege.zh)}
+                    {t("Filtered", "已篩選")}：{displayText(lang, activeCollege.en, activeCollege.zh)}
                   </span>
                   <button
                     type="button"
@@ -835,7 +787,7 @@ export default function CampusMap() {
             <p className="text-xs text-muted-foreground text-right leading-snug hidden lg:block max-w-[160px]">
               {t(
                 "Click a location to view on map",
-                "點選地點查看地圖位置",
+                "點選地點即可在地圖上查看",
               )}
             </p>
           </div>
@@ -855,7 +807,7 @@ export default function CampusMap() {
           </p>
 
           {/* Scrollable list */}
-          <div className="max-h-72 overflow-y-auto lg:max-h-none lg:min-h-0 lg:flex-1">
+          <div ref={listContainerRef} className="max-h-72 overflow-y-auto lg:max-h-none lg:min-h-0 lg:flex-1">
             {matchedItems.length === 0 ? (
               <div className="px-4 py-10 text-center">
                 <MapPin className="w-8 h-8 mx-auto mb-2 text-muted-foreground/30" />
@@ -865,7 +817,7 @@ export default function CampusMap() {
                 <p className="text-xs text-muted-foreground/70 mt-1">
                   {t(
                     "Try different keywords or change the filter.",
-                    "請嘗試其他關鍵字或更改分類篩選。",
+                    "請嘗試不同關鍵字，或調整篩選條件。",
                   )}
                 </p>
               </div>
@@ -901,18 +853,18 @@ export default function CampusMap() {
                             isSelected ? "text-navy" : "text-foreground"
                           }`}
                         >
-                          {t(item.name_en, item.name_zh)}
+                          {displayText(lang, item.name_en, item.name_zh, item.id)}
                         </p>
                         <p className="text-xs text-muted-foreground truncate mt-0.5">
                           {formatLocation(
-                            t(item.building_en, item.building_zh),
+                            displayText(lang, item.building_en, item.building_zh),
                             item.floor,
-                            t(item.room_en ?? "", item.room_zh ?? ""),
+                            displayText(lang, item.room_en, item.room_zh),
                           )}
                         </p>
                         {(item.detail_en || item.detail_zh) && (
                           <p className="text-xs text-foreground/55 mt-1 line-clamp-2 leading-relaxed">
-                            {t(item.detail_en, item.detail_zh)}
+                            {displayText(lang, item.detail_en, item.detail_zh)}
                           </p>
                         )}
                       </div>
@@ -924,6 +876,7 @@ export default function CampusMap() {
             )}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
