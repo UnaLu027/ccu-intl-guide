@@ -1,0 +1,439 @@
+{
+  "package_id": "reviewed-student-guide-hotfix-v1",
+  "source_branch": "hotfix-live-guide-content-review",
+  "source_commit": "6703d47be8f72a51d68d9d20491ad5b6c1fb41ff",
+  "created_at": "2026-06-01T16:34:54.746Z",
+  "change_note": "Reviewed student guide display and content fixes pending admin approval.",
+  "items": [
+    {
+      "content_type": "student_guide_section",
+      "item_id": "degree_calendar",
+      "action": "update",
+      "after_data": {
+        "id": "degree_calendar",
+        "title_en": "Important Dates and Calendar",
+        "title_zh": "重要日期與行事曆",
+        "categoryId": "before_arrival",
+        "tags_en": [
+          "calendar",
+          "orientation",
+          "registration"
+        ],
+        "tags_zh": [
+          "行事曆",
+          "迎新",
+          "註冊"
+        ],
+        "summary_en": "Important dates for move-in, registration, orientation, exams, and dormitory move-out.",
+        "summary_zh": "宿舍入住、註冊、迎新、考試與退宿等重要日期。",
+        "sourceReferences": [
+          {
+            "documentId": "handbook_2026_spring_international_students",
+            "documentTitle_en": "International Students Handbook",
+            "documentTitle_zh": "國際學生手冊",
+            "pages": "p.3-p.5"
+          }
+        ],
+        "relatedTaskIds": [
+          "registration_degree"
+        ],
+        "blocks": [
+          {
+            "type": "timeline",
+            "items": [
+              {
+                "date": "02/20",
+                "event_en": "Semester begins; dormitory move-in day.",
+                "event_zh": "學期開始；宿舍可開始入住。"
+              },
+              {
+                "date": "02/23",
+                "event_en": "New student registration begins.",
+                "event_zh": "新生註冊開始。"
+              },
+              {
+                "date": "02/23-03/06",
+                "event_en": "First course selection period for new students.",
+                "event_zh": "新生第一階段選課。"
+              },
+              {
+                "date": "02/25",
+                "event_en": "Welcome orientation for international students.",
+                "event_zh": "國際學生迎新說明會。"
+              },
+              {
+                "date": "02/27-02/28",
+                "event_en": "228 Peace Memorial Day.",
+                "event_zh": "二二八和平紀念日。"
+              },
+              {
+                "date": "03/16",
+                "event_en": "Deadline for submitting the Student Group Insurance waiver.",
+                "event_zh": "繳交不參加學生團體保險切結書截止。"
+              },
+              {
+                "date": "04/01",
+                "event_en": "Registration deadline.",
+                "event_zh": "註冊截止日。"
+              },
+              {
+                "date": "04/03-04/06",
+                "event_en": "Children's Day and Tomb Sweeping Day holidays.",
+                "event_zh": "兒童節與民族掃墓節連假。"
+              },
+              {
+                "date": "04/07-04/08",
+                "event_en": "Intercollegiate activities; classes suspended.",
+                "event_zh": "校際活動停課。"
+              },
+              {
+                "date": "04/20-04/26",
+                "event_en": "Mid-term examination period.",
+                "event_zh": "期中考週。"
+              },
+              {
+                "date": "04/27-05/25",
+                "event_en": "Application period for course drop.",
+                "event_zh": "棄選申請期間。"
+              },
+              {
+                "date": "05/01",
+                "event_en": "Labor Day.",
+                "event_zh": "勞動節。"
+              },
+              {
+                "date": "05/15",
+                "event_en": "Two-thirds refund benchmark date for suspension or withdrawal.",
+                "event_zh": "休退學退費三分之二基準日。"
+              },
+              {
+                "date": "05/29",
+                "event_en": "Deadline for early graduation application.",
+                "event_zh": "提前畢業申請截止。"
+              },
+              {
+                "date": "06/01",
+                "event_en": "Application begins for department transfer, minor, and double major.",
+                "event_zh": "轉系、輔系、雙主修申請開始。"
+              },
+              {
+                "date": "06/06",
+                "event_en": "Graduation ceremony.",
+                "event_zh": "畢業典禮。"
+              },
+              {
+                "date": "06/08-06/12",
+                "event_en": "First-stage course selection for the next semester.",
+                "event_zh": "下學期第一階段選課。"
+              },
+              {
+                "date": "06/20-06/26",
+                "event_en": "Final examination period.",
+                "event_zh": "期末考週。"
+              },
+              {
+                "date": "07/05",
+                "event_en": "Dormitory move-out deadline.",
+                "event_zh": "宿舍退宿截止日。"
+              },
+              {
+                "date": "07/31",
+                "event_en": "Semester ends.",
+                "event_zh": "學期結束。"
+              }
+            ]
+          }
+        ],
+        "guide_id": "degree",
+        "order_index": 1
+      },
+      "reason": "Reviewed degree-seeking calendar display/content fix."
+    },
+    {
+      "content_type": "student_guide_section",
+      "item_id": "exchange_calendar",
+      "action": "update",
+      "after_data": {
+        "id": "exchange_calendar",
+        "title_en": "Important Dates and Calendar",
+        "title_zh": "重要日期與行事曆",
+        "categoryId": "before_arrival",
+        "tags_en": [
+          "calendar",
+          "course selection",
+          "orientation"
+        ],
+        "tags_zh": [
+          "行事曆",
+          "選課",
+          "說明會"
+        ],
+        "summary_en": "Key dates for exchange and visiting students.",
+        "summary_zh": "交換生與訪問學生的重要日期。",
+        "sourceReferences": [
+          {
+            "documentId": "handbook_2026_spring_exchange_students",
+            "documentTitle_en": "Exchange Students Handbook",
+            "documentTitle_zh": "交換生手冊",
+            "pages": "p.3"
+          }
+        ],
+        "blocks": [
+          {
+            "type": "note",
+            "tone": "warning",
+            "content_en": "The university will be closed throughout the Spring Holidays period (Feb. 14–Feb. 20). If you need to handle administrative matters, please plan around the holiday closure.",
+            "content_zh": "春節假期期間（2 月 14 日至 2 月 20 日），學校將全程關閉；如需辦理行政事項，請避開假期期間。"
+          },
+          {
+            "type": "timeline",
+            "items": [
+              {
+                "date": "02/14-02/20",
+                "event_en": "Spring Holidays; university closed throughout.",
+                "event_zh": "春節假期；學校全程關閉。"
+              },
+              {
+                "date": "02/23",
+                "event_en": "Dormitory move-in day and first lecture day.",
+                "event_zh": "宿舍入住日與第一天上課。"
+              },
+              {
+                "date": "02/23-03/06",
+                "event_en": "Course selection period.",
+                "event_zh": "選課期間。"
+              },
+              {
+                "date": "02/26",
+                "event_en": "Orientation for exchange and visiting students.",
+                "event_zh": "交換生與訪問學生說明會。"
+              },
+              {
+                "date": "02/27-02/28",
+                "event_en": "228 Peace Memorial Day.",
+                "event_zh": "二二八和平紀念日。"
+              },
+              {
+                "date": "04/20-04/26",
+                "event_en": "Mid-term examination period.",
+                "event_zh": "期中考週。"
+              },
+              {
+                "date": "04/27-05/25",
+                "event_en": "Application period for course drop.",
+                "event_zh": "棄選申請期間。"
+              },
+              {
+                "date": "05/01",
+                "event_en": "Labor Day.",
+                "event_zh": "勞動節。"
+              },
+              {
+                "date": "06/18",
+                "event_en": "Last lecture day.",
+                "event_zh": "最後上課日。"
+              },
+              {
+                "date": "06/19",
+                "event_en": "Dragon Boat Festival.",
+                "event_zh": "端午節。"
+              },
+              {
+                "date": "06/20-06/26",
+                "event_en": "Final examination period.",
+                "event_zh": "期末考週。"
+              },
+              {
+                "date": "07/05",
+                "event_en": "Dormitory move-out deadline.",
+                "event_zh": "宿舍退宿截止日。"
+              }
+            ]
+          }
+        ],
+        "guide_id": "exchange",
+        "order_index": 1
+      },
+      "reason": "Reviewed exchange calendar display/content fix."
+    },
+    {
+      "content_type": "student_guide_section",
+      "item_id": "degree_chinese_language",
+      "action": "update",
+      "after_data": {
+        "id": "degree_chinese_language",
+        "title_en": "Chinese Courses and Language Resources",
+        "title_zh": "中文課程與語言資源",
+        "categoryId": "campus_life",
+        "tags_en": [
+          "chinese course",
+          "language center"
+        ],
+        "tags_zh": [
+          "中文課程",
+          "語言中心"
+        ],
+        "summary_en": "Chinese training courses and language resources are available for international students.",
+        "summary_zh": "國際學生可使用中文課程與語言學習資源。",
+        "sourceReferences": [
+          {
+            "documentId": "handbook_2026_spring_international_students",
+            "documentTitle_en": "International Students Handbook",
+            "documentTitle_zh": "國際學生手冊",
+            "pages": "p.17"
+          },
+          {
+            "documentId": "guide_2026_spring_international_students",
+            "documentTitle_en": "International Students Quick Guide",
+            "documentTitle_zh": "國際學生重點提醒",
+            "pages": "p.46-p.47"
+          }
+        ],
+        "blocks": [
+          {
+            "type": "paragraph",
+            "content_en": "The Chinese training program is credit-bearing and free for international students. The CCU Chinese Language Center provides instruction using multimedia activities and learning games to develop language ability and understanding of local culture. Students are encouraged to take at least one Chinese course during their stay at CCU.",
+            "content_zh": "中文訓練課程為國際學生可修習的學分課程，且免收課程費用。中正大學華語中心透過多媒體活動與學習遊戲提供華語教學，協助學生培養語言能力並了解在地文化。學校鼓勵國際學生在校期間至少修習一門中文課程。"
+          },
+          {
+            "type": "note",
+            "tone": "info",
+            "content_en": "Note: The course system URL may need to be updated once the new course selection system is ready.",
+            "content_zh": "注意：新選課系統完成後，課程系統網址可能需要更新。"
+          },
+          {
+            "type": "links",
+            "links": [
+              {
+                "url": "https://chineselanguagecenter.ccu.edu.tw/?Lang=en",
+                "label_en": "Open Chinese Language Center Page",
+                "label_zh": "開啟華語中心頁面"
+              },
+              {
+                "url": "https://kiki.ccu.edu.tw/~ccmisp06/Course/1334_e.html",
+                "label_en": "Open Chinese Credit Course Information",
+                "label_zh": "開啟華語學分課程資訊"
+              },
+              {
+                "url": "https://docs.google.com/document/d/1lDky-L_R6xyISnlPd7Ii_iU5DTEYm3SSn19hhaVw9eI/edit?usp=sharing",
+                "label_en": "Open Chinese Course and Language Center Information",
+                "label_zh": "開啟華語課程與華語中心補充資訊"
+              }
+            ]
+          }
+        ],
+        "guide_id": "degree",
+        "order_index": 14
+      },
+      "reason": "Reviewed Chinese-language support content fix."
+    },
+    {
+      "content_type": "student_guide_section",
+      "item_id": "degree_gender_incident_regulations",
+      "action": "update",
+      "after_data": {
+        "id": "degree_gender_incident_regulations",
+        "title_en": "Sexual Assault, Sexual Harassment, and Sexual Bullying Prevention Regulations",
+        "title_zh": "性侵害、性騷擾與性霸凌防治規定",
+        "categoryId": "anti_sexual_harassment",
+        "tags_en": [
+          "gender equity",
+          "sexual harassment",
+          "sexual assault",
+          "sexual bullying"
+        ],
+        "tags_zh": [
+          "性別平等",
+          "性騷擾",
+          "性侵害",
+          "性霸凌"
+        ],
+        "summary_en": "A summary of formal reporting, confidentiality, and handling principles for campus gender-related incidents.",
+        "summary_zh": "整理校園性別事件的正式通報、保密與處理原則。",
+        "sourceReferences": [
+          {
+            "documentId": "handbook_2026_spring_international_students",
+            "documentTitle_en": "International Students Handbook",
+            "documentTitle_zh": "國際學生手冊",
+            "pages": "p.67-p.70"
+          }
+        ],
+        "relatedTaskIds": [
+          "gender_equity_case_or_form_inquiry"
+        ],
+        "blocks": [
+          {
+            "type": "note",
+            "tone": "warning",
+            "content_en": "If you experience or witness sexual assault, sexual harassment, or sexual bullying, seek help as early as possible and preserve relevant evidence.",
+            "content_zh": "若你遭遇或目睹性侵害、性騷擾或性霸凌事件，請及早尋求協助並保存相關證據。"
+          },
+          {
+            "type": "checklist",
+            "items": [
+              {
+                "en": "Reports or applications may be submitted in writing, orally, or by email, depending on the school procedure.",
+                "zh": "可依學校程序以書面、口頭或電子郵件方式提出申請或通報。"
+              },
+              {
+                "en": "The university should protect the privacy of the applicant, reporter, and involved parties.",
+                "zh": "學校應保護申請人、通報人與當事人的隱私。"
+              },
+              {
+                "en": "Faculty and staff who become aware of suspected campus gender incidents may have reporting responsibilities.",
+                "zh": "教職員若知悉疑似校園性別事件，可能負有依法通報責任。"
+              },
+              {
+                "en": "The Gender Equity Education Committee handles investigation and follow-up according to relevant regulations.",
+                "zh": "性別平等教育委員會會依相關規定進行調查與後續處理。"
+              },
+              {
+                "en": "In urgent danger, call 110 or 113 immediately.",
+                "zh": "若有立即危險，請立刻撥打 110 或 113。"
+              }
+            ]
+          },
+          {
+            "type": "contact",
+            "name_en": "Office of Student Affairs",
+            "name_zh": "學務處",
+            "email": "health@ccu.edu.tw",
+            "phone": "Gender Equality Investigation Application Acceptance Hotline: 05-272-0411 ext.12346; Gender Equality Reporting 24-hour Hotline: 05-272-1114"
+          },
+          {
+            "type": "checklist",
+            "items": [
+              {
+                "en": "Receiving agency: Office of Student Affairs.",
+                "zh": "受理單位：學務處。"
+              },
+              {
+                "en": "Faculty/staff who become aware of suspected incidents must report within 24 hours.",
+                "zh": "教職員知悉疑似事件後，須於 24 小時內通報。"
+              },
+              {
+                "en": "University sends written notification of acceptance within 20 days.",
+                "zh": "學校於 20 日內以書面通知是否受理。"
+              },
+              {
+                "en": "If not accepted, applicant/victim/informant may request reconsideration within 20 days.",
+                "zh": "若不受理，申請人、被害人或通報人可於 20 日內申復。"
+              },
+              {
+                "en": "If dissatisfied with handling result, applicant/victim/offender may request reconsideration within 30 days.",
+                "zh": "若不服處理結果，申請人、被害人或行為人可於 30 日內申復。"
+              },
+              {
+                "en": "Possible assistance includes psychological counseling, legal assistance, academic assistance, financial assistance, social welfare referral, and other protective measures.",
+                "zh": "可提供心理諮商、法律協助、課業協助、經濟協助、社會福利轉介與其他保護措施。"
+              }
+            ]
+          }
+        ],
+        "guide_id": "degree",
+        "order_index": 31
+      },
+      "reason": "Reviewed gender incident regulations content fix."
+    }
+  ]
+}

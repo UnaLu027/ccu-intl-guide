@@ -3,6 +3,7 @@ import {
   offices,
   departments,
   tasks,
+  type ServiceCategory,
   type Office,
   type Department,
   type Task,
@@ -41,12 +42,14 @@ type DepartmentPayload = ReturnType<typeof formatDepartmentResult>;
 type TaskPayload = ReturnType<typeof formatTaskResult>;
 
 export interface CampusSearchData {
+  serviceCategories: ServiceCategory[];
   offices: Office[];
   departments: Department[];
   tasks: Task[];
 }
 
 const staticCampusSearchData: CampusSearchData = {
+  serviceCategories,
   offices,
   departments,
   tasks,
@@ -233,8 +236,8 @@ function getAliasTerms<T>(item: T, rules: Array<AliasRule<T>>): string[] {
   return unique(terms);
 }
 
-function getCategoryText(categoryIds: string[]): string[] {
-  return serviceCategories
+function getCategoryText(categoryIds: string[], categories: ServiceCategory[]): string[] {
+  return categories
     .filter((category) => categoryIds.includes(category.id))
     .flatMap((category) => [
       category.id,
@@ -311,7 +314,7 @@ function textBagForTask(task: Task): string {
   ].join(" "));
 }
 
-function rankOffice(office: Office, query: string): RankedResult<Office> {
+function rankOffice(office: Office, query: string, categories: ServiceCategory[]): RankedResult<Office> {
   const primaryFields = [
     office.id,
     office.name_en,
@@ -334,7 +337,7 @@ function rankOffice(office: Office, query: string): RankedResult<Office> {
     office.phone,
     office.email,
     office.official_url,
-    ...getCategoryText(office.service_categories),
+    ...getCategoryText(office.service_categories, categories),
   ];
 
   const primary = scoreTextFields(query, primaryFields, { exact: 100, includes: 85, token: 65 });
@@ -349,7 +352,7 @@ function rankOffice(office: Office, query: string): RankedResult<Office> {
   };
 }
 
-function rankDepartment(department: Department, query: string): RankedResult<Department> {
+function rankDepartment(department: Department, query: string, categories: ServiceCategory[]): RankedResult<Department> {
   const primaryFields = [
     department.id,
     department.name_en,
@@ -370,7 +373,7 @@ function rankDepartment(department: Department, query: string): RankedResult<Dep
     department.service_scope_en,
     department.service_scope_zh,
     department.official_url,
-    ...getCategoryText(department.service_categories),
+    ...getCategoryText(department.service_categories, categories),
   ];
 
   const primary = scoreTextFields(query, primaryFields, { exact: 100, includes: 82, token: 60 });
@@ -385,8 +388,8 @@ function rankDepartment(department: Department, query: string): RankedResult<Dep
   };
 }
 
-function rankTask(task: Task, query: string): RankedResult<Task> {
-  const categoryText = getCategoryText([task.category_id]);
+function rankTask(task: Task, query: string, categories: ServiceCategory[]): RankedResult<Task> {
+  const categoryText = getCategoryText([task.category_id], categories);
   const aliasTerms = getAliasTerms(task, TASK_HINT_RULES);
   const primaryFields = [
     task.id,
@@ -453,9 +456,9 @@ export function searchCampusServices(
   const departmentLimit = intent === "unit_lookup" || intent === "location_lookup" ? 3 : 1;
   const taskLimit = intent === "task_or_procedure" ? 5 : 3;
 
-  const rankedOffices = sortAndFilter(data.offices.map((office) => rankOffice(office, query)), officeLimit, 35);
-  const rankedDepartments = sortAndFilter(data.departments.map((department) => rankDepartment(department, query)), departmentLimit, 35);
-  const rankedTasks = sortAndFilter(data.tasks.map((task) => rankTask(task, query)), taskLimit, 30);
+  const rankedOffices = sortAndFilter(data.offices.map((office) => rankOffice(office, query, data.serviceCategories)), officeLimit, 35);
+  const rankedDepartments = sortAndFilter(data.departments.map((department) => rankDepartment(department, query, data.serviceCategories)), departmentLimit, 35);
+  const rankedTasks = sortAndFilter(data.tasks.map((task) => rankTask(task, query, data.serviceCategories)), taskLimit, 30);
 
   const total = rankedOffices.length + rankedDepartments.length + rankedTasks.length;
 
@@ -474,17 +477,17 @@ export function searchCampusServices(
 }
 
 export function resolveOffice(query: string, data: CampusSearchData = staticCampusSearchData): RankedResult<Office> | null {
-  const result = sortAndFilter(data.offices.map((office) => rankOffice(office, query)), 1, 35)[0];
+  const result = sortAndFilter(data.offices.map((office) => rankOffice(office, query, data.serviceCategories)), 1, 35)[0];
   return result ?? null;
 }
 
 export function resolveDepartment(query: string, data: CampusSearchData = staticCampusSearchData): RankedResult<Department> | null {
-  const result = sortAndFilter(data.departments.map((department) => rankDepartment(department, query)), 1, 35)[0];
+  const result = sortAndFilter(data.departments.map((department) => rankDepartment(department, query, data.serviceCategories)), 1, 35)[0];
   return result ?? null;
 }
 
 export function resolveTask(query: string, data: CampusSearchData = staticCampusSearchData): RankedResult<Task> | null {
-  const result = sortAndFilter(data.tasks.map((task) => rankTask(task, query)), 1, 30)[0];
+  const result = sortAndFilter(data.tasks.map((task) => rankTask(task, query, data.serviceCategories)), 1, 30)[0];
   return result ?? null;
 }
 

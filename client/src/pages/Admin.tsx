@@ -2,12 +2,14 @@ import { useCallback, useEffect, useState } from "react";
 import {
   AlertCircle,
   Database,
+  Download,
   LockKeyhole,
   LogOut,
   MessageSquare,
   RefreshCw,
   Search,
   Trash2,
+  Upload,
   Users,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -68,7 +70,7 @@ interface AuthStatus {
   passwordConfigured: boolean;
 }
 
-type ContentType = "office" | "department" | "task" | "student_guide_section";
+type ContentType = "office" | "department" | "task" | "student_guide_section" | "service_category";
 
 interface ContentItem {
   type: ContentType;
@@ -97,6 +99,29 @@ interface MaintenanceResult {
   ok: boolean;
   deleted?: Record<string, number>;
   result?: Record<string, number>;
+}
+
+interface ContentImportPreview {
+  ok: boolean;
+  package_id: string;
+  package_fingerprint: string;
+  change_note: string | null;
+  changes: Array<{
+    content_type: ContentType;
+    item_id: string;
+    action: "create" | "update";
+    item_label: string;
+    reason?: string;
+    changed_fields: string[];
+    before_data: Record<string, unknown> | null;
+    after_data: Record<string, unknown>;
+    expected_before_fingerprint: string;
+  }>;
+  skipped_unchanged: Array<{ content_type: ContentType; item_id: string; item_label: string }>;
+  summary: {
+    changes: number;
+    skipped_unchanged: number;
+  };
 }
 
 function fmt(ts: string) {
@@ -467,6 +492,10 @@ const FIELD_LABELS: Record<string, string> = {
   required_documents_en: "英文所需文件",
   steps: "處理步驟",
   guide_id: "指南類型",
+  icon: "圖示",
+  description_zh: "中文描述",
+  description_en: "英文描述",
+  keywords: "關鍵字",
   title_zh: "中文章節標題",
   title_en: "英文章節標題",
   categoryId: "章節分類",
@@ -485,6 +514,7 @@ function fieldLabel(key: string) {
 }
 
 function typeLabel(type: ContentType) {
+  if (type === "service_category") return "\u5e38\u898b\u554f\u984c\u5206\u985e";
   if (type === "office") return "行政單位";
   if (type === "department") return "系所單位";
   if (type === "student_guide_section") return "新生指南章節";
@@ -494,12 +524,25 @@ function typeLabel(type: ContentType) {
 const CONTENT_TYPE_FILTERS: Array<{ value: "all" | ContentType; label: string }> = [
   { value: "all", label: "全部資料類型" },
   { value: "task", label: "任務流程 Task" },
+  { value: "service_category", label: "\u5e38\u898b\u554f\u984c\u5206\u985e Service Category" },
   { value: "department", label: "系所單位 Department" },
   { value: "office", label: "行政單位 Office" },
   { value: "student_guide_section", label: "新生指南章節 Student Guide Section" },
 ];
 
 function makeContentTemplate(type: ContentType, id: string): Record<string, unknown> {
+  if (type === "service_category") {
+    return {
+      id,
+      name_zh: "",
+      name_en: "",
+      icon: "CircleHelp",
+      description_zh: "",
+      description_en: "",
+      keywords: [""],
+    };
+  }
+
   if (type === "student_guide_section") {
     return {
       id,
@@ -1342,6 +1385,10 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [exportText, setExportText] = useState("");
+  const [importText, setImportText] = useState("");
+  const [importPreview, setImportPreview] = useState<ContentImportPreview | null>(null);
+  const [bulkBusy, setBulkBusy] = useState<"export" | "preview" | "apply" | null>(null);
 
   const searchItems = async () => {
     setLoadingItems(true);
@@ -1400,6 +1447,73 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
   };
 
   const changedFields = selected ? (selected.isNew ? Object.keys(formData) : diffFields(selected.data, formData)) : [];
+
+  const exportContentPackage = async () => {
+    setBulkBusy("export");
+    setMessage(null);
+    try {
+      const result = await fetchJson<Record<string, unknown>>("/api/admin/content-export");
+      setExportText(JSON.stringify(result, null, 2));
+      setMessage("已產生目前 active content JSON 匯出，未寫入資料庫。");
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "匯出失敗");
+    } finally {
+      setBulkBusy(null);
+    }
+  };
+
+  const previewImportPackage = async () => {
+    setBulkBusy("preview");
+    setImportPreview(null);
+    setMessage(null);
+    try {
+      const parsed = JSON.parse(importText) as unknown;
+      const result = await fetchJson<ContentImportPreview>("/api/admin/content-import/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed),
+      });
+      setImportPreview(result);
+      setMessage(`預覽完成：${result.summary.changes} 筆變更，${result.summary.skipped_unchanged} 筆未變更。`);
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "匯入預覽失敗");
+    } finally {
+      setBulkBusy(null);
+    }
+  };
+
+  const applyImportPackage = async () => {
+    if (!importPreview) return;
+    const confirmed = window.confirm(`套用匯入套件 ${importPreview.package_id}？這會寫入 content_items 並新增 content_drafts 稽核紀錄。`);
+    if (!confirmed) return;
+
+    setBulkBusy("apply");
+    setMessage(null);
+    try {
+      const parsed = JSON.parse(importText) as unknown;
+      const result = await fetchJson<{ ok: true; applied: number; skipped_unchanged: number }>("/api/admin/content-import/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          confirm: true,
+          package: parsed,
+          package_fingerprint: importPreview.package_fingerprint,
+          expected_before_fingerprints: importPreview.changes.map((change) => ({
+            content_type: change.content_type,
+            item_id: change.item_id,
+            expected_before_fingerprint: change.expected_before_fingerprint,
+          })),
+        }),
+      });
+      setMessage(`匯入完成：套用 ${result.applied} 筆，略過 ${result.skipped_unchanged} 筆未變更項目。`);
+      await onSaved();
+      await searchItems();
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "匯入套用失敗");
+    } finally {
+      setBulkBusy(null);
+    }
+  };
 
   const applyContentUpdate = async () => {
     if (!selected) return;
@@ -1473,6 +1587,102 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
         <TabsTrigger value="create">新增資料</TabsTrigger>
       </TabsList>
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Database className="h-4 w-4" />
+            Content Package 匯出 / 匯入
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            匯出只讀取目前 active content；匯入必須先預覽，確認後才會寫入 content_items 並新增 content_drafts 紀錄。
+          </p>
+        </CardHeader>
+        <CardContent className="grid gap-4 lg:grid-cols-2">
+          <div className="space-y-3">
+            <button
+              type="button"
+              onClick={() => void exportContentPackage()}
+              disabled={bulkBusy !== null}
+              className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold hover:bg-muted disabled:opacity-60"
+            >
+              <Download className="h-4 w-4" />
+              {bulkBusy === "export" ? "匯出中..." : "匯出 active content JSON"}
+            </button>
+            <textarea
+              value={exportText}
+              onChange={(event) => setExportText(event.target.value)}
+              rows={10}
+              className="w-full rounded-md border px-3 py-2 font-mono text-xs"
+              placeholder="匯出結果會顯示在這裡"
+            />
+          </div>
+
+          <div className="space-y-3">
+            <textarea
+              value={importText}
+              onChange={(event) => {
+                setImportText(event.target.value);
+                setImportPreview(null);
+              }}
+              rows={10}
+              className="w-full rounded-md border px-3 py-2 font-mono text-xs"
+              placeholder="貼上 Cowork content-update package JSON"
+            />
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => void previewImportPackage()}
+                disabled={bulkBusy !== null || !importText.trim()}
+                className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold hover:bg-muted disabled:opacity-60"
+              >
+                <Upload className="h-4 w-4" />
+                {bulkBusy === "preview" ? "預覽中..." : "預覽匯入"}
+              </button>
+              <button
+                type="button"
+                onClick={() => void applyImportPackage()}
+                disabled={bulkBusy !== null || !importPreview || importPreview.changes.length === 0}
+                className="rounded-md bg-navy px-3 py-2 text-sm font-semibold text-white hover:bg-navy-light disabled:opacity-60"
+              >
+                {bulkBusy === "apply" ? "套用中..." : "確認套用預覽變更"}
+              </button>
+            </div>
+            {importPreview && (
+              <div className="max-h-56 overflow-auto rounded-md border bg-muted/20 p-3 text-sm">
+                <div className="font-semibold">{importPreview.package_id}</div>
+                <div className="mt-1 text-muted-foreground">
+                  {importPreview.summary.changes} 筆變更，{importPreview.summary.skipped_unchanged} 筆未變更
+                </div>
+                <div className="mt-3 space-y-2">
+                  {importPreview.changes.map((change) => (
+                    <details key={`${change.content_type}-${change.item_id}`} className="rounded border bg-background p-2">
+                      <summary className="cursor-pointer list-none">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge variant="outline">{typeLabel(change.content_type)}</Badge>
+                          <span className="font-mono text-xs">{change.item_id}</span>
+                          <span className="text-xs text-muted-foreground">{change.action}</span>
+                        </div>
+                        <div className="mt-1 text-xs text-muted-foreground">{change.changed_fields.join(", ")}</div>
+                      </summary>
+                      <div className="mt-3 grid gap-3 lg:grid-cols-2">
+                        <div>
+                          <div className="mb-1 text-xs font-semibold text-muted-foreground">before_data</div>
+                          <pre className="max-h-72 overflow-auto rounded bg-red-50 p-3 text-xs">{JSON.stringify(change.before_data, null, 2)}</pre>
+                        </div>
+                        <div>
+                          <div className="mb-1 text-xs font-semibold text-muted-foreground">after_data</div>
+                          <pre className="max-h-72 overflow-auto rounded bg-green-50 p-3 text-xs">{JSON.stringify(change.after_data, null, 2)}</pre>
+                        </div>
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
     <div className="grid gap-4 lg:grid-cols-[360px_1fr]">
       <Card>
         <CardHeader>
@@ -1487,6 +1697,7 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
                 onChange={(event) => setNewType(event.target.value as ContentType)}
                 className="rounded-md border bg-background px-3 py-2 text-sm"
               >
+                <option value="service_category">{"\u5e38\u898b\u554f\u984c\u5206\u985e Service Category"}</option>
                 <option value="task">任務流程 Task</option>
                 <option value="department">系所單位 Department</option>
                 <option value="office">行政單位 Office</option>
@@ -1720,7 +1931,6 @@ function StudentGuideSyncCard() {
   const [loading, setLoading] = useState(false);
   const [loadingDup, setLoadingDup] = useState(false);
   const [syncing, setSyncing] = useState(false);
-  const [resetId, setResetId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showDup, setShowDup] = useState(false);
@@ -1753,7 +1963,7 @@ function StudentGuideSyncCard() {
   };
 
   const doSync = async () => {
-    if (!window.confirm("確定要同步目前程式內建的新生指南 sections 到資料庫嗎？已被人工修改過的 sections 會跳過。")) return;
+    if (!window.confirm("這只會預覽 static content 與資料庫的差異，不會寫入或覆蓋 active content。要繼續嗎？")) return;
     setSyncing(true);
     setMessage(null);
     setError(null);
@@ -1761,28 +1971,12 @@ function StudentGuideSyncCard() {
       const result = await fetchJson<MaintenanceResult>("/api/admin/maintenance/sync-static-content", { method: "POST" });
       const summary = result.result;
       const summaryText = summary ? Object.entries(summary).map(([k, v]) => `${k}: ${v}`).join(", ") : "已完成";
-      setMessage(`同步完成。${summaryText}`);
+      setMessage(`Preview 完成，未寫入資料庫。${summaryText}`);
       await loadStatus();
     } catch {
-      setError("同步失敗");
+      setError("Preview 失敗");
     } finally {
       setSyncing(false);
-    }
-  };
-
-  const doResetToStatic = async (sectionId: string) => {
-    if (!window.confirm(`確定要將 ${sectionId} 重設為程式內建資料嗎？這將覆蓋後台人工修改的內容。`)) return;
-    setResetId(sectionId);
-    setMessage(null);
-    setError(null);
-    try {
-      await fetchJson<{ ok: true }>(`/api/admin/student-guide-sections/${sectionId}/reset-to-static`, { method: "POST" });
-      setMessage(`已將 ${sectionId} 重設為 static 資料。`);
-      await loadStatus();
-    } catch {
-      setError(`重設 ${sectionId} 失敗`);
-    } finally {
-      setResetId(null);
     }
   };
 
@@ -1844,7 +2038,7 @@ function StudentGuideSyncCard() {
               <div>
                 <span className="font-semibold text-blue-600">Manually changed: </span>
                 <span className="text-muted-foreground">{syncStatus.sample_manually_changed_ids.join(", ")}</span>
-                <p className="mt-1 text-muted-foreground/70">若這些 sections 仍有重複 blocks，可用下方「重設為 Static」覆蓋後台修改。</p>
+                <p className="mt-1 text-muted-foreground/70">Reset-to-static is disabled. Use Content Package preview/apply for reviewed updates.</p>
               </div>
             )}
           </div>
@@ -1868,7 +2062,7 @@ function StudentGuideSyncCard() {
             className="inline-flex items-center gap-1.5 rounded-md border bg-background px-3 py-2 text-sm font-semibold hover:bg-muted disabled:opacity-60"
           >
             <Database className="h-3.5 w-3.5" />
-            {syncing ? "同步中..." : "同步 Static Content"}
+            {syncing ? "預覽中..." : "Preview Static Content"}
           </button>
           <button
             type="button"
@@ -1902,14 +2096,9 @@ function StudentGuideSyncCard() {
                     <span className="text-sm font-semibold text-red-700">{entry.section_id}</span>
                     <span className="ml-2 text-xs text-muted-foreground">({entry.guide_id} guide) — {entry.duplicate_count} 個重複 block</span>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => void doResetToStatic(entry.section_id)}
-                    disabled={resetId === entry.section_id}
-                    className="shrink-0 rounded-md border border-red-300 bg-white px-2 py-1 text-xs font-semibold text-red-700 hover:bg-red-50 disabled:opacity-60"
-                  >
-                    {resetId === entry.section_id ? "重設中..." : "重設為 Static"}
-                  </button>
+                  <span className="shrink-0 rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700">
+                    Reset disabled
+                  </span>
                 </div>
                 <div className="text-xs text-muted-foreground break-all">
                   {entry.duplicate_block_keys.map((key, i) => (
@@ -1921,22 +2110,16 @@ function StudentGuideSyncCard() {
           </div>
         )}
 
-        {/* Reset to static for manually changed sections */}
+        {/* Reset-to-static is intentionally disabled for manually changed sections. */}
         {syncStatus && syncStatus.sample_manually_changed_ids.length > 0 && (
           <div className="rounded-lg border p-3 space-y-2">
-            <h4 className="text-sm font-semibold text-blue-700">人工修改過的 Sections — 可強制重設為 Static</h4>
-            <p className="text-xs text-muted-foreground">以下 sections 曾被後台修改過，若需清除修改內容、回復到程式內建版本，可點選「重設為 Static」。</p>
+            <h4 className="text-sm font-semibold text-blue-700">Reset-to-static disabled</h4>
+            <p className="text-xs text-muted-foreground">Active database content is authoritative. Use Content Package preview/apply for reviewed updates.</p>
             <div className="flex flex-wrap gap-2">
               {syncStatus.sample_manually_changed_ids.map((id) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => void doResetToStatic(id)}
-                  disabled={resetId === id}
-                  className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100 disabled:opacity-60"
-                >
-                  {resetId === id ? "重設中..." : id}
-                </button>
+                <span key={id} className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">
+                  {id}
+                </span>
               ))}
             </div>
           </div>
@@ -2001,11 +2184,11 @@ function MaintenanceTab({ onChanged }: { onChanged: () => Promise<void> }) {
     },
     {
       key: "sync-static",
-      title: "同步程式內建內容",
-      description: "把目前程式碼內建的 offices、departments、tasks、新生指南章節補進資料庫；已被後台人工修改過的資料會跳過，避免覆蓋國際處維護內容。",
+      title: "預覽程式內建內容差異",
+      description: "只計算 static content 與資料庫 active content 的差異，不寫入、不覆蓋。正式批次更新請使用 Content Package 匯入預覽與明確套用。",
       endpoint: "/api/admin/maintenance/sync-static-content",
       method: "POST",
-      confirmText: "確定要同步目前程式內建內容到資料庫嗎？已被人工修改過的資料會保留。",
+      confirmText: "這只會預覽 static content 差異，不會寫入或覆蓋 active content。要繼續嗎？",
       danger: false,
     },
   ];
@@ -2034,6 +2217,35 @@ function MaintenanceTab({ onChanged }: { onChanged: () => Promise<void> }) {
     }
   };
 
+  const downloadFullBackup = async () => {
+    setBusyKey("backup-export");
+    setMessage(null);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/admin/records-backup-export");
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const disposition = response.headers.get("Content-Disposition") ?? "";
+      const filenameMatch = disposition.match(/filename="([^"]+)"/);
+      link.href = url;
+      link.download = filenameMatch?.[1] ?? `ccu-intl-guide-full-backup-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      setMessage("Full data backup JSON 已下載。");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "備份下載失敗");
+    } finally {
+      setBusyKey(null);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <StudentGuideSyncCard />
@@ -2051,6 +2263,27 @@ function MaintenanceTab({ onChanged }: { onChanged: () => Promise<void> }) {
         <CardContent className="space-y-3">
           {message && <div className="rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">{message}</div>}
           {error && <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
+
+          <div className="rounded-lg border p-4">
+            <div className="mb-3 flex items-start justify-between gap-3">
+              <div>
+                <h3 className="font-semibold">{"\u4e0b\u8f09\u5b8c\u6574\u8cc7\u6599\u5099\u4efd\uff08JSON\uff09"}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {"\u5099\u4efd\u6a94\u5305\u542b\u7db2\u7ad9\u5167\u5bb9\u3001\u4fee\u6539\u7d00\u9304\u3001\u641c\u5c0b\u8207\u5c0d\u8a71\u8cc7\u6599\uff0c\u8acb\u59a5\u5584\u4fdd\u5b58\uff0c\u52ff\u4e0a\u50b3\u81f3\u516c\u958b GitHub\u3002\u6e05\u9664\u7d00\u9304\u524d\u5efa\u8b70\u5148\u4e0b\u8f09\u5099\u4efd\u3002"}
+                </p>
+              </div>
+              <Download className="mt-1 h-4 w-4 text-muted-foreground" />
+            </div>
+            <button
+              type="button"
+              onClick={() => void downloadFullBackup()}
+              disabled={busyKey !== null}
+              className="inline-flex items-center gap-2 rounded-md border bg-background px-3 py-2 text-sm font-semibold hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Download className="h-4 w-4" />
+              {busyKey === "backup-export" ? "下載中..." : "\u4e0b\u8f09\u5b8c\u6574\u8cc7\u6599\u5099\u4efd\uff08JSON\uff09"}
+            </button>
+          </div>
 
           <div className="grid gap-3 md:grid-cols-2">
             {actions.map((action) => (

@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { z } from "zod";
-import { departments, offices, serviceCategories, tasks } from "../shared/campusData.js";
+import { departments, offices, serviceCategories, tasks, type ServiceCategory } from "../shared/campusData.js";
 import { studentGuides, type StudentGuide, type StudentGuideSection } from "../shared/studentGuideData.js";
 import {
   searchCampusServices,
@@ -33,13 +33,14 @@ type AnalyticsSessionInput = {
   userAgent?: unknown;
 };
 
-type ContentType = "office" | "department" | "task" | "student_guide_section";
-const contentTypes: ContentType[] = ["office", "department", "task", "student_guide_section"];
+type ContentType = "office" | "department" | "task" | "student_guide_section" | "service_category";
+const contentTypes: ContentType[] = ["office", "department", "task", "student_guide_section", "service_category"];
 
 function getContentCollection(type: ContentType) {
   if (type === "office") return offices;
   if (type === "department") return departments;
   if (type === "student_guide_section") return flattenStudentGuideSections().map((item) => item.data);
+  if (type === "service_category") return serviceCategories;
   return tasks;
 }
 
@@ -64,6 +65,7 @@ function flattenStudentGuideSections() {
 
 function staticContentItems() {
   const collections: Array<[ContentType, Array<Record<string, unknown>>]> = [
+    ["service_category", serviceCategories as unknown as Array<Record<string, unknown>>],
     ["office", offices as unknown as Array<Record<string, unknown>>],
     ["department", departments as unknown as Array<Record<string, unknown>>],
     ["task", tasks as unknown as Array<Record<string, unknown>>],
@@ -140,18 +142,19 @@ async function getActiveContentItems() {
 async function getMergedCampusContentData(): Promise<CampusSearchData> {
   const items = await getActiveContentItems();
   return {
+    serviceCategories: items.filter((item) => item.type === "service_category").map((item) => item.data) as unknown as typeof serviceCategories,
     offices: items.filter((item) => item.type === "office").map((item) => item.data) as unknown as typeof offices,
     departments: items.filter((item) => item.type === "department").map((item) => item.data) as unknown as typeof departments,
     tasks: items.filter((item) => item.type === "task").map((item) => item.data) as unknown as typeof tasks,
   };
 }
 
-async function syncStaticContentItemsToDatabase() {
+async function previewStaticContentItemsToDatabase() {
   const staticItems = staticContentItems();
   const changedByAdmin = await getManuallyChangedContentKeys();
   const result = {
-    inserted: 0,
-    updated: 0,
+    would_insert: 0,
+    would_update: 0,
     unchanged: 0,
     skipped_manual: 0,
   };
@@ -168,14 +171,7 @@ async function syncStaticContentItemsToDatabase() {
     ).get<{ data_json: string; item_label: string; status: string }>(item.type, item.id);
 
     if (!current) {
-      await db.prepare(
-        [
-          "INSERT INTO content_items",
-          "(content_type, item_id, item_label, data_json, status)",
-          "VALUES (?, ?, ?, ?, 'active')",
-        ].join(" ")
-      ).run(item.type, item.id, item.label, JSON.stringify(item.data));
-      result.inserted += 1;
+      result.would_insert += 1;
       continue;
     }
 
@@ -190,14 +186,7 @@ async function syncStaticContentItemsToDatabase() {
       continue;
     }
 
-    await db.prepare(
-      [
-        "UPDATE content_items",
-        "SET item_label = ?, data_json = ?, status = 'active', updated_at = CURRENT_TIMESTAMP",
-        "WHERE content_type = ? AND item_id = ?",
-      ].join(" ")
-    ).run(item.label, nextJson, item.type, item.id);
-    result.updated += 1;
+    result.would_update += 1;
   }
 
   return result;
@@ -697,12 +686,458 @@ async function findContentItem(type: ContentType, id: string) {
   };
 }
 
+type StoredContentItemRow = {
+  item_label: string;
+  data_json: string;
+  status: string;
+};
+
+async function getStoredContentItemRow(type: ContentType, id: string) {
+  return await db.prepare(
+    [
+      "SELECT item_label, data_json, status",
+      "FROM content_items",
+      "WHERE content_type = ? AND item_id = ?",
+      "LIMIT 1",
+    ].join(" ")
+  ).get<StoredContentItemRow>(type, id);
+}
+
+function contentStateFingerprint(row: Pick<StoredContentItemRow, "status" | "data_json"> | null) {
+  const status = row?.status ?? "missing";
+  const dataJson = row?.data_json ?? "";
+  return createHash("sha256").update(`${status}\n${dataJson}`).digest("hex");
+}
+
+function readArray(value: unknown): unknown[] | null {
+  return Array.isArray(value) ? value : null;
+}
+
+function requireStringField(data: Record<string, unknown>, key: string, errors: string[]) {
+  if (typeof data[key] !== "string") errors.push(`${key} must be a string`);
+}
+
+function requireStringArrayField(data: Record<string, unknown>, key: string, errors: string[]) {
+  const value = data[key];
+  if (!Array.isArray(value) || value.some((item) => typeof item !== "string")) {
+    errors.push(`${key} must be a string array`);
+  }
+}
+
+function validateOptionalStringArrayField(data: Record<string, unknown>, key: string, errors: string[]) {
+  if (data[key] === undefined) return;
+  requireStringArrayField(data, key, errors);
+}
+
+function validateOptionalArrayField(data: Record<string, unknown>, key: string, errors: string[]) {
+  if (data[key] === undefined) return;
+  if (!Array.isArray(data[key])) errors.push(`${key} must be an array`);
+}
+
+function requireArrayField(data: Record<string, unknown>, key: string, errors: string[]) {
+  if (!Array.isArray(data[key])) errors.push(`${key} must be an array`);
+}
+
+function requireObjectArrayField(data: Record<string, unknown>, key: string, errors: string[]) {
+  const value = data[key];
+  if (!Array.isArray(value) || value.some((item) => !item || typeof item !== "object" || Array.isArray(item))) {
+    errors.push(`${key} must be an array of objects`);
+  }
+}
+
+function requireNumberField(data: Record<string, unknown>, key: string, errors: string[]) {
+  if (typeof data[key] !== "number" || !Number.isFinite(data[key])) errors.push(`${key} must be a number`);
+}
+
+function requireBooleanField(data: Record<string, unknown>, key: string, errors: string[]) {
+  if (typeof data[key] !== "boolean") errors.push(`${key} must be a boolean`);
+}
+
+function validateOptionalBooleanField(data: Record<string, unknown>, key: string, errors: string[]) {
+  if (data[key] === undefined) return;
+  requireBooleanField(data, key, errors);
+}
+
+function validateOptionalStringField(data: Record<string, unknown>, key: string, errors: string[]) {
+  if (data[key] === undefined) return;
+  requireStringField(data, key, errors);
+}
+
+function requireLiteralField(data: Record<string, unknown>, key: string, expected: string, errors: string[]) {
+  if (data[key] !== expected) errors.push(`${key} must be ${expected}`);
+}
+
+function requireOneOfField(data: Record<string, unknown>, key: string, values: string[], errors: string[]) {
+  if (typeof data[key] !== "string" || !values.includes(data[key])) {
+    errors.push(`${key} must be ${values.join(" or ")}`);
+  }
+}
+
+function validateContentData(type: ContentType, itemId: string, value: unknown, mode: "single" | "import" = "single") {
+  const errors: string[] = [];
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return { ok: false as const, errors: ["after_data must be an object"] };
+  }
+
+  const data = value as Record<string, unknown>;
+  requireStringField(data, "id", errors);
+  if (typeof data.id === "string" && data.id !== itemId) errors.push("after_data.id must match item_id");
+
+  if (type === "service_category") {
+    for (const key of ["name_zh", "name_en", "icon", "description_zh", "description_en"]) {
+      requireStringField(data, key, errors);
+    }
+    requireStringArrayField(data, "keywords", errors);
+  } else if (mode === "import") {
+    if (type === "student_guide_section") {
+      for (const key of ["title_en", "title_zh", "categoryId", "summary_en", "summary_zh"]) {
+        requireStringField(data, key, errors);
+      }
+      requireStringArrayField(data, "tags_en", errors);
+      requireStringArrayField(data, "tags_zh", errors);
+      requireArrayField(data, "sourceReferences", errors);
+      requireArrayField(data, "blocks", errors);
+      validateOptionalStringArrayField(data, "relatedTaskIds", errors);
+      if (data.order_index !== undefined) requireNumberField(data, "order_index", errors);
+      if (data.guide_id !== undefined) requireOneOfField(data, "guide_id", ["degree", "exchange"], errors);
+    } else if (type === "task") {
+      for (const key of ["category_id", "task_name_en", "task_name_zh", "scenario_en", "scenario_zh", "target_unit_id"]) {
+        requireStringField(data, key, errors);
+      }
+      requireStringArrayField(data, "required_documents_en", errors);
+      requireStringArrayField(data, "required_documents_zh", errors);
+      requireObjectArrayField(data, "steps", errors);
+      requireOneOfField(data, "target_unit_type", ["office", "department"], errors);
+    } else if (type === "office") {
+      for (const key of [
+        "name_zh",
+        "name_en",
+        "building_name_zh",
+        "building_name_en",
+        "floor",
+        "indoor_location_note_zh",
+        "indoor_location_note_en",
+        "function_desc_zh",
+        "function_desc_en",
+        "service_scope_zh",
+        "service_scope_en",
+        "common_scenarios_zh",
+        "common_scenarios_en",
+        "office_hours",
+        "phone",
+        "email",
+        "official_url",
+        "google_maps_query",
+        "source_url",
+      ]) {
+        requireStringField(data, key, errors);
+      }
+      requireLiteralField(data, "category", "office", errors);
+      requireStringArrayField(data, "service_categories", errors);
+      requireNumberField(data, "latitude", errors);
+      requireNumberField(data, "longitude", errors);
+      requireBooleanField(data, "needs_manual_review", errors);
+      validateOptionalStringField(data, "room_zh", errors);
+      validateOptionalStringField(data, "room_en", errors);
+      validateOptionalStringField(data, "floor_plan_image", errors);
+      validateOptionalStringField(data, "entrance_image", errors);
+      validateOptionalStringField(data, "building_entrance_image", errors);
+      validateOptionalBooleanField(data, "use_manual_coordinates", errors);
+    } else if (type === "department") {
+      for (const key of [
+        "name_zh",
+        "name_en",
+        "college_zh",
+        "college_en",
+        "building_name_zh",
+        "building_name_en",
+        "floor",
+        "indoor_location_note_zh",
+        "indoor_location_note_en",
+        "function_desc_zh",
+        "function_desc_en",
+        "service_scope_zh",
+        "service_scope_en",
+        "official_url",
+        "google_maps_query",
+        "source_url",
+      ]) {
+        requireStringField(data, key, errors);
+      }
+      requireLiteralField(data, "category", "department", errors);
+      requireStringArrayField(data, "service_categories", errors);
+      requireNumberField(data, "latitude", errors);
+      requireNumberField(data, "longitude", errors);
+      requireBooleanField(data, "needs_manual_review", errors);
+      validateOptionalStringField(data, "room_zh", errors);
+      validateOptionalStringField(data, "room_en", errors);
+      validateOptionalStringField(data, "floor_plan_image", errors);
+      validateOptionalStringField(data, "entrance_image", errors);
+      validateOptionalStringField(data, "building_entrance_image", errors);
+      validateOptionalBooleanField(data, "use_manual_coordinates", errors);
+      validateOptionalBooleanField(data, "is_college_office", errors);
+    } else {
+      validateOptionalStringArrayField(data, "service_categories", errors);
+      if (data.latitude !== undefined) requireNumberField(data, "latitude", errors);
+      if (data.longitude !== undefined) requireNumberField(data, "longitude", errors);
+      if (data.needs_manual_review !== undefined) requireBooleanField(data, "needs_manual_review", errors);
+      if (type === "office" && data.category !== undefined && data.category !== "office") errors.push("category must be office");
+      if (type === "department" && data.category !== undefined && data.category !== "department") errors.push("category must be department");
+    }
+  }
+
+  return errors.length > 0
+    ? { ok: false as const, errors }
+    : { ok: true as const, data };
+}
+
+type ContentImportItem = {
+  content_type: ContentType;
+  item_id: string;
+  action: "create" | "update";
+  after_data: Record<string, unknown>;
+  reason?: string;
+};
+
+type ValidatedImportPackage = {
+  package_id: string;
+  change_note: string | null;
+  items: ContentImportItem[];
+};
+
+type ImportExpectedBefore = {
+  content_type: ContentType;
+  item_id: string;
+  expected_before_fingerprint: string;
+};
+
+const adminBackupTables = [
+  "content_items",
+  "content_drafts",
+  "sessions",
+  "search_events",
+  "search_click_events",
+  "ccugpt_conversations",
+  "ccugpt_messages",
+  "ccugpt_requests",
+  "mcp_tool_call_events",
+  "feedback_events",
+] as const;
+
+function stableJsonStringify(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(stableJsonStringify).join(",")}]`;
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .filter(([, entry]) => entry !== undefined)
+      .sort(([a], [b]) => a.localeCompare(b));
+    return `{${entries.map(([key, entry]) => `${JSON.stringify(key)}:${stableJsonStringify(entry)}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function packageFingerprint(value: unknown) {
+  return createHash("sha256").update(stableJsonStringify(value)).digest("hex");
+}
+
+function parseContentImportPackage(value: unknown) {
+  const errors: string[] = [];
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return { ok: false as const, errors: ["Package must be a JSON object"] };
+  }
+
+  const input = value as Record<string, unknown>;
+  const packageId = readString(input.package_id);
+  if (!packageId) errors.push("package_id is required");
+  if (!Array.isArray(input.items)) errors.push("items must be an array");
+
+  const items: ContentImportItem[] = [];
+  const seenItemKeys = new Set<string>();
+  if (Array.isArray(input.items)) {
+    input.items.forEach((rawItem, index) => {
+      if (!rawItem || typeof rawItem !== "object" || Array.isArray(rawItem)) {
+        errors.push(`items[${index}] must be an object`);
+        return;
+      }
+
+      const item = rawItem as Record<string, unknown>;
+      const type = readString(item.content_type) as ContentType | null;
+      const itemId = readString(item.item_id);
+      const action = readString(item.action);
+      if (!type || !contentTypes.includes(type)) errors.push(`items[${index}].content_type is unsupported`);
+      if (!itemId) errors.push(`items[${index}].item_id is required`);
+      if (action !== "create" && action !== "update") {
+        errors.push(`items[${index}].action must be create or update; delete is not supported`);
+      }
+      if (!type || !contentTypes.includes(type) || !itemId || (action !== "create" && action !== "update")) return;
+
+      const itemKey = `${type}:${itemId}`;
+      if (seenItemKeys.has(itemKey)) {
+        errors.push(`items[${index}] duplicates content package item key ${itemKey}`);
+        return;
+      }
+      seenItemKeys.add(itemKey);
+
+      const validation = validateContentData(type, itemId, item.after_data, "import");
+      if (!validation.ok) {
+        validation.errors.forEach((error) => errors.push(`items[${index}].${error}`));
+        return;
+      }
+
+      items.push({
+        content_type: type,
+        item_id: itemId,
+        action,
+        after_data: validation.data,
+        reason: readString(item.reason) ?? undefined,
+      });
+    });
+  }
+
+  return errors.length > 0 || !packageId
+    ? { ok: false as const, errors }
+    : { ok: true as const, package: { package_id: packageId, change_note: readString(input.change_note), items } };
+}
+
+async function previewContentImportPackage(value: unknown) {
+  const parsed = parseContentImportPackage(value);
+  if (!parsed.ok) return parsed;
+
+  const errors: string[] = [];
+  const changes: Array<{
+    content_type: ContentType;
+    item_id: string;
+    action: "create" | "update";
+    item_label: string;
+    reason?: string;
+    changed_fields: string[];
+    before_data: Record<string, unknown> | null;
+    after_data: Record<string, unknown>;
+    expected_before_fingerprint: string;
+  }> = [];
+  const skipped_unchanged: Array<{ content_type: ContentType; item_id: string; item_label: string; expected_before_fingerprint: string }> = [];
+
+  for (const item of parsed.package.items) {
+    const current = await getStoredContentItemRow(item.content_type, item.item_id);
+    const expectedBeforeFingerprint = contentStateFingerprint(current ?? null);
+    if (current?.status === "deleted") {
+      errors.push(`${item.content_type}:${item.item_id} is deleted; restore it separately before importing`);
+      continue;
+    }
+    if (item.action === "update" && current?.status !== "active") {
+      errors.push(`${item.content_type}:${item.item_id} update target is missing`);
+      continue;
+    }
+    if (item.action === "create" && current?.status === "active") {
+      errors.push(`${item.content_type}:${item.item_id} create target already exists`);
+      continue;
+    }
+
+    let original: Record<string, unknown> | null = null;
+    if (current?.status === "active") {
+      original = parseJsonObject(current.data_json);
+      if (!original) {
+        errors.push(`${item.content_type}:${item.item_id} current data_json is invalid`);
+        continue;
+      }
+    }
+
+    const itemLabel = contentLabel(item.content_type, item.after_data);
+    const changedFields = original ? diffObjectFields(original, item.after_data) : Object.keys(item.after_data);
+
+    if (original && changedFields.length === 0) {
+      skipped_unchanged.push({
+        content_type: item.content_type,
+        item_id: item.item_id,
+        item_label: itemLabel,
+        expected_before_fingerprint: expectedBeforeFingerprint,
+      });
+      continue;
+    }
+
+    changes.push({
+      content_type: item.content_type,
+      item_id: item.item_id,
+      action: item.action,
+      item_label: itemLabel,
+      reason: item.reason,
+      changed_fields: changedFields,
+      before_data: original,
+      after_data: item.after_data,
+      expected_before_fingerprint: expectedBeforeFingerprint,
+    });
+  }
+
+  if (errors.length > 0) return { ok: false as const, errors };
+
+  return {
+    ok: true as const,
+    package_id: parsed.package.package_id,
+    package_fingerprint: packageFingerprint(value),
+    change_note: parsed.package.change_note,
+    changes,
+    skipped_unchanged,
+    summary: {
+      changes: changes.length,
+      skipped_unchanged: skipped_unchanged.length,
+    },
+    package: parsed.package,
+  };
+}
+
+function diffObjectFields(before: Record<string, unknown>, after: Record<string, unknown>) {
+  return Object.keys({ ...before, ...after }).filter((key) => JSON.stringify(before[key]) !== JSON.stringify(after[key]));
+}
+
+type ServiceCategoryReference = {
+  content_type: ContentType;
+  item_id: string;
+  field: string;
+  label: string;
+};
+
+async function findServiceCategoryReferences(categoryId: string) {
+  const items = await getActiveContentItems();
+  return items.flatMap<ServiceCategoryReference>((item) => {
+    if (item.type === "task" && (item.data as { category_id?: unknown }).category_id === categoryId) {
+      return [{ content_type: item.type, item_id: item.id, field: "category_id", label: item.label }];
+    }
+    if ((item.type === "office" || item.type === "department") && Array.isArray((item.data as { service_categories?: unknown }).service_categories)) {
+      const categories = (item.data as { service_categories: unknown[] }).service_categories;
+      if (categories.includes(categoryId)) {
+        return [{ content_type: item.type, item_id: item.id, field: "service_categories", label: item.label }];
+      }
+    }
+    return [];
+  });
+}
+
+function readExpectedBeforeFingerprints(value: unknown): Map<string, string> | null {
+  if (!Array.isArray(value)) return null;
+  const result = new Map<string, string>();
+  for (const entry of value) {
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) return null;
+    const record = entry as Record<string, unknown>;
+    const type = readString(record.content_type) as ContentType | null;
+    const itemId = readString(record.item_id);
+    const fingerprint = readString(record.expected_before_fingerprint);
+    if (!type || !contentTypes.includes(type) || !itemId || !fingerprint) return null;
+    result.set(`${type}:${itemId}`, fingerprint);
+  }
+  return result;
+}
+
 function readString(value: unknown): string | null {
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
 }
 
 function normalizeQuery(query: string) {
   return query.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+class ContentImportConflictError extends Error {
+  constructor(readonly conflicts: string[]) {
+    super("Content import conflict");
+  }
 }
 
 async function ensureSession(input: AnalyticsSessionInput, fallbackUserAgent?: string): Promise<string | null> {
@@ -733,6 +1168,10 @@ async function adminJson(res: express.Response, action: () => unknown | Promise<
     const payload = await action();
     if (!res.headersSent) res.json(payload);
   } catch (err) {
+    if (err instanceof ContentImportConflictError) {
+      res.status(409).json({ error: err.message, conflicts: err.conflicts });
+      return;
+    }
     console.error("Admin API error:", err);
     res.status(500).json({ error: "Admin API failed" });
   }
@@ -1134,9 +1573,10 @@ function registerTools(server: McpServer) {
       language: languageSchema,
     },
     async ({ language }) => {
+      const data = await getMergedCampusContentData();
       return textResponse({
         language: language ?? "auto",
-        categories: serviceCategories.map((category) => ({
+        categories: data.serviceCategories.map((category) => ({
           id: category.id,
           name_en: category.name_en,
           name_zh: category.name_zh,
@@ -1153,8 +1593,6 @@ async function startServer() {
   await initDb();
   await ensureContentItemsSchema();
   await seedContentItems();
-  await syncStaticStudentGuideSectionsToDatabase();
-  await applyKnownContentFixes();
 
   const app = express();
   const server = createServer(app);
@@ -1240,7 +1678,7 @@ async function startServer() {
   app.get("/api/content-data", (_req, res) => void adminJson(res, async () => {
     const contentData = await getMergedCampusContentData();
     return {
-      serviceCategories,
+      serviceCategories: contentData.serviceCategories,
       offices: contentData.offices,
       departments: contentData.departments,
       tasks: contentData.tasks,
@@ -1406,6 +1844,27 @@ async function startServer() {
 
   app.use("/api/admin", requireAdmin);
 
+  app.get("/api/admin/records-backup-export", (_req, res) => void adminJson(res, async () => {
+    const exportedAt = new Date().toISOString();
+    const tableCounts: Record<string, number> = {};
+    const tables: Record<string, unknown[]> = {};
+
+    for (const table of adminBackupTables) {
+      const rows = await db.prepare(`SELECT * FROM ${table}`).all<Record<string, unknown>>();
+      tables[table] = rows;
+      tableCounts[table] = rows.length;
+    }
+
+    res.setHeader("Content-Disposition", `attachment; filename="ccu-intl-guide-full-backup-${exportedAt.replace(/[:.]/g, "-")}.json"`);
+    return {
+      format_version: 1,
+      exported_at: exportedAt,
+      source: "ccu-intl-guide-admin-full-backup",
+      table_counts: tableCounts,
+      tables,
+    };
+  }));
+
   app.get("/api/admin/stats", (_req, res) => void adminJson(res, async () => {
     const totalSearches = ((await db.prepare("SELECT COUNT(*) as n FROM search_events").get()) as { n: number }).n;
     const totalConversations = ((await db.prepare("SELECT COUNT(*) as n FROM ccugpt_conversations").get()) as { n: number }).n;
@@ -1535,7 +1994,9 @@ async function startServer() {
   app.post("/api/admin/maintenance/sync-static-content", (_req, res) => void adminJson(res, async () => {
     return {
       ok: true,
-      result: await syncStaticContentItemsToDatabase(),
+      mode: "preview_only",
+      message: "Static content sync is preview-only. Use reviewed content import to apply audited changes.",
+      result: await previewStaticContentItemsToDatabase(),
     };
   }));
 
@@ -1688,54 +2149,13 @@ async function startServer() {
   }));
 
   // ── Reset student guide section to static data ──────────────────────────────
-  // Overwrites the content_items row for the given section with the current static data,
-  // even if it was previously manually edited (writes a content_drafts record as audit trail).
-  app.post("/api/admin/student-guide-sections/:id/reset-to-static", (req, res) => void adminJson(res, async () => {
-    const sectionId = req.params.id;
-
-    const staticItems = staticStudentGuideContentItems();
-    const staticItem = staticItems.find((item) => item.id === sectionId);
-    if (!staticItem) {
-      res.status(404);
-      return { error: `No static data found for section id: ${sectionId}` };
-    }
-
-    const current = await db.prepare(
-      "SELECT data_json, item_label FROM content_items WHERE content_type = 'student_guide_section' AND item_id = ? LIMIT 1"
-    ).get<{ data_json: string; item_label: string }>(sectionId);
-
-    const nextJson = JSON.stringify(staticItem.data);
-
-    await runDbTransaction(async () => {
-      await db.prepare(
-        [
-          "INSERT INTO content_items",
-          "(content_type, item_id, item_label, data_json, status)",
-          "VALUES ('student_guide_section', ?, ?, ?, 'active')",
-          "ON CONFLICT(content_type, item_id) DO UPDATE SET",
-          "item_label = excluded.item_label,",
-          "data_json = excluded.data_json,",
-          "status = 'active',",
-          "updated_at = CURRENT_TIMESTAMP",
-        ].join(" ")
-      ).run(sectionId, staticItem.label, nextJson);
-
-      await db.prepare(
-        [
-          "INSERT INTO content_drafts",
-          "(content_type, item_id, item_label, before_json, after_json, status, note)",
-          "VALUES ('student_guide_section', ?, ?, ?, ?, 'applied', ?)",
-        ].join(" ")
-      ).run(
-        sectionId,
-        staticItem.label,
-        current ? current.data_json : "{}",
-        nextJson,
-        RESET_STUDENT_GUIDE_TO_STATIC_NOTE
-      );
-    });
-
-    return { ok: true, section_id: sectionId, reset_to: staticItem.label };
+  // Reset-to-static is disabled because active DB content is authoritative.
+  app.post("/api/admin/student-guide-sections/:id/reset-to-static", (_req, res) => void adminJson(res, async () => {
+    res.status(410);
+    return {
+      ok: false,
+      error: "Reset-to-static is disabled. Use Content Package preview/apply for reviewed updates.",
+    };
   }));
 
   app.get("/api/admin/content-items", (req, res) => void adminJson(res, async () => {
@@ -1774,6 +2194,18 @@ async function startServer() {
     if (!item) {
       res.status(404);
       return { error: "Content item not found" };
+    }
+
+    if (type === "service_category") {
+      const references = await findServiceCategoryReferences(req.params.id);
+      if (references.length > 0) {
+        res.status(409);
+        return {
+          error: "Service category is still referenced. Reassign those records before deleting it.",
+          references: references.slice(0, 20),
+          reference_count: references.length,
+        };
+      }
     }
 
     await runDbTransaction(async () => {
@@ -1818,6 +2250,172 @@ async function startServer() {
     ).all();
   }));
 
+  app.get("/api/admin/content-export", (_req, res) => void adminJson(res, async () => {
+    const items = await getActiveContentItems();
+    return {
+      package_id: `content-export-${new Date().toISOString().replace(/[:.]/g, "-")}`,
+      created_at: new Date().toISOString(),
+      change_note: "Current active editable published content export.",
+      items: contentTypes.flatMap((type) =>
+        items
+          .filter((item) => item.type === type)
+          .map((item) => ({
+            content_type: item.type,
+            item_id: item.id,
+            action: "update",
+            after_data: item.data,
+            reason: "Exported active content",
+          }))
+      ),
+    };
+  }));
+
+  app.post("/api/admin/content-import/preview", express.json({ limit: "10mb" }), (req, res) => void adminJson(res, async () => {
+    const preview = await previewContentImportPackage(req.body);
+    if (!preview.ok) {
+      res.status(400);
+      return { error: "Invalid content import package", details: preview.errors };
+    }
+    const { package: _validatedPackage, ...safePreview } = preview;
+    return safePreview;
+  }));
+
+  app.post("/api/admin/content-import/apply", express.json({ limit: "10mb" }), (req, res) => void adminJson(res, async () => {
+    const body = req.body as Record<string, unknown>;
+    if (body.confirm !== true) {
+      res.status(400);
+      return { error: "Explicit confirmation is required" };
+    }
+
+    const parsed = parseContentImportPackage(body.package);
+    if (!parsed.ok) {
+      res.status(400);
+      return { error: "Invalid content import package", details: parsed.errors };
+    }
+
+    const previewPackageFingerprint = readString(body.package_fingerprint);
+    const currentPackageFingerprint = packageFingerprint(body.package);
+    if (!previewPackageFingerprint) {
+      res.status(400);
+      return { error: "package_fingerprint from preview is required" };
+    }
+    if (previewPackageFingerprint !== currentPackageFingerprint) {
+      res.status(409);
+      return { error: "Package changed after preview. Run preview again before applying." };
+    }
+
+    const expectedBefore = readExpectedBeforeFingerprints(body.expected_before_fingerprints);
+    if (!expectedBefore) {
+      res.status(400);
+      return { error: "expected_before_fingerprints from preview are required" };
+    }
+
+    let applied = 0;
+    let skippedUnchanged = 0;
+
+    await runDbTransaction(async () => {
+      const changes: Array<{
+        item: ContentImportItem;
+        original: Record<string, unknown> | null;
+        item_label: string;
+        next_json: string;
+      }> = [];
+      const conflicts: string[] = [];
+
+      for (const item of parsed.package.items) {
+        const key = `${item.content_type}:${item.item_id}`;
+        const current = await getStoredContentItemRow(item.content_type, item.item_id);
+        const currentFingerprint = contentStateFingerprint(current ?? null);
+        if (current?.status === "deleted") {
+          conflicts.push(`${key} is deleted; restore it separately before importing`);
+          continue;
+        }
+        if (item.action === "update" && current?.status !== "active") {
+          conflicts.push(`${key} update target is missing`);
+          continue;
+        }
+        if (item.action === "create" && current?.status === "active") {
+          conflicts.push(`${key} create target already exists`);
+          continue;
+        }
+
+        let original: Record<string, unknown> | null = null;
+        if (current?.status === "active") {
+          original = parseJsonObject(current.data_json);
+          if (!original) {
+            conflicts.push(`${key} current data_json is invalid`);
+            continue;
+          }
+        }
+
+        const changedFields = original ? diffObjectFields(original, item.after_data) : Object.keys(item.after_data);
+        if (original && changedFields.length === 0) {
+          skippedUnchanged += 1;
+          continue;
+        }
+
+        const expected = expectedBefore.get(key);
+        if (!expected) {
+          conflicts.push(`${key} is missing an expected-before fingerprint`);
+          continue;
+        }
+        if (currentFingerprint !== expected) {
+          conflicts.push(`${key} changed after preview; run preview again before applying`);
+          continue;
+        }
+
+        changes.push({
+          item,
+          original,
+          item_label: contentLabel(item.content_type, item.after_data),
+          next_json: JSON.stringify(item.after_data),
+        });
+      }
+
+      if (conflicts.length > 0) {
+        throw new ContentImportConflictError(conflicts);
+      }
+
+      for (const change of changes) {
+        await db.prepare(
+          [
+            "INSERT INTO content_items",
+            "(content_type, item_id, item_label, data_json, status)",
+            "VALUES (?, ?, ?, ?, 'active')",
+            "ON CONFLICT(content_type, item_id) DO UPDATE SET",
+            "item_label = excluded.item_label,",
+            "data_json = excluded.data_json,",
+            "status = 'active',",
+            "updated_at = CURRENT_TIMESTAMP",
+          ].join(" ")
+        ).run(change.item.content_type, change.item.item_id, change.item_label, change.next_json);
+
+        await db.prepare(
+          [
+            "INSERT INTO content_drafts",
+            "(content_type, item_id, item_label, before_json, after_json, status, note)",
+            "VALUES (?, ?, ?, ?, ?, 'applied', ?)",
+          ].join(" ")
+        ).run(
+          change.item.content_type,
+          change.item.item_id,
+          change.item_label,
+          JSON.stringify(change.original ?? {}),
+          change.next_json,
+          `Cowork import: ${parsed.package.package_id}`
+        );
+        applied += 1;
+      }
+    });
+
+    return {
+      ok: true,
+      package_id: parsed.package.package_id,
+      applied,
+      skipped_unchanged: skippedUnchanged,
+    };
+  }));
+
   app.post("/api/admin/content-drafts", express.json({ limit: "2mb" }), (req, res) => void adminJson(res, async () => {
     const body = req.body as Record<string, unknown>;
     const type = readString(body.content_type) as ContentType | null;
@@ -1837,6 +2435,11 @@ async function startServer() {
     }
 
     const afterData = { ...(after as Record<string, unknown>), id: itemId };
+    const validation = validateContentData(type, itemId, afterData);
+    if (!validation.ok) {
+      res.status(400);
+      return { error: "Invalid content item", details: validation.errors };
+    }
     const original = await findContentItem(type, itemId);
 
     if (isNew && original) {
