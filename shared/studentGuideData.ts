@@ -195,8 +195,22 @@ const baseStudentGuides: StudentGuide[] = [
               { date: "02/23", event_en: "New student registration begins.", event_zh: "新生註冊開始。" },
               { date: "02/23-03/06", event_en: "First course selection period for new students.", event_zh: "新生第一階段選課。" },
               { date: "02/25", event_en: "Welcome orientation for international students.", event_zh: "國際學生迎新說明會。" },
+              { date: "02/27-02/28", event_en: "228 Peace Memorial Day.", event_zh: "二二八和平紀念日。" },
+              { date: "03/16", event_en: "Deadline for submitting the Student Group Insurance waiver.", event_zh: "繳交不參加學生團體保險切結書截止。" },
               { date: "04/01", event_en: "Registration deadline.", event_zh: "註冊截止日。" },
+              { date: "04/03-04/06", event_en: "Children's Day and Tomb Sweeping Day holidays.", event_zh: "兒童節與民族掃墓節連假。" },
+              { date: "04/07-04/08", event_en: "Intercollegiate activities; classes suspended.", event_zh: "校際活動停課。" },
+              { date: "04/20-04/26", event_en: "Mid-term examination period.", event_zh: "期中考週。" },
+              { date: "04/27-05/25", event_en: "Application period for course drop.", event_zh: "棄選申請期間。" },
+              { date: "05/01", event_en: "Labor Day.", event_zh: "勞動節。" },
+              { date: "05/15", event_en: "Two-thirds refund benchmark date for suspension or withdrawal.", event_zh: "休退學退費三分之二基準日。" },
+              { date: "05/29", event_en: "Deadline for early graduation application.", event_zh: "提前畢業申請截止。" },
+              { date: "06/01", event_en: "Application begins for department transfer, minor, and double major.", event_zh: "轉系、輔系、雙主修申請開始。" },
+              { date: "06/06", event_en: "Graduation ceremony.", event_zh: "畢業典禮。" },
+              { date: "06/08-06/12", event_en: "First-stage course selection for the next semester.", event_zh: "下學期第一階段選課。" },
+              { date: "06/20-06/26", event_en: "Final examination period.", event_zh: "期末考週。" },
               { date: "07/05", event_en: "Dormitory move-out deadline.", event_zh: "宿舍退宿截止日。" },
+              { date: "07/31", event_en: "Semester ends.", event_zh: "學期結束。" },
             ],
           },
         ],
@@ -557,13 +571,25 @@ const baseStudentGuides: StudentGuide[] = [
           {
             type: "paragraph",
             content_en:
-              "The Chinese training program is credit-loaded and free for international students. Students are encouraged to take at least one Chinese course during their stay at CCU.",
+              "The Chinese training program is credit-bearing and free for international students. The CCU Chinese Language Center provides instruction using multimedia activities and learning games to develop language ability and understanding of local culture. Students are encouraged to take at least one Chinese course during their stay at CCU.",
             content_zh:
-              "中文訓練課程為國際學生可修習的學分課程，且免收課程費用。學校鼓勵國際學生在校期間至少修習一門中文課程。",
+              "中文訓練課程為國際學生可修習的學分課程，且免收課程費用。中正大學華語中心透過多媒體活動與學習遊戲提供華語教學，協助學生培養語言能力並了解在地文化。學校鼓勵國際學生在校期間至少修習一門中文課程。",
+          },
+          {
+            type: "checklist",
+            items: [
+              { en: "Chinese Training Program courses are credit-loaded and free.", zh: "華語訓練課程可採計學分且免費。" },
+              { en: "International students are encouraged to take at least one Chinese course.", zh: "鼓勵國際學生至少修習一門華語課程。" },
+              { en: "The course system URL may need to be updated once the new course selection system is ready.", zh: "新選課系統完成後，課程系統網址可能需要更新。" },
+            ],
           },
           {
             type: "links",
-            links: [{ url: "https://chineselanguagecenter.ccu.edu.tw/?Lang=en", label_en: "Open Chinese Language Center Page", label_zh: "開啟華語中心頁面" }],
+            links: [
+              { url: "https://chineselanguagecenter.ccu.edu.tw/?Lang=en", label_en: "Open Chinese Language Center Page", label_zh: "開啟華語中心頁面" },
+              { url: "https://kiki.ccu.edu.tw/~ccmisp06/Course/1334_e.html", label_en: "Open Chinese Credit Course Information", label_zh: "開啟華語學分課程資訊" },
+              { url: "https://docs.google.com/document/d/1lDky-L_R6xyISnlPd7Ii_iU5DTEYm3SSn19hhaVw9eI/edit?usp=sharing", label_en: "Open Chinese Course and Language Center Information", label_zh: "開啟華語課程與華語中心補充資訊" },
+            ],
           },
         ],
       },
@@ -1139,11 +1165,25 @@ const baseStudentGuides: StudentGuide[] = [
         sourceReferences: [{ ...exchangeSource, pages: "p.3" }],
         blocks: [
           {
+            type: "note",
+            tone: "warning",
+            content_en: "The university will be closed throughout the Spring Holidays period (Feb. 14–Feb. 20). If you need to handle administrative matters, please plan around the holiday closure.",
+            content_zh: "春節假期期間（2 月 14 日至 2 月 20 日），學校將全程關閉；如需辦理行政事項，請避開假期期間。",
+          },
+          {
             type: "timeline",
             items: [
+              { date: "02/14-02/20", event_en: "Spring Holidays; university closed throughout.", event_zh: "春節假期；學校全程關閉。" },
               { date: "02/23", event_en: "Dormitory move-in day and first lecture day.", event_zh: "宿舍入住日與第一天上課。" },
               { date: "02/23-03/06", event_en: "Course selection period.", event_zh: "選課期間。" },
               { date: "02/26", event_en: "Orientation for exchange and visiting students.", event_zh: "交換生與訪問學生說明會。" },
+              { date: "02/27-02/28", event_en: "228 Peace Memorial Day.", event_zh: "二二八和平紀念日。" },
+              { date: "04/20-04/26", event_en: "Mid-term examination period.", event_zh: "期中考週。" },
+              { date: "04/27-05/25", event_en: "Application period for course drop.", event_zh: "棄選申請期間。" },
+              { date: "05/01", event_en: "Labor Day.", event_zh: "勞動節。" },
+              { date: "06/18", event_en: "Last lecture day.", event_zh: "最後上課日。" },
+              { date: "06/19", event_en: "Dragon Boat Festival.", event_zh: "端午節。" },
+              { date: "06/20-06/26", event_en: "Final examination period.", event_zh: "期末考週。" },
               { date: "07/05", event_en: "Dormitory move-out deadline.", event_zh: "宿舍退宿截止日。" },
             ],
           },
@@ -1692,27 +1732,8 @@ const baseStudentGuides: StudentGuide[] = [
 ];
 
 const studentGuideBlockSupplements: Record<string, HandbookBlock[]> = {
-  degree_calendar: [
-    {
-      type: "timeline",
-      items: [
-        { date: "02/27-02/28", event_en: "228 Peace Memorial Day.", event_zh: "二二八和平紀念日。" },
-        { date: "03/16", event_en: "Deadline for submitting the Student Group Insurance waiver.", event_zh: "繳交不參加學生團體保險切結書截止。" },
-        { date: "04/03-04/06", event_en: "Children's Day and Tomb Sweeping Day holidays.", event_zh: "兒童節與民族掃墓節連假。" },
-        { date: "04/07-04/08", event_en: "Intercollegiate activities; classes suspended.", event_zh: "校際活動停課。" },
-        { date: "04/20-04/26", event_en: "Mid-term examination period.", event_zh: "期中考週。" },
-        { date: "04/27-05/25", event_en: "Application period for course drop.", event_zh: "棄選申請期間。" },
-        { date: "05/01", event_en: "Labor Day.", event_zh: "勞動節。" },
-        { date: "05/15", event_en: "Two-thirds refund benchmark date for suspension or withdrawal.", event_zh: "休退學退費三分之二基準日。" },
-        { date: "05/29", event_en: "Deadline for early graduation application.", event_zh: "提前畢業申請截止。" },
-        { date: "06/01", event_en: "Application begins for department transfer, minor, and double major.", event_zh: "轉系、輔系、雙主修申請開始。" },
-        { date: "06/06", event_en: "Graduation ceremony.", event_zh: "畢業典禮。" },
-        { date: "06/08-06/12", event_en: "First-stage course selection for the next semester.", event_zh: "下學期第一階段選課。" },
-        { date: "06/20-06/26", event_en: "Final examination period.", event_zh: "期末考週。" },
-        { date: "07/31", event_en: "Semester ends.", event_zh: "學期結束。" },
-      ],
-    },
-  ],
+  // degree_calendar timeline consolidated into base section (chronological order); supplement no longer needed.
+  degree_calendar: [],
   degree_registration_overview: [
     {
       type: "timeline",
@@ -1923,13 +1944,10 @@ const studentGuideBlockSupplements: Record<string, HandbookBlock[]> = {
       links: [{ url: "https://www.wda.gov.tw/en/", label_en: "Open Workforce Development Agency Website", label_zh: "開啟勞動力發展署英文網站" }],
     },
   ],
+  // degree_arc_application_extension: danger note removed here; canonical version kept in studentGuideFinalPdfCorrections only.
+  // Checklist items retained (dedupe will remove any exact overlaps with finalPdfCorrections).
+  // NOTE: This section is manually protected in production DB. Static fix takes effect only after admin DB reset.
   degree_arc_application_extension: [
-    {
-      type: "note",
-      tone: "danger",
-      content_en: "Late first-time ARC application may be fined NT$2,000-10,000. Late ARC extension may be fined NT$10,000-50,000. If more than 30 days late, the student must leave Taiwan and re-apply from abroad.",
-      content_zh: "首次 ARC 逾期申請可能罰 NTD 2,000 至 10,000；ARC 逾期延期可能罰 NTD 10,000 至 50,000。若逾期超過 30 天，須離境並自境外重新申請。",
-    },
     {
       type: "checklist",
       items: [
@@ -1941,38 +1959,11 @@ const studentGuideBlockSupplements: Record<string, HandbookBlock[]> = {
       ],
     },
   ],
-  degree_chinese_language: [
-    {
-      type: "checklist",
-      items: [
-        { en: "Chinese Training Program courses are credit-loaded and free.", zh: "華語訓練課程可採計學分且免費。" },
-        { en: "International students are encouraged to take at least one Chinese course.", zh: "鼓勵國際學生至少修習一門華語課程。" },
-        { en: "The course system URL may need to be updated once the new course selection system is ready.", zh: "新選課系統完成後，課程系統網址可能需要更新。" },
-      ],
-    },
-    {
-      type: "links",
-      links: [
-        { url: "https://kiki.ccu.edu.tw/~ccmisp06/Course/1334_e.html", label_en: "Open Chinese Credit Course Information", label_zh: "開啟華語學分課程資訊" },
-      ],
-    },
-  ],
-  degree_gender_incident_regulations: [
-    {
-      type: "contact",
-      name_en: "Office of Student Affairs",
-      name_zh: "學生事務處",
-      email: "health@ccu.edu.tw",
-      phone: "Investigation hotline 05-272-0411 ext. 12346; 24-hour reporting hotline 05-272-1114",
-    },
-    {
-      type: "checklist",
-      items: [
-        { en: "Faculty and staff who become aware of suspected incidents must report within 24 hours.", zh: "教職員知悉疑似事件後，須於 24 小時內通報。" },
-        { en: "Possible assistance includes psychological counseling, legal assistance, academic assistance, financial assistance, social welfare referral, and other protective measures.", zh: "可能協助包含心理諮商、法律協助、課業協助、經濟協助、社會福利轉介與其他保護措施。" },
-      ],
-    },
-  ],
+  // degree_chinese_language consolidated into base section (paragraph + checklist + 3 links); no longer needed here.
+  degree_chinese_language: [],
+  // degree_gender_incident_regulations: contact block removed (duplicate of studentGuideFinalPdfCorrections entry);
+  // checklist items covered by finalPdfCorrections. Supplement entry cleared to avoid duplicate contact card.
+  degree_gender_incident_regulations: [],
   exchange_document_submission: [
     {
       type: "note",
@@ -2156,26 +2147,8 @@ const studentGuideBlockSupplements: Record<string, HandbookBlock[]> = {
       ],
     },
   ],
-  exchange_calendar: [
-    {
-      type: "timeline",
-      items: [
-        { date: "02/14-02/20", event_en: "Spring holidays.", event_zh: "春節假期。" },
-        { date: "02/23", event_en: "Dormitory move-in day for exchange and visiting students.", event_zh: "交換生與訪問學生宿舍入住日。" },
-        { date: "02/23", event_en: "First lecture day.", event_zh: "第一堂課開始。" },
-        { date: "02/23-03/06", event_en: "Course selection period.", event_zh: "選課期間。" },
-        { date: "02/26", event_en: "Orientation for exchange and visiting students.", event_zh: "交換生與訪問學生說明會。" },
-        { date: "02/27-02/28", event_en: "228 Peace Memorial Day.", event_zh: "二二八和平紀念日。" },
-        { date: "04/20-04/26", event_en: "Mid-term examination period.", event_zh: "期中考週。" },
-        { date: "04/27-05/25", event_en: "Application period for course drop.", event_zh: "棄選申請期間。" },
-        { date: "05/01", event_en: "Labor Day.", event_zh: "勞動節。" },
-        { date: "06/18", event_en: "Last lecture day.", event_zh: "最後上課日。" },
-        { date: "06/19", event_en: "Dragon Boat Festival.", event_zh: "端午節。" },
-        { date: "06/20-06/26", event_en: "Final examination period.", event_zh: "期末考週。" },
-        { date: "07/05", event_en: "Dormitory move-out deadline.", event_zh: "宿舍退宿截止日。" },
-      ],
-    },
-  ],
+  // exchange_calendar timeline consolidated into base section (chronological order + spring holiday note); supplement no longer needed.
+  exchange_calendar: [],
   exchange_required_tasks: [
     {
       type: "checklist",
@@ -2417,48 +2390,15 @@ const studentGuidePdfDetailSupplements: Record<string, HandbookBlock[]> = {
       ],
     },
   ],
-  degree_registration_overview: [
-    {
-      type: "table",
-      columns: [
-        { key: "unit", label_en: "Unit", label_zh: "單位" },
-        { key: "documents", label_en: "Documents", label_zh: "文件" },
-      ],
-      rows: [
-        {
-          unit: { en: "Office of International Affairs", zh: "國際事務處" },
-          documents: { en: "Passport and visa with stamp of entering Taiwan; ID photo 4.5 x 3.5 cm; diploma original and authenticated version; transcript original and authenticated version; English Proficiency Certificate; Chinese Proficiency Certificate; Financial Statement; Health Certificate or ARC; Health Insurance or NHI if any; Taiwan Bank information if any.", zh: "護照與含入境章之簽證、4.5 x 3.5 公分證件照、畢業證書正本與驗證本、成績單正本與驗證本、英文能力證明、中文能力證明、財力證明、健康證明或 ARC、醫療保險或健保資料如有、臺灣銀行資料如有。" },
-        },
-      ],
-    },
-  ],
-  degree_accommodation: [
-    {
-      type: "table",
-      columns: [
-        { key: "type", label_en: "Dormitory type", label_zh: "宿舍類型" },
-        { key: "capacity", label_en: "Students per room", label_zh: "每房人數" },
-        { key: "equipment", label_en: "Room equipment", label_zh: "房內設備" },
-      ],
-      rows: [
-        { type: { en: "Undergraduate dormitory", zh: "大學部宿舍" }, capacity: { en: "4 students per room", zh: "四人一房" }, equipment: { en: "Beds, L-shaped desks, closets, telephone, lamps, and internet access.", zh: "床、L 型書桌、衣櫃、電話、檯燈與網路。" } },
-        { type: { en: "Graduate dormitory", zh: "研究生宿舍" }, capacity: { en: "2 students per room", zh: "兩人一房" }, equipment: { en: "Beds, desks, chairs, book shelves, closets, telephone, and internet access.", zh: "床、書桌、椅子、書架、衣櫃、電話與網路。" } },
-        { type: { en: "PhD dormitory", zh: "博士生宿舍" }, capacity: { en: "1-3 students per room", zh: "一至三人一房" }, equipment: { en: "Beds, desks, chairs, book shelves, closets, telephone, and internet access.", zh: "床、書桌、椅子、書架、衣櫃、電話與網路。" } },
-      ],
-    },
-    {
-      type: "checklist",
-      items: [
-        { en: "Residence deposit: NT$1,600; electricity charge: NT$2,000.", zh: "住宿保證金 NTD 1,600；電費 NTD 2,000。" },
-        { en: "Students receive an IC card with NT$1,000 for room electricity.", zh: "學生會取得含 NTD 1,000 房間電費的 IC 卡。" },
-        { en: "NT$500 is reserved for public space electricity.", zh: "NTD 500 保留作公共空間電費。" },
-        { en: "At the end of the semester, the Dormitory Service Center settles the exact electricity cost.", zh: "學期末由宿舍服務中心結算實際電費。" },
-        { en: "Dormitories do not provide sheets, kitchen space, or permission to cook in the room.", zh: "宿舍不提供床單，無廚房空間，也不可在房內烹煮。" },
-        { en: "Public facilities include washing machines, RO drinking water, and social lounge.", zh: "公共設施包含洗衣機、RO 飲水機與交誼廳。" },
-        { en: "Dormitory network information: ext. 14151.", zh: "宿舍網路洽詢分機：14151。" },
-      ],
-    },
-  ],
+  // degree_registration_overview: 2-column OIA-only table removed; full 4-column 3-unit version is in
+  // both studentGuideBlockSupplements and studentGuideFinalPdfCorrections. Removing this subset prevents
+  // a third overlapping table block.
+  // NOTE: Manually protected in production DB — static fix requires admin DB reset to take effect.
+  degree_registration_overview: [],
+  // degree_accommodation: room-type table removed from studentGuidePdfDetailSupplements;
+  // canonical table kept in studentGuideFinalPdfCorrections only to prevent the duplicate table on screen.
+  // NOTE: Manually protected in production DB — static fix requires admin DB reset to take effect.
+  degree_accommodation: [],
   degree_library: [
     {
       type: "table",
@@ -2812,23 +2752,8 @@ const studentGuideFinalPdfCorrections: Record<string, HandbookBlock[]> = {
       ],
     },
   ],
-  degree_chinese_language: [
-    {
-      type: "checklist",
-      items: [
-        { en: "Chinese Training Program is credit-loaded and free.", zh: "中文課程有學分且免費。" },
-        { en: "International students are encouraged to take at least one Chinese course.", zh: "鼓勵國際學生至少修習一門中文課。" },
-        { en: "Course system URL may need update once new course selection system is ready.", zh: "新的選課系統上線後，課程系統網址可能需要更新。" },
-      ],
-    },
-    {
-      type: "links",
-      links: [
-        { url: "https://kiki.ccu.edu.tw/~ccmisp06/Course/1334_e.html", label_en: "Open Chinese Credit Course Information", label_zh: "開啟中文學分課程資訊" },
-        { url: "https://chineselanguagecenter.ccu.edu.tw/", label_en: "Open Chinese Language Center Page", label_zh: "開啟華語中心頁面" },
-      ],
-    },
-  ],
+  // degree_chinese_language consolidated into base section; no longer needed here.
+  degree_chinese_language: [],
   degree_gender_incident_regulations: [
     {
       type: "contact",
@@ -3133,25 +3058,8 @@ const studentGuideCoverageGapAdditions: Record<string, HandbookBlock[]> = {
       ],
     },
   ],
-  degree_chinese_language: [
-    {
-      type: "paragraph",
-      content_en:
-        "The CCU Chinese Language Center provides Chinese language instruction using multimedia activities and learning games to develop language ability and understanding of local culture.",
-      content_zh:
-        "中正大學華語中心透過多媒體活動與學習遊戲提供華語教學，協助學生培養語言能力並了解在地文化。",
-    },
-    {
-      type: "links",
-      links: [
-        {
-          url: "https://docs.google.com/document/d/1lDky-L_R6xyISnlPd7Ii_iU5DTEYm3SSn19hhaVw9eI/edit?usp=sharing",
-          label_en: "Open Chinese Course and Language Center Information",
-          label_zh: "開啟華語課程與華語中心補充資訊",
-        },
-      ],
-    },
-  ],
+  // degree_chinese_language paragraph, checklist and links consolidated into base section; cleared here to prevent duplication.
+  degree_chinese_language: [],
   exchange_highlights: [
     {
       type: "note",
@@ -3173,14 +3081,8 @@ const studentGuideCoverageGapAdditions: Record<string, HandbookBlock[]> = {
       ],
     },
   ],
-  exchange_calendar: [
-    {
-      type: "note",
-      tone: "warning",
-      content_en: "During the Spring Holidays from Feb. 14 to Feb. 20, 2026, the university will be closed throughout the holiday period.",
-      content_zh: "2026 年 2 月 14 日至 2 月 20 日春節假期期間，學校全程關閉。",
-    },
-  ],
+  // exchange_calendar spring holiday note consolidated into base section; no longer needed here.
+  exchange_calendar: [],
   exchange_arc: [
     {
       type: "note",
