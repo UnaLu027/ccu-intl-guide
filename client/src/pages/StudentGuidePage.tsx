@@ -192,7 +192,7 @@ function GuideToc({ sections, activeId }: { sections: StudentGuideSection[]; act
 
   return (
     <aside className="hidden lg:block">
-      <div className="sticky top-24 rounded-lg border border-border bg-card p-4">
+      <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto rounded-lg border border-border bg-card p-4">
         <h2 className="font-display text-sm font-bold text-muted-foreground">
           {t("Contents", "目錄")}
         </h2>
