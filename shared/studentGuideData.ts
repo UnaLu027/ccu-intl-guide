@@ -576,12 +576,10 @@ const baseStudentGuides: StudentGuide[] = [
               "中文訓練課程為國際學生可修習的學分課程，且免收課程費用。中正大學華語中心透過多媒體活動與學習遊戲提供華語教學，協助學生培養語言能力並了解在地文化。學校鼓勵國際學生在校期間至少修習一門中文課程。",
           },
           {
-            type: "checklist",
-            items: [
-              { en: "Chinese Training Program courses are credit-loaded and free.", zh: "華語訓練課程可採計學分且免費。" },
-              { en: "International students are encouraged to take at least one Chinese course.", zh: "鼓勵國際學生至少修習一門華語課程。" },
-              { en: "The course system URL may need to be updated once the new course selection system is ready.", zh: "新選課系統完成後，課程系統網址可能需要更新。" },
-            ],
+            type: "note",
+            tone: "info",
+            content_en: "Note: The course system URL may need to be updated once the new course selection system is ready.",
+            content_zh: "注意：新選課系統完成後，課程系統網址可能需要更新。",
           },
           {
             type: "links",
