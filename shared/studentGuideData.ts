@@ -2984,6 +2984,289 @@ const studentGuideFinalPdfCorrections: Record<string, HandbookBlock[]> = {
   ],
 };
 
+/**
+ * Content expansion based on:
+ * - 2026 Spring Guide for International Students, pp.35-49
+ * - 2026 Spring Handbook for CCU Exchange Students, pp.2-19
+ *
+ * This is intentionally implemented as an additional block map so it works with the
+ * existing HandbookBlock types and mergeGuideBlocksWithDedupe() pipeline.
+ * No existing section IDs, task mappings, admin logic, analytics, or map logic are changed.
+ */
+const studentGuideCoverageGapAdditions: Record<string, HandbookBlock[]> = {
+  degree_anti_fraud: [
+    {
+      type: "note",
+      tone: "danger",
+      content_en:
+        "Never sell, lend, or open a bank account for someone else. Handing over your bank account, ATM card, PIN, online banking access, passport, ARC, or SIM card may make you a fraud accomplice, even if you did not personally keep the money.",
+      content_zh:
+        "切勿販售、出借或替他人開設銀行帳戶。將帳戶、提款卡、密碼、網路銀行權限、護照、ARC 或 SIM 卡交給他人，即使自己沒有拿走款項，也可能成為詐騙共犯。",
+    },
+    {
+      type: "table",
+      columns: [
+        { key: "risk", label_en: "Risk", label_zh: "風險" },
+        { key: "meaning", label_en: "What it means for you", label_zh: "可能造成的後果" },
+      ],
+      rows: [
+        {
+          risk: { en: "Dummy account", zh: "人頭帳戶" },
+          meaning: {
+            en: "Fraud groups may use an account in your name to receive or withdraw money from victims.",
+            zh: "詐騙集團可能利用以你名義持有的帳戶收取或提領被害人款項。",
+          },
+        },
+        {
+          risk: { en: "Frozen or restricted accounts", zh: "帳戶遭凍結或限制" },
+          meaning: {
+            en: "Once your account is reported or flagged, accessing your own funds or obtaining financial services may become difficult.",
+            zh: "帳戶一旦遭通報或列為警示，領取自己的款項或申辦金融服務都可能變得困難。",
+          },
+        },
+        {
+          risk: { en: "Criminal responsibility", zh: "刑事責任" },
+          meaning: {
+            en: "Selling an account or helping withdraw or deliver money may lead to investigation, prosecution, imprisonment, repayment claims, or immigration consequences.",
+            zh: "販售帳戶、協助提款或交付款項，可能導致偵查、起訴、監禁、賠償責任或居留影響。",
+          },
+        },
+        {
+          risk: { en: "Future in Taiwan", zh: "在臺未來發展" },
+          meaning: {
+            en: "A fraud-related case may affect study, work, visa, ARC, or future plans in Taiwan.",
+            zh: "涉及詐騙案件可能影響就學、工作、簽證、ARC 或未來在臺規劃。",
+          },
+        },
+      ],
+    },
+    {
+      type: "paragraph",
+      content_en:
+        "What is a money mule? A money mule is a person who helps fraudsters withdraw money, collect cash from victims, or pass money onward. The quick guide warns that handing the money over to someone else does not remove your legal risk.",
+      content_zh:
+        "什麼是車手（Money Mule）？車手是協助詐騙者提領款項、向被害人收取現金，或將款項轉交出去的人。懶人包提醒，即使最後將錢交給別人，也不代表沒有法律風險。",
+    },
+    {
+      type: "checklist",
+      items: [
+        {
+          en: "Never lend or sell your bank account, ATM card, PIN, SIM card, passport, ARC, or online banking information.",
+          zh: "絕不要出借或販售銀行帳戶、提款卡、密碼、SIM 卡、護照、ARC 或網路銀行資料。",
+        },
+        {
+          en: "Refuse anyone who asks you to open an account, receive money, transfer money, or withdraw cash in exchange for quick money or an easy job.",
+          zh: "若有人以快速賺錢或輕鬆工作為由，要求你開戶、收款、轉帳或提款，請直接拒絕。",
+        },
+        {
+          en: "If you notice unusual transactions, contact your bank and the police immediately, and ask OIA or trusted campus staff for help.",
+          zh: "若發現帳戶有異常交易，請立即聯絡銀行與警方，並向國際處或可信任的校內人員求助。",
+        },
+        {
+          en: "Be cautious of overseas job offers promising high pay, free travel, or easy work; scammers may take away your phone or passport and force you to participate in fraud.",
+          zh: "對宣稱高薪、免費機票或輕鬆工作的海外工作機會保持警覺；詐騙者可能扣留你的手機或護照，並強迫你參與詐騙。",
+        },
+      ],
+    },
+    {
+      type: "table",
+      columns: [
+        { key: "case", label_en: "Case reminder in the guide", label_zh: "懶人包案例提醒" },
+        { key: "lesson", label_en: "Lesson", label_zh: "重點" },
+      ],
+      rows: [
+        {
+          case: { en: "Selling or lending an account before leaving Taiwan", zh: "離臺前販售或出借帳戶" },
+          lesson: {
+            en: "Leaving Taiwan does not erase responsibility; an account owner may still be investigated or stopped when departing.",
+            zh: "離開臺灣並不會消除責任；帳戶持有人仍可能遭調查，甚至於出境時被查獲。",
+          },
+        },
+        {
+          case: { en: "Accepting a quick-money cash withdrawal job", zh: "接受快速賺錢的提款工作" },
+          lesson: {
+            en: "Withdrawing or delivering cash for others may involve fraud victims' money and cause serious legal and financial consequences.",
+            zh: "替他人提款或交付款項，可能涉及被害人遭詐款項，並造成嚴重法律與金錢後果。",
+          },
+        },
+        {
+          case: { en: "Being recruited through an overseas job advertisement", zh: "遭海外工作廣告招募" },
+          lesson: {
+            en: "Verify job offers before travelling and do not surrender personal documents or communication devices to strangers.",
+            zh: "出國工作前務必查證機會真實性，不要將證件或通訊設備交給陌生人。",
+          },
+        },
+      ],
+    },
+    {
+      type: "links",
+      links: [
+        {
+          url: "/student-guide-assets/degree/anti-fraud-quick-guide-pages-35-44.png",
+          label_en: "View Illustrated Anti-Fraud Cards from the Quick Guide",
+          label_zh: "查看懶人包防詐圖卡整理",
+        },
+      ],
+    },
+  ],
+  degree_oia_services: [
+    {
+      type: "note",
+      tone: "warning",
+      content_en:
+        "Important: If your phone number, address, or email changes, inform the Office of International Affairs as soon as possible so the university can contact you in time.",
+      content_zh:
+        "重要提醒：若你的電話號碼、地址或電子郵件有任何變更，請儘速通知國際事務處，以便學校能及時聯繫你。",
+    },
+    {
+      type: "contact",
+      name_en: "Personal Information Update - Office of International Affairs",
+      name_zh: "個人資料更新 - 國際事務處",
+      email: "ccuoiais@ccu.edu.tw",
+    },
+    {
+      type: "checklist",
+      items: [
+        { en: "The OIA website provides detailed guides, useful resources, and latest news for international students.", zh: "國際處網站提供國際學生所需的詳細指南、實用資源與最新消息。" },
+        { en: "Information includes admissions procedures and documents, housing, scholarships, campus life, and frequently asked questions.", zh: "網站資訊包含申請流程與文件、住宿、獎學金、校園生活及常見問題。" },
+        { en: "Check the latest news regularly and follow the official OIA Facebook page for timely updates.", zh: "請定期查看最新消息，並追蹤國際處官方 Facebook 以取得即時更新。" },
+      ],
+    },
+  ],
+  degree_chinese_language: [
+    {
+      type: "paragraph",
+      content_en:
+        "The CCU Chinese Language Center provides Chinese language instruction using multimedia activities and learning games to develop language ability and understanding of local culture.",
+      content_zh:
+        "中正大學華語中心透過多媒體活動與學習遊戲提供華語教學，協助學生培養語言能力並了解在地文化。",
+    },
+    {
+      type: "links",
+      links: [
+        {
+          url: "https://docs.google.com/document/d/1lDky-L_R6xyISnlPd7Ii_iU5DTEYm3SSn19hhaVw9eI/edit?usp=sharing",
+          label_en: "Open Chinese Course and Language Center Information",
+          label_zh: "開啟華語課程與華語中心補充資訊",
+        },
+      ],
+    },
+  ],
+  exchange_highlights: [
+    {
+      type: "note",
+      tone: "info",
+      content_en:
+        "Information in this handbook may be updated with timely notice. Exchange and visiting students should review updates carefully so they do not miss procedures that affect arrival, registration, course selection, or departure.",
+      content_zh:
+        "本手冊資訊可能依公告適時更新。交換生與訪問學生應仔細確認最新資訊，以免遺漏影響抵達、報到、選課或離校的程序。",
+    },
+    {
+      type: "table",
+      columns: [
+        { key: "item", label_en: "OIA Contact Item", label_zh: "國際處聯絡資訊" },
+        { key: "detail", label_en: "Detail", label_zh: "內容" },
+      ],
+      rows: [
+        { item: { en: "Contact", zh: "聯絡人" }, detail: { en: "Project Assistant Evelyn NGUYEN (Ms.)", zh: "Project Assistant Evelyn NGUYEN 女士" } },
+        { item: { en: "Office hours", zh: "辦公時間" }, detail: { en: "Monday-Friday, 08:30-12:00 / 13:30-17:00", zh: "週一至週五，08:30-12:00 / 13:30-17:00" } },
+      ],
+    },
+  ],
+  exchange_calendar: [
+    {
+      type: "note",
+      tone: "warning",
+      content_en: "During the Spring Holidays from Feb. 14 to Feb. 20, 2026, the university will be closed throughout the holiday period.",
+      content_zh: "2026 年 2 月 14 日至 2 月 20 日春節假期期間，學校全程關閉。",
+    },
+  ],
+  exchange_arc: [
+    {
+      type: "note",
+      tone: "warning",
+      content_en:
+        "Students staying in Taiwan for more than six months should also plan for National Health Insurance after becoming eligible.",
+      content_zh:
+        "在臺停留超過六個月的學生，除申請 ARC 外，也應提前規劃符合資格後加入全民健康保險。",
+    },
+    {
+      type: "table",
+      columns: [
+        { key: "item", label_en: "National Health Insurance reminder", label_zh: "全民健保提醒" },
+        { key: "detail", label_en: "Detail from the handbook", label_zh: "手冊說明" },
+      ],
+      rows: [
+        {
+          item: { en: "Eligibility timing", zh: "加入時間" },
+          detail: { en: "Mandatory after six months of residence with an ARC; payment begins from the seventh month of stay.", zh: "持 ARC 居留滿六個月後須加入；自居留第七個月起開始繳費。" },
+        },
+        {
+          item: { en: "Estimated monthly cost", zh: "每月約略費用" },
+          detail: { en: "About NTD 826 per month, according to the Spring 2026 exchange handbook.", zh: "依 2026 春季交換生手冊，約為每月 NTD 826。" },
+        },
+        {
+          item: { en: "Travel during the first six months", zh: "前六個月離臺提醒" },
+          detail: { en: "During the first six months, leaving Taiwan more than once or for more than one month may affect NHI eligibility.", zh: "前六個月內，若離臺超過一次或單次離臺超過一個月，可能影響健保加入資格。" },
+        },
+      ],
+    },
+  ],
+  exchange_fees_expenses: [
+    {
+      type: "table",
+      columns: [
+        { key: "item", label_en: "Additional off-campus housing item", label_zh: "校外住宿補充項目" },
+        { key: "estimate", label_en: "Estimate / Payment Rule", label_zh: "預估費用／繳納方式" },
+      ],
+      rows: [
+        { item: { en: "Off-campus internet fee", zh: "校外住宿網路費" }, estimate: { en: "Around US$50 per semester", zh: "約每學期 US$50" } },
+        { item: { en: "Off-campus electricity fee", zh: "校外住宿電費" }, estimate: { en: "Paid by students every two months", zh: "由學生每兩個月繳交一次" } },
+      ],
+    },
+    {
+      type: "links",
+      links: [
+        { url: "http://www.gladsea.com.tw/", label_en: "View Off-Campus Dormitory Photos Mentioned in the Handbook", label_zh: "查看手冊所列校外住宿照片網站" },
+      ],
+    },
+  ],
+  exchange_check_in_leaving: [
+    {
+      type: "note",
+      tone: "info",
+      content_en:
+        "The original appendix forms are provided below as reference images. Students should obtain and submit the official current form issued by OIA when completing check-in or school-leaving procedures.",
+      content_zh:
+        "下方提供原手冊附錄表單圖片作為參考。實際辦理報到或離校程序時，仍請使用國際處提供之最新正式表單。",
+    },
+    {
+      type: "links",
+      links: [
+        { url: "/student-guide-assets/exchange/appendix-1-registration-sheet-p15.png", label_en: "View Appendix 1: Registration Sheet", label_zh: "查看附錄一：報到程序單" },
+        { url: "/student-guide-assets/exchange/appendix-2-school-leaving-p16.png", label_en: "View Appendix 2: School Leaving Procedure Sheet", label_zh: "查看附錄二：離校程序單" },
+      ],
+    },
+  ],
+  exchange_oia_location: [
+    {
+      type: "note",
+      tone: "info",
+      content_en:
+        "Use the campus map to locate the Office of International Affairs, the CCU Supermarket, dormitories, the Administration Building, the Library, and other key arrival destinations.",
+      content_zh:
+        "可利用校園地圖確認國際事務處、中正大學超市、宿舍、行政大樓、圖書館與其他初抵臺常用地點的位置。",
+    },
+    {
+      type: "links",
+      links: [
+        { url: "/student-guide-assets/exchange/ccu-campus-map-p18.png", label_en: "View CCU Campus Map", label_zh: "查看中正大學校園地圖" },
+        { url: "/student-guide-assets/exchange/oia-location-map-p19.png", label_en: "View OIA Location Guide", label_zh: "查看國際處位置指引圖" },
+      ],
+    },
+  ],
+};
+
 // ─── Block deduplication helpers ─────────────────────────────────────────────
 
 /**
@@ -3103,6 +3386,7 @@ function applyStudentGuideSupplements(guides: StudentGuide[]): StudentGuide[] {
         studentGuideBlockSupplements[section.id] ?? [],
         studentGuidePdfDetailSupplements[section.id] ?? [],
         studentGuideFinalPdfCorrections[section.id] ?? [],
+        studentGuideCoverageGapAdditions[section.id] ?? [],
       ),
     })),
   }));
