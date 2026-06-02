@@ -579,7 +579,7 @@ function makeContentTemplate(type: ContentType, id: string): Record<string, unkn
       category_id: "",
       required_documents_zh: [""],
       required_documents_en: [""],
-      steps: [{ zh: "", en: "" }],
+      steps: [{ zh: "", en: "", links: [] }],
     };
   }
 
@@ -779,17 +779,69 @@ function StringArrayEditor({
   );
 }
 
+function TaskStepsEditor({
+  value,
+  onChange,
+}: {
+  value: unknown;
+  onChange: (next: unknown) => void;
+}) {
+  const steps = readRecordArray(value);
+
+  const updateStep = (index: number, key: string, val: unknown) =>
+    onChange(steps.map((step, i) => (i === index ? { ...step, [key]: val } : step)));
+
+  return (
+    <div className="space-y-4 rounded-md border p-3 md:col-span-2">
+      <div className="text-sm font-semibold">處理步驟</div>
+      {steps.map((step, index) => (
+        <div key={index} className="rounded-md border bg-muted/20 p-3 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-semibold">步驟 {index + 1}</span>
+            <div className="flex gap-3">
+              <button type="button" onClick={() => onChange(moveArrayItem(steps, index, -1))} disabled={index === 0} className="text-xs text-muted-foreground hover:underline disabled:opacity-40">上移</button>
+              <button type="button" onClick={() => onChange(moveArrayItem(steps, index, 1))} disabled={index === steps.length - 1} className="text-xs text-muted-foreground hover:underline disabled:opacity-40">下移</button>
+              <button type="button" onClick={() => onChange(steps.filter((_, i) => i !== index))} className="text-xs text-red-600 hover:underline">刪除步驟</button>
+            </div>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            <FieldTextarea label="中文步驟" value={readAdminString(step.zh)} onChange={(next) => updateStep(index, "zh", next)} rows={3} />
+            <FieldTextarea label="英文步驟" value={readAdminString(step.en)} onChange={(next) => updateStep(index, "en", next)} rows={3} />
+          </div>
+          <div>
+            <div className="mb-2 text-xs font-semibold text-muted-foreground">此步驟的按鈕連結</div>
+            <LinksListEditor value={step.links} onChange={(nextLinks) => updateStep(index, "links", nextLinks)} />
+          </div>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={() => onChange([...steps, { zh: "", en: "", links: [] }])}
+        className="rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted"
+      >
+        新增步驟
+      </button>
+    </div>
+  );
+}
+
 function FieldEditor({
   name,
   original,
   value,
   onChange,
+  contentType,
 }: {
   name: string;
   original: unknown;
   value: unknown;
   onChange: (next: unknown) => void;
+  contentType?: ContentType;
 }) {
+  if (contentType === "task" && name === "steps") {
+    return <TaskStepsEditor value={value} onChange={onChange} />;
+  }
+
   if (isZhEnArray(value) || isZhEnArray(original)) {
     return <ZhEnArrayEditor name={name} value={value} onChange={onChange} />;
   }
@@ -1790,6 +1842,7 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
                       name={key}
                       original={original}
                       value={formData[key]}
+                      contentType={selected.type}
                       onChange={(next) =>
                         setFormData((current) => ({
                           ...current,

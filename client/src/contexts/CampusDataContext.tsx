@@ -60,68 +60,85 @@ function containsQuery(fields: unknown[], query: string) {
 }
 
 function makeContextValue(data: CampusDataPayload, loading: boolean, source: "database" | "static"): CampusDataContextValue {
-  const searchByNeed = (query: string) => ({
-    tasks: data.tasks
-      .filter((task) =>
-        containsQuery([
-          task.id,
-          task.task_name_zh,
-          task.task_name_en,
-          task.scenario_zh,
-          task.scenario_en,
-          task.category_id,
-          task.target_unit_id,
-          task.required_documents_zh,
-          task.required_documents_en,
-          task.steps,
-        ], query)
-      )
-      .slice(0, 15),
-    offices: data.offices
-      .filter((office) =>
-        containsQuery([
-          office.id,
-          office.name_zh,
-          office.name_en,
-          office.function_desc_zh,
-          office.function_desc_en,
-          office.service_scope_zh,
-          office.service_scope_en,
-          office.common_scenarios_zh,
-          office.common_scenarios_en,
-          office.building_name_zh,
-          office.building_name_en,
-          office.floor,
-          office.room_zh,
-          office.room_en,
-          office.email,
-          office.phone,
-          office.service_categories,
-        ], query)
-      )
-      .slice(0, 10),
-    departments: data.departments
-      .filter((department) =>
-        containsQuery([
-          department.id,
-          department.name_zh,
-          department.name_en,
-          department.college_zh,
-          department.college_en,
-          department.function_desc_zh,
-          department.function_desc_en,
-          department.service_scope_zh,
-          department.service_scope_en,
-          department.building_name_zh,
-          department.building_name_en,
-          department.floor,
-          department.room_zh,
-          department.room_en,
-          department.service_categories,
-        ], query)
-      )
-      .slice(0, 10),
-  });
+  const searchByNeed = (query: string) => {
+    const normalizedQuery = normalizeSearchText(query);
+
+    const tasks = normalizedQuery
+      ? data.tasks
+          .filter((task) =>
+            containsQuery([
+              task.id,
+              task.task_name_zh,
+              task.task_name_en,
+              task.scenario_zh,
+              task.scenario_en,
+              task.category_id,
+              task.target_unit_id,
+              task.required_documents_zh,
+              task.required_documents_en,
+              task.steps,
+            ], query)
+          )
+          .map((task) => {
+            let score = 0;
+            if (containsQuery([task.task_name_zh, task.task_name_en], query)) score += 8;
+            if (containsQuery([task.scenario_zh, task.scenario_en], query)) score += 4;
+            if (containsQuery([task.required_documents_zh, task.required_documents_en], query)) score += 2;
+            if (containsQuery([task.steps], query)) score += 1;
+            return { task, score };
+          })
+          .sort((a, b) => b.score !== a.score ? b.score - a.score : a.task.task_name_zh.localeCompare(b.task.task_name_zh))
+          .map(({ task }) => task)
+      : [];
+
+    return {
+      tasks,
+      offices: data.offices
+        .filter((office) =>
+          containsQuery([
+            office.id,
+            office.name_zh,
+            office.name_en,
+            office.function_desc_zh,
+            office.function_desc_en,
+            office.service_scope_zh,
+            office.service_scope_en,
+            office.common_scenarios_zh,
+            office.common_scenarios_en,
+            office.building_name_zh,
+            office.building_name_en,
+            office.floor,
+            office.room_zh,
+            office.room_en,
+            office.email,
+            office.phone,
+            office.service_categories,
+          ], query)
+        )
+        .slice(0, 10),
+      departments: data.departments
+        .filter((department) =>
+          containsQuery([
+            department.id,
+            department.name_zh,
+            department.name_en,
+            department.college_zh,
+            department.college_en,
+            department.function_desc_zh,
+            department.function_desc_en,
+            department.service_scope_zh,
+            department.service_scope_en,
+            department.building_name_zh,
+            department.building_name_en,
+            department.floor,
+            department.room_zh,
+            department.room_en,
+            department.service_categories,
+          ], query)
+        )
+        .slice(0, 10),
+    };
+  };
 
   const filterByCategory = (categoryId: string) => ({
     offices: data.offices.filter((office) => office.service_categories.includes(categoryId)),
