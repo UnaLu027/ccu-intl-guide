@@ -191,7 +191,7 @@ function GuideToc({ sections, activeId }: { sections: StudentGuideSection[]; act
   const { t } = useLanguage();
 
   return (
-    <aside className="hidden lg:block">
+    <aside className="hidden xl:block">
       <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto rounded-lg border border-border bg-card p-4">
         <h2 className="font-display text-sm font-bold text-muted-foreground">
           {t("Contents", "目錄")}
@@ -441,7 +441,7 @@ export default function StudentGuidePage() {
           </div>
 
           {showContents && (
-            <select value={activeId} onChange={(event) => scrollToSection(event.target.value)} className="h-11 w-full rounded-lg border border-border bg-card px-3 text-sm font-semibold text-navy outline-none focus:border-amber lg:hidden">
+            <select value={activeId} onChange={(event) => scrollToSection(event.target.value)} className="h-11 w-full rounded-lg border border-border bg-card px-3 text-sm font-semibold text-navy outline-none focus:border-amber xl:hidden">
               {filteredSections.map((section) => (
                 <option key={section.id} value={section.id}>{t(section.title_en, section.title_zh)}</option>
               ))}
@@ -455,7 +455,7 @@ export default function StudentGuidePage() {
             <p className="mt-2 text-sm text-muted-foreground">{t("Try another keyword or category.", "請改用其他關鍵字或分類。")}</p>
           </div>
         ) : (
-          <div className={showContents ? "grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)]" : "mx-auto max-w-5xl"}>
+          <div className={showContents ? "grid gap-8 xl:grid-cols-[300px_minmax(0,1fr)]" : "mx-auto max-w-5xl"}>
             {showContents && <GuideToc sections={filteredSections} activeId={activeId} />}
             <div className="min-w-0 space-y-8">
               {filteredSections.map((section, index) => (
