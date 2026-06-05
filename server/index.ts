@@ -2241,13 +2241,76 @@ async function startServer() {
     return { ok: true };
   }));
 
-  app.get("/api/admin/content-drafts", (_req, res) => void adminJson(res, async () => {
-    return await db.prepare(
-      [
-        "SELECT id, created_at, updated_at, content_type, item_id, item_label, before_json, after_json, status, note",
-        "FROM content_drafts ORDER BY created_at DESC LIMIT 100",
-      ].join(" ")
-    ).all();
+  app.get("/api/admin/content-drafts", (req, res) => void adminJson(res, async () => {
+    const q = req.query as Record<string, string>;
+    const queryStr = (q.query ?? "").trim();
+    const typeFilter = q.type ?? "all";
+    const sourceFilter = q.source ?? "all";
+    const statusFilter = q.status ?? "all";
+    const dateFrom = (q.date_from ?? "").trim();
+    const dateTo = (q.date_to ?? "").trim();
+    const page = Math.max(1, parseInt(q.page ?? "1", 10) || 1);
+    const pageSize = Math.min(100, Math.max(10, parseInt(q.page_size ?? "50", 10) || 50));
+
+    const conditions: string[] = [];
+    const params: (string | number | null)[] = [];
+
+    if (queryStr) {
+      const needle = `%${queryStr}%`;
+      conditions.push("(item_label LIKE ? OR item_id LIKE ? OR content_type LIKE ? OR note LIKE ? OR before_json LIKE ? OR after_json LIKE ?)");
+      params.push(needle, needle, needle, needle, needle, needle);
+    }
+
+    const allowedTypes = ["task", "student_guide_section", "office", "department", "service_category"];
+    if (typeFilter !== "all" && allowedTypes.includes(typeFilter)) {
+      conditions.push("content_type = ?");
+      params.push(typeFilter);
+    }
+
+    if (sourceFilter === "cowork") {
+      conditions.push("note LIKE ?");
+      params.push("Cowork import:%");
+    } else if (sourceFilter === "manual") {
+      conditions.push("(status = ? AND (note IS NULL OR note NOT LIKE ?))");
+      params.push("applied", "Cowork import:%");
+    } else if (sourceFilter === "deleted") {
+      conditions.push("status = ?");
+      params.push("deleted");
+    }
+
+    const allowedStatuses = ["applied", "deleted"];
+    if (statusFilter !== "all" && allowedStatuses.includes(statusFilter)) {
+      conditions.push("status = ?");
+      params.push(statusFilter);
+    }
+
+    if (dateFrom) {
+      conditions.push("created_at >= ?");
+      params.push(dateFrom);
+    }
+    if (dateTo) {
+      const d = new Date(dateTo);
+      if (!isNaN(d.getTime())) {
+        d.setUTCDate(d.getUTCDate() + 1);
+        conditions.push("created_at < ?");
+        params.push(d.toISOString().slice(0, 10));
+      }
+    }
+
+    const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    const selectFields = "SELECT id, created_at, updated_at, content_type, item_id, item_label, before_json, after_json, status, note";
+
+    const countRow = await db
+      .prepare(`SELECT COUNT(*) as count FROM content_drafts ${where}`)
+      .get<{ count: number }>(...params);
+    const total = countRow?.count ?? 0;
+    const offset = (page - 1) * pageSize;
+
+    const items = await db
+      .prepare(`${selectFields} FROM content_drafts ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`)
+      .all(...params, pageSize, offset);
+
+    return { total, page, page_size: pageSize, items };
   }));
 
   app.get("/api/admin/content-export", (_req, res) => void adminJson(res, async () => {

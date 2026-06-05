@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AlertCircle,
   Database,
@@ -58,11 +58,18 @@ interface Conversation {
   messages: Message[];
 }
 
+interface DraftsResponse {
+  total: number;
+  page: number;
+  page_size: number;
+  items: ContentDraft[];
+}
+
 interface AdminData {
   stats: Stats;
   searchEvents: SearchEvent[];
   conversations: Conversation[];
-  drafts: ContentDraft[];
+  drafts: DraftsResponse;
 }
 
 interface AuthStatus {
@@ -1923,31 +1930,219 @@ function ContentMaintenanceTab({ onSaved }: { onSaved: () => Promise<void> }) {
   );
 }
 
-function DraftsTab({ drafts }: { drafts: ContentDraft[] }) {
-  if (drafts.length === 0) {
-    return <EmptyState title="目前尚無修改紀錄" description="內容維護更新正式內容後，修改前後 JSON 會保留在這裡。" />;
-  }
+const DRAFT_TYPE_LABELS: Record<string, string> = {
+  task: "任務流程",
+  student_guide_section: "新生指南章節",
+  office: "行政單位",
+  department: "系所單位",
+  service_category: "常見問題分類",
+};
+
+function safePrettyJson(raw: string): string {
+  try { return JSON.stringify(JSON.parse(raw), null, 2); } catch { return raw; }
+}
+
+const DRAFT_PAGE_SIZE = 50;
+
+function DraftsTab({ initialData }: { initialData: DraftsResponse }) {
+  const [queryInput, setQueryInput] = useState("");
+  const [committedQuery, setCommittedQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [sourceFilter, setSourceFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [page, setPage] = useState(1);
+  const [draftsData, setDraftsData] = useState<DraftsResponse>(initialData);
+  const [fetching, setFetching] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const skipFirstRef = useRef(true);
+  const isSearchActiveRef = useRef(false);
+  isSearchActiveRef.current = Boolean(
+    committedQuery || typeFilter !== "all" || sourceFilter !== "all" ||
+    statusFilter !== "all" || dateFrom || dateTo || page > 1
+  );
+
+  useEffect(() => {
+    if (!isSearchActiveRef.current) {
+      setDraftsData(initialData);
+    }
+  }, [initialData]);
+
+  const doFetch = useCallback(async (opts: {
+    query: string; type: string; source: string; status: string;
+    dateFrom: string; dateTo: string; page: number;
+  }) => {
+    setFetching(true);
+    setFetchError(null);
+    try {
+      const sp = new URLSearchParams({ page: String(opts.page), page_size: String(DRAFT_PAGE_SIZE) });
+      if (opts.query) sp.set("query", opts.query);
+      if (opts.type !== "all") sp.set("type", opts.type);
+      if (opts.source !== "all") sp.set("source", opts.source);
+      if (opts.status !== "all") sp.set("status", opts.status);
+      if (opts.dateFrom) sp.set("date_from", opts.dateFrom);
+      if (opts.dateTo) sp.set("date_to", opts.dateTo);
+      const result = await fetchJson<DraftsResponse>(`/api/admin/content-drafts?${sp.toString()}`);
+      setDraftsData(result);
+    } catch {
+      setFetchError("無法載入修改紀錄，請重試");
+    } finally {
+      setFetching(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (skipFirstRef.current) { skipFirstRef.current = false; return; }
+    void doFetch({ query: committedQuery, type: typeFilter, source: sourceFilter, status: statusFilter, dateFrom, dateTo, page });
+  }, [committedQuery, typeFilter, sourceFilter, statusFilter, dateFrom, dateTo, page, doFetch]);
+
+  const handleSearch = () => { setPage(1); setCommittedQuery(queryInput); };
+  const isFiltered = Boolean(committedQuery || typeFilter !== "all" || sourceFilter !== "all" || statusFilter !== "all" || dateFrom || dateTo);
+  const totalPages = Math.ceil(draftsData.total / DRAFT_PAGE_SIZE);
 
   return (
-    <div className="space-y-3">
-      {drafts.map((draft) => (
-        <Card key={draft.id}>
-          <CardHeader>
-            <CardTitle className="flex flex-wrap items-center gap-2 text-base">
-              <Badge variant="outline">{draft.content_type}</Badge>
-              {draft.item_label}
-              <span className="text-xs font-normal text-muted-foreground">{fmt(draft.created_at)}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {draft.note && <p className="text-sm text-muted-foreground">{draft.note}</p>}
-            <div className="grid gap-3 md:grid-cols-2">
-              <pre className="max-h-72 overflow-auto rounded bg-red-50 p-3 text-xs">{JSON.stringify(JSON.parse(draft.before_json), null, 2)}</pre>
-              <pre className="max-h-72 overflow-auto rounded bg-green-50 p-3 text-xs">{JSON.stringify(JSON.parse(draft.after_json), null, 2)}</pre>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+    <div className="space-y-4">
+      <div className="space-y-3 rounded-lg border border-border bg-card p-4">
+        <div className="flex gap-2">
+          <input
+            value={queryInput}
+            onChange={(e) => setQueryInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
+            placeholder="搜尋標題、內容、備註、匯入包名稱，例如：宿舍、SIM、Visa、體育中心、Cowork import"
+            className="h-9 flex-1 rounded-md border border-border bg-background px-3 text-sm outline-none focus:border-amber"
+          />
+          <button
+            type="button"
+            onClick={handleSearch}
+            className="inline-flex items-center gap-1.5 rounded-md bg-navy px-3 py-2 text-sm font-medium text-white hover:bg-navy/90"
+          >
+            <Search className="h-4 w-4" />
+            搜尋
+          </button>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <select
+            value={typeFilter}
+            onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
+            className="h-9 rounded-md border border-border bg-background px-2 text-sm outline-none focus:border-amber"
+          >
+            <option value="all">全部資料類型</option>
+            <option value="task">任務流程 Task</option>
+            <option value="student_guide_section">新生指南章節 Student Guide Section</option>
+            <option value="office">行政單位 Office</option>
+            <option value="department">系所單位 Department</option>
+            <option value="service_category">常見問題分類 Service Category</option>
+          </select>
+          <select
+            value={sourceFilter}
+            onChange={(e) => { setSourceFilter(e.target.value); setPage(1); }}
+            className="h-9 rounded-md border border-border bg-background px-2 text-sm outline-none focus:border-amber"
+          >
+            <option value="all">全部來源</option>
+            <option value="cowork">AI Cowork 匯入</option>
+            <option value="manual">手動修改</option>
+            <option value="deleted">刪除紀錄</option>
+          </select>
+          <select
+            value={statusFilter}
+            onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
+            className="h-9 rounded-md border border-border bg-background px-2 text-sm outline-none focus:border-amber"
+          >
+            <option value="all">全部狀態</option>
+            <option value="applied">applied</option>
+            <option value="deleted">deleted</option>
+          </select>
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
+            className="h-9 rounded-md border border-border bg-background px-2 text-sm outline-none focus:border-amber"
+            title="起始日期"
+          />
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
+            className="h-9 rounded-md border border-border bg-background px-2 text-sm outline-none focus:border-amber"
+            title="結束日期"
+          />
+          {isFiltered && (
+            <button
+              type="button"
+              onClick={() => {
+                setQueryInput(""); setCommittedQuery(""); setTypeFilter("all");
+                setSourceFilter("all"); setStatusFilter("all"); setDateFrom(""); setDateTo(""); setPage(1);
+              }}
+              className="h-9 rounded-md border border-border px-3 text-sm hover:bg-muted"
+            >
+              清除篩選
+            </button>
+          )}
+        </div>
+      </div>
+
+      <p className="text-sm text-muted-foreground">
+        {fetching ? "載入中..." : isFiltered ? `找到 ${draftsData.total} 筆` : `共 ${draftsData.total} 筆修改紀錄`}
+      </p>
+
+      {fetchError && (
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{fetchError}</div>
+      )}
+
+      {draftsData.items.length === 0 && !fetching ? (
+        <EmptyState title="目前尚無修改紀錄" description="內容維護更新正式內容後，修改前後 JSON 會保留在這裡。" />
+      ) : (
+        <div className="space-y-3">
+          {draftsData.items.map((draft) => (
+            <Card key={draft.id}>
+              <CardHeader>
+                <CardTitle className="flex flex-wrap items-center gap-2 text-base">
+                  <Badge variant="outline">{DRAFT_TYPE_LABELS[draft.content_type] ?? draft.content_type}</Badge>
+                  {draft.item_label}
+                  {draft.note?.startsWith("Cowork import:") && (
+                    <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">AI Cowork 匯入</Badge>
+                  )}
+                  {draft.status === "deleted" && (
+                    <Badge className="bg-red-100 text-red-700 hover:bg-red-100">刪除</Badge>
+                  )}
+                  <span className="ml-auto text-xs font-normal text-muted-foreground">{fmt(draft.created_at)}</span>
+                </CardTitle>
+                <p className="font-mono text-xs text-muted-foreground">item_id: {draft.item_id} · 狀態: {draft.status}</p>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {draft.note && <p className="text-sm text-muted-foreground">{draft.note}</p>}
+                <div className="grid gap-3 md:grid-cols-2">
+                  <pre className="max-h-72 overflow-auto rounded bg-red-50 p-3 text-xs">{safePrettyJson(draft.before_json)}</pre>
+                  <pre className="max-h-72 overflow-auto rounded bg-green-50 p-3 text-xs">{safePrettyJson(draft.after_json)}</pre>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between border-t border-border pt-4">
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1 || fetching}
+            className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-muted disabled:opacity-40"
+          >
+            上一頁
+          </button>
+          <span className="text-sm text-muted-foreground">第 {page} / {totalPages} 頁</span>
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages || fetching}
+            className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-muted disabled:opacity-40"
+          >
+            下一頁
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -2387,7 +2582,7 @@ export default function Admin() {
         fetchJson<Stats>("/api/admin/stats"),
         fetchJson<SearchEvent[]>("/api/admin/search-events"),
         fetchJson<Conversation[]>("/api/admin/ccugpt-conversations"),
-        fetchJson<ContentDraft[]>("/api/admin/content-drafts"),
+        fetchJson<DraftsResponse>("/api/admin/content-drafts"),
       ]);
       setData({ stats, searchEvents, conversations, drafts });
     } catch (err) {
@@ -2488,7 +2683,7 @@ export default function Admin() {
             <TabsTrigger value="search">搜尋紀錄 ({data.searchEvents.length})</TabsTrigger>
             <TabsTrigger value="ccugpt">CCUGPT 對話 ({data.conversations.length})</TabsTrigger>
             <TabsTrigger value="content">內容維護</TabsTrigger>
-            <TabsTrigger value="drafts">修改紀錄 ({data.drafts.length})</TabsTrigger>
+            <TabsTrigger value="drafts">修改紀錄{data.drafts.total > 0 ? `（共 ${data.drafts.total} 筆）` : ""}</TabsTrigger>
             <TabsTrigger value="maintenance">資料管理</TabsTrigger>
           </TabsList>
 
@@ -2509,7 +2704,7 @@ export default function Admin() {
           </TabsContent>
 
           <TabsContent value="drafts">
-            <DraftsTab drafts={data.drafts} />
+            <DraftsTab initialData={data.drafts} />
           </TabsContent>
 
           <TabsContent value="maintenance">
