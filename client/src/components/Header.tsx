@@ -65,7 +65,7 @@ export default function Header() {
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-1 xl:flex">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActivePath(location, item.href, Boolean(item.children));
@@ -126,7 +126,7 @@ export default function Header() {
             {lang === "en" ? "中" : "EN"}
           </button>
           <button
-            className="rounded-md p-1.5 hover:bg-white/10 md:hidden"
+            className="rounded-md p-1.5 hover:bg-white/10 xl:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? t("Close menu", "關閉選單") : t("Open menu", "開啟選單")}
           >
@@ -136,7 +136,7 @@ export default function Header() {
       </div>
 
       {mobileOpen && (
-        <nav className="border-t border-white/10 pb-3 md:hidden">
+        <nav className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 pb-3 xl:hidden">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActivePath(location, item.href, Boolean(item.children));
