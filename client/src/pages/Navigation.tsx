@@ -25,6 +25,7 @@ import {
   CheckCircle2,
   ClipboardList,
 } from "lucide-react";
+import { LocationPhotos } from "@/components/LocationPhotos";
 
 export default function Navigation() {
   const { t, lang } = useLanguage();
@@ -129,6 +130,17 @@ export default function Navigation() {
 
   const college_en = !isOffice && "college_en" in item ? item.college_en : "";
   const college_zh = !isOffice && "college_zh" in item ? item.college_zh : "";
+
+  const entrance_image = "entrance_image" in item ? item.entrance_image : undefined;
+  const floor_plan_image = "floor_plan_image" in item ? item.floor_plan_image : undefined;
+  const building_entrance_image = "building_entrance_image" in item ? item.building_entrance_image : undefined;
+
+  const locationPhotos = [
+    { src: building_entrance_image, label_en: "Building Entrance", label_zh: "大樓入口" },
+    { src: entrance_image, label_en: "Entrance", label_zh: "門口" },
+    { src: floor_plan_image, label_en: "Floor Plan", label_zh: "平面圖", fit: "contain" as const },
+  ];
+  const hasPhotos = locationPhotos.some((p) => Boolean(p.src));
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -300,48 +312,52 @@ export default function Navigation() {
           {/* Right: Location & Map */}
           <div className="lg:col-span-2 space-y-5">
             {/* Location card */}
-            {indoor_en && (
+            {(indoor_en || hasPhotos) && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h2 className="font-display font-bold text-base text-navy mb-3">
                   {t("Location", "位置")}
                 </h2>
 
-                <div className="space-y-2.5">
-                  <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <DoorOpen className="w-4 h-4 shrink-0 mt-0.5" />
-                    <span>{t(indoor_en, indoor_zh)}</span>
+                {indoor_en && (
+                  <div className="space-y-2.5">
+                    <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <DoorOpen className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span>{t(indoor_en, indoor_zh)}</span>
+                    </div>
+
+                    <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span>
+                        {t(building_en, building_zh)} · {floor}
+                      </span>
+                    </div>
+
+                    {office_hours && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Clock className="w-4 h-4 shrink-0" />
+                        <span>{office_hours}</span>
+                      </div>
+                    )}
+
+                    {phone && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Phone className="w-4 h-4 shrink-0" />
+                        <span>{phone}</span>
+                      </div>
+                    )}
+
+                    {email && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Mail className="w-4 h-4 shrink-0" />
+                        <a href={`mailto:${email}`} className="underline hover:text-navy">
+                          {email}
+                        </a>
+                      </div>
+                    )}
                   </div>
+                )}
 
-                  <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
-                    <span>
-                      {t(building_en, building_zh)} · {floor}
-                    </span>
-                  </div>
-
-                  {office_hours && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="w-4 h-4 shrink-0" />
-                      <span>{office_hours}</span>
-                    </div>
-                  )}
-
-                  {phone && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Phone className="w-4 h-4 shrink-0" />
-                      <span>{phone}</span>
-                    </div>
-                  )}
-
-                  {email && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Mail className="w-4 h-4 shrink-0" />
-                      <a href={`mailto:${email}`} className="underline hover:text-navy">
-                        {email}
-                      </a>
-                    </div>
-                  )}
-                </div>
+                <LocationPhotos photos={locationPhotos} />
 
                 <div className="flex flex-wrap gap-2 mt-4">
                   {googleMapsUrl && (

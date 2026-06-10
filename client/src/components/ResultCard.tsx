@@ -2,61 +2,12 @@
  * ResultCard — Wayfinding Signage System
  * Displays office/department info in a card with navigation actions
  */
-import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getGoogleMapsSearchUrl } from "@/lib/mapTarget";
 import { Link } from "wouter";
 import { MapPin, ClipboardList, ExternalLink, Clock, Phone, Mail, AlertTriangle, DoorOpen, ArrowRight } from "lucide-react";
 import type { Office, Department } from "@/data/campusData";
-
-interface PhotoCardProps {
-  src?: string;
-  label: string;
-  alt: string;
-  fit?: "cover" | "contain";
-}
-
-function PhotoCard({ src, label, alt, fit = "cover" }: PhotoCardProps) {
-  const [failed, setFailed] = useState(false);
-
-  if (!src || failed) return null;
-
-  return (
-    <figure className="min-w-0">
-      <figcaption className="text-xs font-medium text-muted-foreground mb-1">
-        {label}
-      </figcaption>
-      <div className="aspect-[4/3] w-full overflow-hidden rounded-lg border border-border bg-cream">
-        <img
-          src={src}
-          alt={alt}
-          loading="lazy"
-          decoding="async"
-          onError={() => setFailed(true)}
-          className={`h-full w-full ${fit === "contain" ? "object-cover" : "object-cover"}`}
-        />
-      </div>
-    </figure>
-  );
-}
-
-interface LocationPhotosProps {
-  photos: PhotoCardProps[];
-}
-
-function LocationPhotos({ photos }: LocationPhotosProps) {
-  const availablePhotos = photos.filter(photo => Boolean(photo.src));
-
-  if (availablePhotos.length === 0) return null;
-
-  return (
-    <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-      {availablePhotos.map(photo => (
-        <PhotoCard key={`${photo.label}-${photo.src}`} {...photo} />
-      ))}
-    </div>
-  );
-}
+import { LocationPhotos } from "@/components/LocationPhotos";
 
 interface OfficeCardProps {
   office: Office;
@@ -158,18 +109,8 @@ export function OfficeCard({ office, reason }: OfficeCardProps) {
 
         <LocationPhotos
           photos={[
-            {
-              src: o.entrance_image,
-              label: "Entrance · 門口",
-              alt: `${o.name_en} entrance`,
-              fit: "cover",
-            },
-            {
-              src: o.floor_plan_image,
-              label: "Floor Plan · 平面圖",
-              alt: `${o.name_en} floor plan`,
-              fit: "contain",
-            },
+            { src: o.entrance_image, label_en: "Entrance", label_zh: "門口" },
+            { src: o.floor_plan_image, label_en: "Floor Plan", label_zh: "平面圖", fit: "contain" },
           ]}
         />
 
@@ -258,24 +199,9 @@ export function DeptCard({ dept }: DeptCardProps) {
 
         <LocationPhotos
           photos={[
-            {
-              src: d.building_entrance_image,
-              label: "Building Entrance · 大樓入口",
-              alt: `${d.name_en} building entrance`,
-              fit: "cover",
-            },
-            {
-              src: d.entrance_image,
-              label: "Entrance · 門口",
-              alt: `${d.name_en} entrance`,
-              fit: "cover",
-            },
-            {
-              src: d.floor_plan_image,
-              label: "Floor Plan · 平面圖",
-              alt: `${d.name_en} floor plan`,
-              fit: "contain",
-            },
+            { src: d.building_entrance_image, label_en: "Building Entrance", label_zh: "大樓入口" },
+            { src: d.entrance_image, label_en: "Entrance", label_zh: "門口" },
+            { src: d.floor_plan_image, label_en: "Floor Plan", label_zh: "平面圖", fit: "contain" },
           ]}
         />
 
