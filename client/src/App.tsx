@@ -16,6 +16,7 @@ import Offices from "./pages/Offices";
 import Tasks from "./pages/Tasks";
 import TaskDetail from "./pages/TaskDetail";
 import StudentGuidePage from "./pages/StudentGuidePage";
+import StudentGuideWelcomePage from "./pages/StudentGuideWelcomePage";
 import RelatedSites from "./pages/RelatedSites";
 import Navigation from "./pages/Navigation";
 import Admin from "./pages/Admin";
@@ -27,7 +28,7 @@ function LegacyHandbookRedirect() {
   const [, navigate] = useLocation();
 
   useEffect(() => {
-    navigate("/guides/degree", { replace: true });
+    navigate("/guides/welcome", { replace: true });
   }, [navigate]);
 
   return null;
@@ -44,6 +45,7 @@ function Router() {
       <Route path="/offices" component={Offices} />
       <Route path="/tasks" component={Tasks} />
       <Route path="/task/:id" component={TaskDetail} />
+      <Route path="/guides/welcome" component={StudentGuideWelcomePage} />
       <Route path="/guides/:guideId" component={StudentGuidePage} />
       <Route path="/guides" component={LegacyHandbookRedirect} />
       <Route path="/handbook" component={LegacyHandbookRedirect} />
