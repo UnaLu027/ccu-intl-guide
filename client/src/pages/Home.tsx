@@ -4,6 +4,7 @@
  * Secondary: Task cards + Map link
  */
 import Header from "@/components/Header";
+import SiteWelcomeOverlay from "@/components/SiteWelcomeOverlay";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCampusData } from "@/contexts/CampusDataContext";
 import { Link, useLocation } from "wouter";
@@ -49,6 +50,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SiteWelcomeOverlay />
       <Header />
 
       {/* ===== HERO SECTION — SEARCH AS PRIMARY ===== */}

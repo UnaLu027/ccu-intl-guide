@@ -18,19 +18,19 @@ import { useState } from "react";
 const guideChildren = [
   {
     href: "/guides/degree",
-    labelEn: "Degree-Seeking Student Guide",
+    labelEn: "Degree-Seeking Students",
     labelZh: "學位生新生指南",
   },
   {
     href: "/guides/exchange",
-    labelEn: "Exchange Student Guide",
+    labelEn: "Exchange Students",
     labelZh: "交換生新生指南",
   },
 ];
 
 const navItems = [
   { href: "/", labelEn: "Home", labelZh: "首頁", icon: Search },
-  { href: "/guides/degree", labelEn: "New Student Guide", labelZh: "新生指南", icon: BookOpen, children: guideChildren },
+  { href: "/guides/welcome", labelEn: "New Student Guide", labelZh: "新生指南", icon: BookOpen, children: guideChildren },
   { href: "/tasks", labelEn: "FAQ", labelZh: "常見問題", icon: ClipboardList },
   { href: "/map", labelEn: "Map", labelZh: "地圖", icon: Map },
   { href: "/offices", labelEn: "Offices", labelZh: "行政單位", icon: Briefcase },
